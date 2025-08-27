@@ -9,12 +9,21 @@ okay this readme is gonna be messy as hell until milestone 1 is officially done.
 - [Markdown Basic Syntax](https://www.markdownguide.org/basic-syntax/)
 
 # journal that list what I did
+this is for commit so i can add these in the description since im using github desktop teehee
 ### 27 Sept 2025
+-- 1st commit
 1. Created the project with `ng new TextVideoChatSystem`
 2. Created the frontend and backend; Angular and Node respectively.
     - Angular (Frontend) is in the folder /TextVideoChatSystem/src
     - Node (Backend) is in the folder /TextVideoChatSystem/server
+3. Added `.server/node_modules` in .gitignore so node_modules in server won't get pushed.
+4. Installed Bootstrap, Nodemon, Express, and CORS
+    - Bootstrap - Frontend: `npm install bootstrap --save`
+    - Nodemon - Backend: `npm install nodemon --save`
+    - CORS - Backend: `npm install cors --save`
+    - Express - Backend: `npm install express --save`
 
+-- 2nd commit
 
 # What I need for the documentation
 - How the Git is organized
