@@ -45,6 +45,14 @@ okay my plan is gonna define the uhhhh models was it called? since thats the bac
     So far I've only pasted what I have from my workshop, of course I will adjust as needed but at least I have my workshop code as a 'blueprint' of some sorts.
 5. Modified `app.routes.ts` to have proper routing.
 
+-- 4th Commit
+1. Verify that login (frontend&backend) are both working.
+    I verified by running the whole thing and tried to login
+2. Added `<router-outlet />` to app.html since this one line is what displays the component. (I accidentally deleted them before whoops)
+3. Adjusted `login.ts` and `loginRoute.ts`.
+    On the old workshop I used to have a variable called `valid` inside the class `User`. However, when I created `ChatUsers` here I used `signedIn` instead. They serve the same purpose though.
+4. Added and imported `provideHttpClient` at `app.config.ts`
+
 # What I need for the documentation
 - How the Git is organized
 - How do I use the Git for development

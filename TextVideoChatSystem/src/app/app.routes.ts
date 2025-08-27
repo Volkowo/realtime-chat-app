@@ -9,6 +9,11 @@ export const routes: Routes = [
         title: "Login"
     },
     {
+    path: "login",
+    component: Login,
+    title: "Login"
+    },
+    {
         path: "group",  
         component: Group,
         title: "Group"

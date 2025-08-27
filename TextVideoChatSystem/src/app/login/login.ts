@@ -24,7 +24,8 @@ export class Login {
 
   checkLogin(){
     this.http.post('http://localhost:3000/api/auth', {email: this.email, pass: this.pass}).subscribe((user: any) => {
-      if (user.valid){
+      console.log(this.email, this.pass)
+      if (user.signedIn){
           const userString = JSON.stringify(user);
           localStorage.setItem("user", userString);
           this.router.navigate(['/group'])

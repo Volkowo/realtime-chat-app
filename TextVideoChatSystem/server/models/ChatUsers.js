@@ -1,9 +1,9 @@
 class ChatUser{
-    constructor(id, email, username, password, roles = ["chatUser"], groups){
+    constructor(id, email, username, pass, roles = ["chatUser"], groups){
         this.id = id;
         this.email = email;
         this.username = username;
-        this.password = password;
+        this.pass = pass;
         this.roles = roles;
         this.groups = groups;
         this.signedIn = false;
@@ -13,7 +13,7 @@ class ChatUser{
 const users = [
     new ChatUser(
         "1",
-        "ogsuperadmin@email.com",
+        "og@email.com",
         "abc",
         "123",
         ["chatUser", "superAdmin"],

@@ -11,7 +11,7 @@ function route(app, path) {
         console.log(users);
         console.log(req.body);
         console.log("AAAAAA " + email, pass);
-        const loggedUser = users.find(user => user.email === email && user.password === pass);
+        const loggedUser = users.find(user => user.email === email && user.pass === pass);
 
         if (loggedUser) {
             const { pass, ...loggedUserWithoutPass } = loggedUser;
