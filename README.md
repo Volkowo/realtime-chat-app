@@ -32,6 +32,19 @@ okay my plan is gonna define the uhhhh models was it called? since thats the bac
     - `Groups.js` - Define the overall structure of groups.
 3. Created /service inside /server, not sure what I'll use that for now (I know the purpose of the folder, I just dunno what services will be there). But better be safe than sorry.
 
+-- 3rd commit
+1. Created component for login and group (for now)
+    - `ng generate component login`
+    - `ng generate component group`
+    Mostly I wanted this two for now so I can test backend/frontend stuff.
+2. Updated `angular.json` to include Bootstrap and `src/assets`.
+    - Any media will go to `src/assets`
+3. Added `server.js` in backend.
+    This handles the listening and all that.
+4. Worked through login component. 
+    So far I've only pasted what I have from my workshop, of course I will adjust as needed but at least I have my workshop code as a 'blueprint' of some sorts.
+5. Modified `app.routes.ts` to have proper routing.
+
 # What I need for the documentation
 - How the Git is organized
 - How do I use the Git for development
