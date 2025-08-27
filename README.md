@@ -24,6 +24,13 @@ this is for commit so i can add these in the description since im using github d
     - Express - Backend: `npm install express --save`
 
 -- 2nd commit
+okay my plan is gonna define the uhhhh models was it called? since thats the backbone of this whole project, so ill probably need that done first before I can actually do anything LOL
+1. Created /models inside /server. This is to define the structure of users, admins, group, channel, etc.
+2. Created the following in /models:
+    - `Channel.js` - Define the overall structure of channel
+    - `ChatUsers.js` - Define the overall structure of every user in the website.
+    - `Groups.js` - Define the overall structure of groups.
+3. Created /service inside /server, not sure what I'll use that for now (I know the purpose of the folder, I just dunno what services will be there). But better be safe than sorry.
 
 # What I need for the documentation
 - How the Git is organized
