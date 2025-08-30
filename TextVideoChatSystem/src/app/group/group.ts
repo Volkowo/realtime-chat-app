@@ -25,6 +25,7 @@ export class Group implements OnInit {
         this.userJSON = JSON.parse(this.user);
         this.http.get(`http://localhost:3000/api/groups/${this.userJSON.id}`).subscribe((groups: any) => {
           const groupsString = JSON.stringify(groups)
+          localStorage.setItem("groups", groupsString);
           console.log("GROUP: " + groupsString);
         })
     } else {

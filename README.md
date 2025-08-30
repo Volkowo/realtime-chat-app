@@ -62,6 +62,15 @@ I will not remove this on the final version of README.md just as a prove that I 
     - Fetches the appropriate group (as in the group the user is in.).
     - No front-end display yet though, that'll come soon.
 
+-- 2nd Commit
+1. Added unique ID for `channel`.
+    - I added a unique ID under the assumption that a channel across different group can have the same name. So we need an ID to actually get the correct channel.
+2. Populated `ChatUsers`, `Channels`, and `Groups`.
+    - Added some dummy data just so I can test the front end (which is what I'm gonna do after this.)
+3. Implemented front-end's model of user (`users.ts`) in `login.ts`.
+4. Added route for channel as well (backend only for now).
+    - I haven't tested them yet. That's what I'll do after this commit.
+
 # What I need for the documentation
 - How the Git is organized
 - How do I use the Git for development

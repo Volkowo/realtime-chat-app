@@ -1,7 +1,8 @@
 class Channel{
-    constructor(channelName){
+    constructor(channelID, channelName, messages = []){
+        this.channelID = channelID
         this.channelName = channelName;
-        this.messages = [];
+        this.messages = messages;
     }
 
     addMessage(userID, message){
@@ -12,3 +13,5 @@ class Channel{
         })
     }
 }
+
+module.exports = {Channel}
