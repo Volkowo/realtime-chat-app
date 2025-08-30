@@ -14,7 +14,7 @@ const users = [
     new ChatUser(
         "1",
         "og@email.com",
-        "abc",
+        "super",
         "123",
         ["chatUser", "superAdmin"],
         [{ group: "TestGroup", role: "superAdmin" }]

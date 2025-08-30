@@ -1,9 +1,9 @@
 class Group{
-    constructor(id, groupName){
+    constructor(id, groupName, channels = [], users = []){
         this.id = id;
         this.groupName = groupName;
-        this.channels = [];
-        this.users = [];
+        this.channels = channels;
+        this.users = users;
     }
 }
 

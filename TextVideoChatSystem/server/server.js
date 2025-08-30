@@ -12,7 +12,9 @@ app.use(bodyParser.json())
 app.use(bodyParser.json());
 
 const loginRoute = require('./routes/loginRoute');
+const groupRoute = require('./routes/groupRoute');
 loginRoute.route(app, '/api/auth'); // Pass the app instance and path
+groupRoute.route(app, '/api/groups/:userID');
 
 app.use(express.static(__dirname + '../dist/week4/browser'));
 

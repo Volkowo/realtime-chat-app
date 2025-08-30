@@ -9,8 +9,9 @@ okay this readme is gonna be messy as hell until milestone 1 is officially done.
 - [Markdown Basic Syntax](https://www.markdownguide.org/basic-syntax/)
 
 # journal that list what I did
-this is for commit so i can add these in the description since im using github desktop teehee
-### 27 Sept 2025
+<!-- this is for commit so i can add these in the description since im using github desktop teehee -->
+I will not remove this on the final version of README.md just as a prove that I did commit stuff incrementally.
+### 27 Aug 2025
 -- 1st commit
 1. Created the project with `ng new TextVideoChatSystem`
 2. Created the frontend and backend; Angular and Node respectively.
@@ -24,7 +25,7 @@ this is for commit so i can add these in the description since im using github d
     - Express - Backend: `npm install express --save`
 
 -- 2nd commit
-okay my plan is gonna define the uhhhh models was it called? since thats the backbone of this whole project, so ill probably need that done first before I can actually do anything LOL
+<!-- okay my plan is gonna define the uhhhh models was it called? since thats the backbone of this whole project, so ill probably need that done first before I can actually do anything LOL -->
 1. Created /models inside /server. This is to define the structure of users, admins, group, channel, etc.
 2. Created the following in /models:
     - `Channel.js` - Define the overall structure of channel
@@ -52,6 +53,14 @@ okay my plan is gonna define the uhhhh models was it called? since thats the bac
 3. Adjusted `login.ts` and `loginRoute.ts`.
     On the old workshop I used to have a variable called `valid` inside the class `User`. However, when I created `ChatUsers` here I used `signedIn` instead. They serve the same purpose though.
 4. Added and imported `provideHttpClient` at `app.config.ts`
+
+### 30 Aug 2025
+-- 1st Commit
+1. Changed how login works.
+    - I initally set the validation w/ email and password, assignment wanted username and password instead so yeah I adjusted the validation as needed.
+2. Made the route to get groups on both front end and back end.
+    - Fetches the appropriate group (as in the group the user is in.).
+    - No front-end display yet though, that'll come soon.
 
 # What I need for the documentation
 - How the Git is organized

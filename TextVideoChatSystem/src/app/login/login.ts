@@ -12,19 +12,18 @@ import { HttpClientModule } from '@angular/common/http';
   styleUrl: './login.css'
 })
 export class Login {
-  email = "";
+  username = "";
   pass = "";
 
   constructor(private router: Router, private http: HttpClient){}
 
   resetInput(){
-    this.email = "";
+    this.username = "";
     this.pass = "";
   }
 
   checkLogin(){
-    this.http.post('http://localhost:3000/api/auth', {email: this.email, pass: this.pass}).subscribe((user: any) => {
-      console.log(this.email, this.pass)
+    this.http.post('http://localhost:3000/api/auth', {username: this.username, pass: this.pass}).subscribe((user: any) => {
       if (user.signedIn){
           const userString = JSON.stringify(user);
           localStorage.setItem("user", userString);
