@@ -80,6 +80,11 @@ I will not remove this on the final version of README.md just as a prove that I 
 3. Fixed routes in `channelRoute.js`
     - Deleted the trailing slash(I think thats what it's called?) for one of the route. I forgot you don't need any trailing slash at the end of a route.
 
+# Routes
+| Route Name | Parameter | Return Values | Purpose |
+|---|---|---|---|
+| test | test| test| Test|
+
 # What I need for the documentation
 - How the Git is organized
 - How do I use the Git for development
