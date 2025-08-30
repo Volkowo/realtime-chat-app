@@ -71,6 +71,15 @@ I will not remove this on the final version of README.md just as a prove that I 
 4. Added route for channel as well (backend only for now).
     - I haven't tested them yet. That's what I'll do after this commit.
 
+-- 3rd Commit
+1. Added list of groups in `group.html`
+    - Displays the groups the user is in.
+    - Clicking the group logs the id and also the channels of said group. The UI is coming next.
+2. Fixed dictionary values in `ChatUsers.js`
+    - Forgot that the dictionary for group/role pair uses **groupID** instead of **groupName**. So yeah I just fixed that real quick.
+3. Fixed routes in `channelRoute.js`
+    - Deleted the trailing slash(I think thats what it's called?) for one of the route. I forgot you don't need any trailing slash at the end of a route.
+
 # What I need for the documentation
 - How the Git is organized
 - How do I use the Git for development

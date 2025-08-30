@@ -3,7 +3,7 @@ const { groups } = require('../models/Groups');
 function route(app, path) {
     // ROUTE
     // 1. Get the list of channel
-    app.get('/api/groups/:groupID/channels/', function (req, res) {
+    app.get('/api/groups/:groupID/channels', function (req, res) {
     const groupID = req.params.groupID;
 
     console.log("groupID (backend): ", groupID)

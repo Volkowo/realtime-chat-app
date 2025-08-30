@@ -1,2 +1,10 @@
-<p>group works!</p>
-<button type="button" class="btn btn-primary" (click)="logOut()">Logout</button>
+
+<div class="container">
+    <p>group works!</p>
+    <button type="button" class="btn btn-primary" (click)="logOut()">Logout</button>
+
+    <li *ngFor = "let group of groupsJSON" (click)="selectGroup(group.groupID)">
+        {{group.groupName}}
+        
+    </li>
+</div>
