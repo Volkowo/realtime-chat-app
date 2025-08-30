@@ -3,8 +3,20 @@
     <p>group works!</p>
     <button type="button" class="btn btn-primary" (click)="logOut()">Logout</button>
 
-    <li *ngFor = "let group of groupsJSON" (click)="selectGroup(group.groupID)">
+    <li 
+        *ngFor = "let group of groupsJSON" 
+        (click)="selectGroup(group.groupID)" 
+        data-bs-toggle="collapse" 
+        [attr.data-bs-target]="'#group' + group.groupID" 
+        aria-expanded="false" 
+        [attr.aria-controls]="'#group' + group.groupID">
         {{group.groupName}}
-        
+        <div class="collapse" [id]="'group' + group.groupID">
+            <div class="card card-body">
+                <li *ngFor = "let channel of group.channels">
+                    {{channel.channelName}}
+                </li>
+            </div>
+        </div>
     </li>
 </div>
