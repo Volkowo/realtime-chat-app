@@ -80,6 +80,15 @@ I will not remove this on the final version of README.md just as a prove that I 
 3. Fixed routes in `channelRoute.js`
     - Deleted the trailing slash(I think thats what it's called?) for one of the route. I forgot you don't need any trailing slash at the end of a route.
 
+-- 4th commit
+1. New branch and readme updated
+
+-- 5th Commit
+1. Each group can display their respective channels now.
+    - Loop through group.channels to show channels per group.
+    - Fixes issue where all groups were showing the same channels.
+
+
 # Routes
 | Route Name | Parameter | Return Values | Purpose |
 |---|---|---|---|
