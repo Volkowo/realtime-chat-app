@@ -95,6 +95,11 @@ Started adding UI to the group page. Most of the UI are copied (and adjusted acc
 - No messages yet (as in it's not being displayed yet.)
 - Will adjust the UI further before starting to work on messages.
 
+-- 2nd Commit
+1. Added a new CSS file specifically for the one that I copied from Bootstrap (Named `groupBootstrap.css`)
+2. Modified `group.ts` so it can read `groupBootstrap.css` and `group.css`.
+    - I just changed `styleUrl` to `styleUrls` and made whatever inside into an array.
+
 
 # Routes
 | Route Name | Parameter | Return Values | Purpose |

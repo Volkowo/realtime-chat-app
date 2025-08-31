@@ -34,8 +34,8 @@ function route(app, path) {
         const channel = group.channels.find(channel => channel.channelID == channelID)
         
         if (channel){
-            console.log("Channel (one channel/backend): ", channel)
-            res.json(channel)
+            console.log("messages (backend): ", channel.messages)
+            res.json(channel.messages)
         } else {
             console.log("idk you suck grr")
         }

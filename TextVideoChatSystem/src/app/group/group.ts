@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-group',
   imports: [FormsModule, RouterModule, HttpClientModule, CommonModule],
   templateUrl: './group.html',
-  styleUrl: './group.css'
+  styleUrls: ['./group.css', './groupBootstrap.css']
 })
 export class Group implements OnInit {
   constructor(private router: Router, private http: HttpClient) {
@@ -20,6 +20,9 @@ export class Group implements OnInit {
   userJSON: any;
   groupsJSON: any;
   channelsJSON: any;
+  messagesJSON: any;
+  groupID: string = "";
+  channelID: string = "";
 
   ngOnInit(){
     this.user = (localStorage.getItem("user"))
@@ -30,6 +33,9 @@ export class Group implements OnInit {
           const groupsString = JSON.stringify(groups)
           localStorage.setItem("groups", groupsString);
           console.log("GROUP: " + groupsString);
+
+          this.groupID = localStorage.getItem("selectedGroup") || "";
+          this.channelID = localStorage.getItem("selectedChannel") || "";
         })
     } else {
       console.log("User not logged in!")
@@ -37,12 +43,33 @@ export class Group implements OnInit {
   }
 
   selectGroup(groupID: string){
-    console.log(groupID)
+    localStorage.setItem("selectedGroup", groupID);
+    this.groupID = localStorage.getItem("selectedGroup") || "";
+    console.log("Selected Group: ", this.groupID)
 
     this.http.get(`http://localhost:3000/api/groups/${groupID}/channels`).subscribe((channels: any) => {
       this.channelsJSON = channels;
       const channelString = JSON.stringify(channels)
       console.log("channels: ", channelString)
+    })
+  }
+  
+  /*
+    TODO:
+      0. Make models for channels, groups, and messages
+      1. Validation -> Check if channelID actually belongs in the Group
+      2. Error message for validation
+  */
+
+  test(channelID: string){
+    localStorage.setItem("selectedChannel", channelID);
+    this.channelID = localStorage.getItem("selectedChannel") || "";
+    console.log("Selected Channel: ", this.channelID)
+
+    this.http.get(`http://localhost:3000/api/groups/${this.groupID}/channels/${this.channelID}`).subscribe((messages: any) => {
+      this.messagesJSON = messages;
+      const messageString = JSON.stringify(messages);
+      console.log("messages: ", messageString)
     })
   }
 
