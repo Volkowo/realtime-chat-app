@@ -88,6 +88,13 @@ I will not remove this on the final version of README.md just as a prove that I 
     - Loop through group.channels to show channels per group.
     - Fixes issue where all groups were showing the same channels.
 
+## 31 Aug 2025
+-- 1st commit
+Started adding UI to the group page. Most of the UI are copied (and adjusted accordingly) from [Bootstrap Examples](https://getbootstrap.com/docs/5.3/examples/sidebars/).
+- All the group and channels are in the sidebars.
+- No messages yet (as in it's not being displayed yet.)
+- Will adjust the UI further before starting to work on messages.
+
 
 # Routes
 | Route Name | Parameter | Return Values | Purpose |
