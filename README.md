@@ -99,6 +99,11 @@ Started adding UI to the group page. Most of the UI are copied (and adjusted acc
 1. Added a new CSS file specifically for the one that I copied from Bootstrap (Named `groupBootstrap.css`)
 2. Modified `group.ts` so it can read `groupBootstrap.css` and `group.css`.
     - I just changed `styleUrl` to `styleUrls` and made whatever inside into an array.
+3. Messages are now displayed when we click on a channel.
+    - Changed the dropdown in `group.html` to accordion so only one dropdown can be active at the same time.
+    - Modifed `channelRoute.js` so that it actually passes the messages of a channel.
+    - Used LocalStorage to store the selected GroupID and ChannelID in `group.ts`.
+    - Modified `group.html` (obviously) so it shows the messages.
 
 
 # Routes
