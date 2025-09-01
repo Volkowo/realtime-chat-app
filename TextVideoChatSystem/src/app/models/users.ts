@@ -1,7 +1,10 @@
-export interface User {
-    username: string;
-    email: string;
-    roles: [];
-    groups: [];
-    signedIn: boolean;
+export class User {
+    constructor(
+        public username: string = "",
+        public email: string = "",
+        public roles: any[] = [],
+        public groups: any[] = [],
+        public signedIn: boolean = false
+    ){}
+
 }

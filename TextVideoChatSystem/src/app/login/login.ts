@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -12,11 +12,15 @@ import { User } from '../models/users';
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class Login {
+export class Login implements OnInit {
   username = "";
   pass = "";
 
   constructor(private router: Router, private http: HttpClient){}
+
+  ngOnInit(){
+    // localStorage.setItem("users", )
+  }
 
   resetInput(){
     this.username = "";
@@ -28,6 +32,7 @@ export class Login {
       if (user.signedIn){
           const userString = JSON.stringify(user);
           localStorage.setItem("user", userString);
+          console.log("Logged in user: ", userString)
           this.router.navigate(['/group'])
       } else {
         alert("Invalid credentials!");
