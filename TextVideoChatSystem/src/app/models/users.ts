@@ -1,7 +1,9 @@
 export class User {
     constructor(
-        public username: string = "",
+        public id: string = "",
         public email: string = "",
+        public username: string = "",
+        public pass: string = "",
         public roles: any[] = [],
         public groups: any[] = [],
         public signedIn: boolean = false
