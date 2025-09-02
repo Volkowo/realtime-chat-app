@@ -32,7 +32,7 @@
                         </button>
                         <div class="collapse" [id]="'group' + group.groupID" data-bs-parent="#groupsAccordion">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li *ngFor = "let channel of group.channels" class="ps-4" (click)="test(channel.channelID)">
+                                <li *ngFor = "let channel of group.channels" class="ps-4" (click)="getMessage(channel.channelID)">
                                     {{channel.channelName}}
                                 </li>
                             </ul>
@@ -40,7 +40,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-10 min-vh-100 offset-2" id="chatContainer">
+            <div class="col-10 min-vh-100 p-4 offset-2" id="chatContainer">
                 <p>group works!</p>
                 <ng-container *ngIf = "messagesJSON">
                     <li *ngFor="let message of messagesJSON">
