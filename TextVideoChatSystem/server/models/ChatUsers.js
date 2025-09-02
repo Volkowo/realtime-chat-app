@@ -17,7 +17,7 @@ const users = [
         "super",
         "123",
         ["chatUser", "superAdmin"],
-        [{ group: "1", role: "superAdmin" }]
+        [{ group: "1", role: "superAdmin" }, { group: '2', role: 'superAdmin' }, { group: '3', role: 'superAdmin' },]
     ),
     new ChatUser("2", "user2@email.com", "userTwo", "123", ["chatUser"], [{ group: "1", role: "member" }, { group: "2", role: "member" }]),
     new ChatUser("3", "user3@email.com", "userThree", "123", ["chatUser", "groupAdmin"], [{ group: "2", role: "groupAdmin" }]),

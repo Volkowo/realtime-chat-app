@@ -13,30 +13,30 @@ export class Seed {
     if(!localStorage.getItem("groups") || !localStorage.getItem("users")){
       // Hard-coded data
       const group1Channels = [
-        new ChannelModel('c1', 'general'),
-        new ChannelModel('c2', 'random')
+          new ChannelModel("c1", "general"),
+          new ChannelModel("c2", "random")
       ];
-      group1Channels[0].addMessage('1', 'Welcome to TestGroup!');
-      group1Channels[0].addMessage('2', 'Hi everyone!');
-      group1Channels[1].addMessage('4', 'Random thoughts here...');
+      group1Channels[0].addMessage("m1", "1", "Welcome to TestGroup!");
+      group1Channels[0].addMessage("m2", "2", "Hi everyone!");
+      group1Channels[1].addMessage("m3", "4", "Random thoughts here...");
 
       const group2Channels = [
-        new ChannelModel('c3', 'general'),
-        new ChannelModel('c4', 'memes')
+          new ChannelModel("c3", "general"),
+          new ChannelModel("c4", "memes")
       ];
-      group2Channels[0].addMessage('2', 'Hello FunGroup!');
-      group2Channels[0].addMessage('3', 'Hi userTwo!');
-      group2Channels[1].addMessage('3', 'Check out this meme!');
+      group2Channels[0].addMessage("m4", "2", "Hello FunGroup!");
+      group2Channels[0].addMessage("m5", "3", "Hi userTwo!");
+      group2Channels[1].addMessage("m6", "3", "Check out this meme!");
 
       const group3Channels = [
-        new ChannelModel('c5', 'projects')
+          new ChannelModel("c5", "projects")
       ];
-      group3Channels[0].addMessage('5', 'Working on project phase 1');
+      group3Channels[0].addMessage("m6", "5", "Working on project phase 1");
 
       const groups = [
         new GroupModel('1', 'TestGroup', group1Channels, ['1', '2', '4']),
-        new GroupModel('2', 'FunGroup', group2Channels, ['2', '3']),
-        new GroupModel('3', 'ProjectGroup', group3Channels, ['5'])
+        new GroupModel('2', 'FunGroup', group2Channels, ['1', '2', '3']),
+        new GroupModel('3', 'ProjectGroup', group3Channels, ['1', '5'])
       ];
 
       const users = [
