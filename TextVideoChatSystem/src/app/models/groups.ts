@@ -1,8 +1,9 @@
-export class Group{
+import { ChannelModel } from './channels';
+export class GroupModel{
     constructor(
         public groupID: string = "",
         public groupName: string = "",
-        public channels: any[] = [],
-        public users: any[] = []
+        public channels: ChannelModel[] = [],
+        public users: string[] = []
     ){}
 }

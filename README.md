@@ -105,6 +105,21 @@ Started adding UI to the group page. Most of the UI are copied (and adjusted acc
     - Used LocalStorage to store the selected GroupID and ChannelID in `group.ts`.
     - Modified `group.html` (obviously) so it shows the messages.
 
+## 1 Sept 2025
+Migrated hard-coded stuff on back-end to front-end so I can integrate it with Local Storage.
+- Made models on front-end. It mirrors what I have on the back-end.
+- Made 2 services: `data.ts` and `seed.ts`. The one I'll use for now is `seed.ts` which will seed the initial data to Local Storage.
+
+## 2 Sept 2025
+-- 1st commit
+1. Finished migrating the models.
+2. Updated both `login.ts` and `group.ts` to import the related models.
+3. Fixed how logout works in `group.ts`.
+    - Initially I made it so that everytime the user logs out, it just clears the whole Local Storage. But since I have actual data now I can't do that.
+    - I did add a `reset()` function that does that in case I need it for whatever reason.
+4. Ensures that the user cannot open 'Group' before they are logged in.
+
+
 
 # Routes
 | Route Name | Parameter | Return Values | Purpose |

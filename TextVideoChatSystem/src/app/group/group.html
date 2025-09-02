@@ -32,7 +32,7 @@
                         </button>
                         <div class="collapse" [id]="'group' + group.groupID" data-bs-parent="#groupsAccordion">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li *ngFor = "let channel of group.channels" class="ps-4" (click)="test(channel.channelID)">
+                                <li *ngFor = "let channel of group.channels" class="ps-4" (click)="getMessage(channel.channelID)">
                                     {{channel.channelName}}
                                 </li>
                             </ul>

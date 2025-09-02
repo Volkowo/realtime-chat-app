@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-import { User } from '../models/users';
+import { UserModel } from '../models/users';
 
 @Component({
   selector: 'app-login',
@@ -32,7 +32,7 @@ export class Login implements OnInit {
   }
 
   checkLogin(){
-    this.http.post<User>('http://localhost:3000/api/auth', {username: this.username, pass: this.pass}).subscribe((user: any) => {
+    this.http.post<UserModel>('http://localhost:3000/api/auth', {username: this.username, pass: this.pass}).subscribe((user: UserModel) => {
       if (user.signedIn){
           const userString = JSON.stringify(user);
           localStorage.setItem("user", userString);

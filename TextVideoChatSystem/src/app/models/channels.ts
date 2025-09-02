@@ -1,15 +1,13 @@
-export class Channel{
+import { MessageModel } from "./messages"
+
+export class ChannelModel{
     constructor(
         public channelID: string, 
         public channelName: string, 
-        public messages: any[] = []
+        public messages: MessageModel[] = []
     ){}
 
     addMessage(userID: string, message: string){
-        this.messages.push({
-            datetime: new Date(),
-            userID: userID,
-            message: message
-        })
+        this.messages.push(new MessageModel(userID, message))
     }
 }

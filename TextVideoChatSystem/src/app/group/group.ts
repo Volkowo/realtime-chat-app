@@ -5,6 +5,10 @@ import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { UserModel, LoggedInUser } from '../models/users';
+import { GroupModel } from '../models/groups';
+import { ChannelModel } from '../models/channels';
+import { MessageModel } from '../models/messages';
 
 @Component({
   selector: 'app-group',
@@ -18,9 +22,9 @@ export class Group implements OnInit {
   }
   user: any;
   userJSON: any;
-  groupsJSON: any;
-  channelsJSON: any;
-  messagesJSON: any;
+  groupsJSON: GroupModel[] = [];
+  channelsJSON: ChannelModel[] = [];
+  messagesJSON: MessageModel[] = [];
   groupID: string = "";
   channelID: string = "";
 
@@ -28,7 +32,7 @@ export class Group implements OnInit {
     this.user = (localStorage.getItem("user"))
     if (this.user){
         this.userJSON = JSON.parse(this.user);
-        this.http.get(`http://localhost:3000/api/groups/${this.userJSON.id}`).subscribe((groups: any) => {
+        this.http.get<GroupModel[]>(`http://localhost:3000/api/groups/${this.userJSON.id}`).subscribe((groups: GroupModel[]) => {
           this.groupsJSON = groups
           const groupsString = JSON.stringify(groups)
           localStorage.setItem("groups", groupsString);
@@ -38,7 +42,7 @@ export class Group implements OnInit {
           this.channelID = localStorage.getItem("selectedChannel") || "";
         })
     } else {
-      console.log("User not logged in!")
+      this.router.navigate([''])
     }
   }
 
@@ -47,7 +51,7 @@ export class Group implements OnInit {
     this.groupID = localStorage.getItem("selectedGroup") || "";
     console.log("Selected Group: ", this.groupID)
 
-    this.http.get(`http://localhost:3000/api/groups/${groupID}/channels`).subscribe((channels: any) => {
+    this.http.get<ChannelModel[]>(`http://localhost:3000/api/groups/${groupID}/channels`).subscribe((channels: ChannelModel[]) => {
       this.channelsJSON = channels;
       const channelString = JSON.stringify(channels)
       console.log("channels: ", channelString)
@@ -61,22 +65,27 @@ export class Group implements OnInit {
       2. Error message for validation
   */
 
-  test(channelID: string){
+  getMessage(channelID: string){
     localStorage.setItem("selectedChannel", channelID);
     this.channelID = localStorage.getItem("selectedChannel") || "";
     console.log("Selected Channel: ", this.channelID)
 
-    this.http.get(`http://localhost:3000/api/groups/${this.groupID}/channels/${this.channelID}`).subscribe((messages: any) => {
+    this.http.get<MessageModel[]>(`http://localhost:3000/api/groups/${this.groupID}/channels/${this.channelID}`).subscribe((messages: MessageModel[]) => {
       this.messagesJSON = messages;
       const messageString = JSON.stringify(messages);
       console.log("messages: ", messageString)
     })
   }
 
-
-
   logOut(){
+    localStorage.removeItem("user");
+    alert("Logged out!");
+    this.router.navigate([''])
+  }
+  
+  reset(){
     localStorage.clear();
-    alert("Logged out!")
+    alert("All data has been reset.");
+    this.router.navigate([''])
   }
 }
