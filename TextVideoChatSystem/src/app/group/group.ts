@@ -76,12 +76,6 @@ export class Group implements OnInit {
       console.log("messages: ", messageString)
     })
   }
-
-  logOut(){
-    localStorage.removeItem("user");
-    alert("Logged out!");
-    this.router.navigate([''])
-  }
   
   reset(){
     localStorage.clear();

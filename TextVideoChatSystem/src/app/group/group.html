@@ -15,8 +15,9 @@
     <main class="flex-nowrap">
         <!-- Sidebar -->
         <div class="row">
-            <div class="col-2 p-3 bg-light position-fixed min-vh-100">
+            <div class="col-2 pt-1 ps-3 bg-light position-fixed min-vh-100">
                 <ul class="list-unstyled ps-0" id="groupsAccordion">
+                    {{userJSON.username}}
                     <li 
                         *ngFor = "let group of groupsJSON" 
                         class="mb-1">
@@ -43,11 +44,15 @@
             <div class="col-10 min-vh-100 p-4 offset-2" id="chatContainer">
                 <p>group works!</p>
                 <ng-container *ngIf = "messagesJSON">
-                    <li *ngFor="let message of messagesJSON">
-                        {{message.message}}
-                    </li>
+                    <div *ngFor="let message of messagesJSON" class="mb-4">
+                        {{message.datetime | date:'medium'}} - ID: {{message.userID}}
+                        <li>
+                            {{message.message}}
+                        </li>
+
+                    </div>
                 </ng-container>
-                <button type="button" class="btn btn-primary" (click)="logOut()">Logout</button>
+                <button type="button" class="btn btn-primary" (click)="reset()">Reset</button>
             </div>
         </div>
     </main>
