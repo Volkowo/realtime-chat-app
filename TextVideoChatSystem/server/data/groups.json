@@ -1,33 +1,83 @@
 [
-    {
-        "groupID": "1",
-        "groupName": "TestGroup",
-        "channels": [
-        {
-            "channelID": "c1",
-            "channelName": "general",
-            "messages": [
-            { "messageID": "m1", "userID": "1", "message": "Welcome to TestGroup!", "datetime": "2025-09-03T12:00:00.000Z" },
-            { "messageID": "m2", "userID": "2", "message": "Hi everyone!", "datetime": "2025-09-03T12:01:00.000Z" }
-            ]
-        },
-        {
-            "channelID": "c2",
-            "channelName": "random",
-            "messages": [
-            { "messageID": "m3", "userID": "4", "message": "Random thoughts here...", "datetime": "2025-09-03T12:05:00.000Z" }
-            ]
-        }
-        ],
-        "users": ["1", "2", "4"]
-    },
-    {
-        "groupID": "2",
-        "groupName": "FunGroup",
-        "channels": [
-        { "channelID": "c3", "channelName": "general", "messages": [] },
-        { "channelID": "c4", "channelName": "memes", "messages": [] }
-        ],
-        "users": ["1", "2", "3"]
-    }
+  {
+    "groupID": "1",
+    "groupName": "TestGroup",
+    "channels": [
+      {
+        "channelID": "c1",
+        "channelName": "general",
+        "messages": [
+          { "messageID": "m1", "userID": "1", "message": "Welcome to TestGroup!", "datetime": "2025-09-03T12:00:00.000Z" },
+          { "messageID": "m2", "userID": "2", "message": "Hi everyone!", "datetime": "2025-09-03T12:01:00.000Z" }
+        ]
+      },
+      {
+        "channelID": "c2",
+        "channelName": "random",
+        "messages": [
+          { "messageID": "m3", "userID": "4", "message": "Random thoughts here...", "datetime": "2025-09-03T12:05:00.000Z" }
+        ]
+      }
+    ],
+    "users": ["1", "2", "4"]
+  },
+  {
+    "groupID": "2",
+    "groupName": "FunGroup",
+    "channels": [
+      { "channelID": "c3", "channelName": "general", "messages": [] },
+      { "channelID": "c4", "channelName": "memes", "messages": [] }
+    ],
+    "users": ["1", "2", "3"]
+  },
+  {
+    "groupID": "3",
+    "groupName": "ProjectGroup",
+    "channels": [
+      {
+        "channelID": "c5",
+        "channelName": "projects",
+        "messages": [
+          { "messageID": "m4", "userID": "5", "message": "Working on project phase 1", "datetime": "2025-09-03T12:10:00.000Z" }
+        ]
+      }
+    ],
+    "users": ["1", "5"]
+  },
+  {
+    "groupID": "4",
+    "groupName": "HobbyGroup",
+    "channels": [
+      {
+        "channelID": "c6",
+        "channelName": "general",
+        "messages": [
+          { "messageID": "m5", "userID": "6", "message": "Anyone into model trains?", "datetime": "2025-09-03T12:15:00.000Z" }
+        ]
+      },
+      {
+        "channelID": "c7",
+        "channelName": "photos",
+        "messages": []
+      }
+    ],
+    "users": ["1", "6", "7"]
+  },
+  {
+    "groupID": "5",
+    "groupName": "StudyGroup",
+    "channels": [
+      {
+        "channelID": "c8",
+        "channelName": "math",
+        "messages": []
+      },
+      {
+        "channelID": "c9",
+        "channelName": "physics",
+        "messages": []
+      }
+    ],
+    "users": ["1", "3", "8"]
+  }
 ]

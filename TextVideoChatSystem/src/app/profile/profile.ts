@@ -30,10 +30,12 @@ export class Profile implements OnInit {
           this.userJSON = JSON.parse(this.user);
           console.log("USER: ", this.user)
           
-          this.users = (localStorage.getItem("users"))
-          console.log("Users: ", this.users)
-          this.usersJSON = JSON.parse(this.users)
-          console.log(this.usersJSON); 
+          this.http.get(`http://localhost:3000/api/users`).subscribe((users: any) => {
+            this.users = JSON.stringify(users);
+            console.log("Users: ", this.users)
+            this.usersJSON = users;
+            console.log(this.usersJSON); 
+          })
       } else {
         this.router.navigate([''])
       }
@@ -61,7 +63,7 @@ export class Profile implements OnInit {
 
   checkGroupAdminRole(user: any){
     // console.log("User groups:", user.groups);
-    const nonAdmin = user.groups.filter((group: any) => group.role == "member");
+    const nonAdmin = user.groups.filter((group: any) => group.role == "chatUser");
     // console.log(nonAdmin);
     return nonAdmin;
   }
@@ -69,5 +71,10 @@ export class Profile implements OnInit {
   checkUser(user: any, group: any){
     console.log("Button check", user);
     console.log("what is group: ", group)
+
+    this.http.put(`http://localhost:3000/api/user/${user.id}/group/${group.group}/role`, {}).subscribe((updatedUser: any) => {
+      const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
+      this.usersJSON[index] = updatedUser
+    })
   }
 }

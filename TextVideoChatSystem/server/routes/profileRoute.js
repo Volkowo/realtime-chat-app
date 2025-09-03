@@ -13,24 +13,25 @@ function route(app, path) {
         const groupID = req.params.groupID;
 
         const user = users.find(user => user.id == userID)
-        const group = user.groups.find(group => group.groupID == groupID);
+        console.log(user)
+        const group = user.groups.find(group => group.group == groupID);
+        console.log(group)
 
-        group.role = "superAdmin"
+        group.role = "groupAdmin"
 
-        // const { username, pass } = req.body;
-        // console.log(users);
-        // console.log(req.body);
-        // console.log("AAAAAA " + username, pass);
-        // const loggedUser = users.find(user => user.username === username && user.pass === pass);
+        if(!user.roles.includes("groupAdmin")){
+            user.roles.push("groupAdmin")
+        }
 
-        // if (loggedUser) {
-        //     const { pass, ...loggedUserWithoutPass } = loggedUser;
-        //     loggedUserWithoutPass.signedIn = true;
+        writeJSON('../data/users.json', users)
 
-        //     res.json(loggedUserWithoutPass);
-        // } else {
-        //     res.json({ signedIn: false });
-        // }
+        res.json(user)
     });
+
+    //2. Get users
+    app.get('/api/users', function (req, res){
+        const users = readJSON('../data/users.json');
+        res.json(users)
+    })
 }
 module.exports = { route };
