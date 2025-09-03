@@ -16,6 +16,6 @@ export class App implements OnInit {
   constructor(private seedService: Seed){}
 
   ngOnInit(){
-    this.seedService.runSeed();
+    // this.seedService.runSeed();
   }
 }

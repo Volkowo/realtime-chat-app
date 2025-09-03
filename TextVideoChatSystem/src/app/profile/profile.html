@@ -6,18 +6,28 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-            <th>Email</th>
             <th>Username</th>
+            <th>Groups</th>
             <th>Global Roles</th>
             <th>Admin Roles</th>
             <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @for(user of usersJSON; track user.userID; let i = $index){
+            @for(user of usersJSON; track user.id; let i = $index){
                 <tr>
-                    <td>{{ user.email }}</td>
                     <td>{{ user.username }}</td>
+                    <td>
+                        <ul>
+                            <li>
+                                @for(group of user.groups; track group.group){
+                                    <li>
+                                        {{getGroupById(group.group)}}
+                                    </li>
+                                }
+                            </li>
+                        </ul>
+                    </td>
 
                     <!-- Global Roles -->
                     <td>
@@ -39,7 +49,7 @@
                             <ul>
                                 @for(groupRole of hasAdmin(user); track $index){
                                     <li>
-                                        Group {{ groupRole.group }}: {{groupRole.role}}
+                                        {{getGroupById(groupRole.group)}}: {{groupRole.role}}
                                     </li>
                                 }
                             </ul>
@@ -67,9 +77,11 @@
                                             Choose Group
                                         </button>
                                         <ul class="dropdown-menu">
-                                            @for(group of checkGroupAdminRole(user); track $index){
+                                            @for(group of checkGroupAdminRole(user); track group.group){
                                                 <li>
-                                                    {{getGroupById(group.group)}}
+                                                    <button class="dropdown-item" (click)="checkUser(user, group)">
+                                                        {{ getGroupById(group.group) }}
+                                                    </button>
                                                 </li>
                                             }
                                         </ul>

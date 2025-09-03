@@ -60,9 +60,14 @@ export class Profile implements OnInit {
   }
 
   checkGroupAdminRole(user: any){
-    console.log("User groups:", user.groups);
+    // console.log("User groups:", user.groups);
     const nonAdmin = user.groups.filter((group: any) => group.role == "member");
-    console.log(nonAdmin);
+    // console.log(nonAdmin);
     return nonAdmin;
+  }
+
+  checkUser(user: any, group: any){
+    console.log("Button check", user);
+    console.log("what is group: ", group)
   }
 }

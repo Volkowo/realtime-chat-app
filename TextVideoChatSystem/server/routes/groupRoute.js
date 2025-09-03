@@ -16,7 +16,6 @@ function route(app, path) {
         } else{
             console.log("no grpups..?")
         }
-
     })
 }
 module.exports = { route };
