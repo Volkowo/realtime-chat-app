@@ -1,0 +1,27 @@
+[
+    {
+    "id": "1",
+    "email": "og@email.com",
+    "username": "super",
+    "pass": "123",
+    "roles": ["chatUser", "superAdmin"],
+    "groups": [
+        { "group": "1", "role": "superAdmin" },
+        { "group": "2", "role": "superAdmin" },
+        { "group": "3", "role": "superAdmin" }
+    ],
+    "signedIn": false
+    },
+    {
+    "id": "2",
+    "email": "user2@email.com",
+    "username": "userTwo",
+    "pass": "123",
+    "roles": ["chatUser"],
+    "groups": [
+        { "group": "1", "role": "member" },
+        { "group": "2", "role": "member" }
+    ],
+    "signedIn": false
+    }
+]

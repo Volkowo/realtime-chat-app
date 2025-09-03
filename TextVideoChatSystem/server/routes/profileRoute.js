@@ -1,5 +1,4 @@
-const { groups } = require('../models/Groups');
-const { users } = require('../models/ChatUsers');
+const { readJSON, writeJSON } = require('../models/jsonHelper');
 
 function route(app, path) {
     // ROUTE
@@ -7,6 +6,8 @@ function route(app, path) {
         if (!req.body) {
             return res.sendStatus(400);
         }
+
+        const users = readJSON('../data/users.json');
 
         const userID = req.params.userID;
         const groupID = req.params.groupID;

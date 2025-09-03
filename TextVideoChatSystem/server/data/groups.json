@@ -1,0 +1,33 @@
+[
+    {
+        "groupID": "1",
+        "groupName": "TestGroup",
+        "channels": [
+        {
+            "channelID": "c1",
+            "channelName": "general",
+            "messages": [
+            { "messageID": "m1", "userID": "1", "message": "Welcome to TestGroup!", "datetime": "2025-09-03T12:00:00.000Z" },
+            { "messageID": "m2", "userID": "2", "message": "Hi everyone!", "datetime": "2025-09-03T12:01:00.000Z" }
+            ]
+        },
+        {
+            "channelID": "c2",
+            "channelName": "random",
+            "messages": [
+            { "messageID": "m3", "userID": "4", "message": "Random thoughts here...", "datetime": "2025-09-03T12:05:00.000Z" }
+            ]
+        }
+        ],
+        "users": ["1", "2", "4"]
+    },
+    {
+        "groupID": "2",
+        "groupName": "FunGroup",
+        "channels": [
+        { "channelID": "c3", "channelName": "general", "messages": [] },
+        { "channelID": "c4", "channelName": "memes", "messages": [] }
+        ],
+        "users": ["1", "2", "3"]
+    }
+]
