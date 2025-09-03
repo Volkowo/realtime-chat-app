@@ -1,4 +1,86 @@
 <p>profile works!</p>
 <p> {{userJSON.email}}</p>
 <p> {{userJSON.username}}</p>
+<ng-container *ngIf="userJSON.roles.includes('superAdmin'); else nonAdmin">
+    <p>Admin View</p>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Global Roles</th>
+            <th>Admin Roles</th>
+            <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let user of usersJSON; let i = index">
+                <td>{{ user.email }}</td>
+                <td>{{ user.username }}</td>
+                
+                <!-- Global Roles -->
+                <td>
+                    <ul>
+                    <li *ngFor="let role of user.roles; let j = index">
+                        {{ role }}
+                        <button class="btn btn-sm btn-danger">x</button>
+                    </li>
+                    </ul>
+                    <input #newRole type="text" placeholder="Add role">
+                    <button class="btn btn-sm btn-success">+</button>
+                </td>
+                
+                <!-- Group Roles -->
+                <td>
+                    <ul *ngIf="hasAdmin(user).length > 0">
+                    <li *ngFor="let groupRole of hasAdmin(user)">
+                            Group {{ groupRole.group }}: {{groupRole.role}}
+                    </li>
+                    </ul>
+                </td>
+                
+                <td>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" 
+                    [attr.data-bs-target]="'#user' + user.id" (click)="checkGroupAdminRole(user)" [disabled]="isSuperAdmin(user)">
+                    Promote to Group Admin
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" [id]="'user' + user.id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Choose Group to Promote User</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Choose Group
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li class="ps-2" *ngFor="let group of checkGroupAdminRole(user)">{{getGroupById(group.group)}}</li>
+                                    </ul>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        </table>
+</ng-container>
+
+<ng-template #nonAdmin>
+    <p>You're not an admin hmm</p>
+</ng-template>
 <button type="button" class="btn btn-primary" (click)="logOut()">Logout</button>
+
+<!-- (click)="removeRole(i, j)"
+(click)="addRole(i, newRole.value); newRole.value=''" -->

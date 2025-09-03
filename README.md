@@ -127,6 +127,9 @@ Migrated hard-coded stuff on back-end to front-end so I can integrate it with Lo
     - Removed the `logout()` function.
     - Added some stuff here and there but it still looks the same overall.
 
+-- 3rd Commit
+Fixed seeding, again. I realized that I need the models on **both** front-end and back-end to mirror each other. Future commits is gonna be about admin page since that's what this branch is supposed to be about.
+
 
 # Routes
 | Route Name | Parameter | Return Values | Purpose |
