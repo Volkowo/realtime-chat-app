@@ -33,5 +33,11 @@ function route(app, path) {
         const users = readJSON('../data/users.json');
         res.json(users)
     })
+
+    //3. Get groups
+    app.get('/api/groups', function(req, res){
+        const groups = readJSON('../data/groups.json');
+        res.json(groups)
+    })
 }
 module.exports = { route };

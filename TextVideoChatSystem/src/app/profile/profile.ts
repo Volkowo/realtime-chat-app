@@ -5,13 +5,10 @@ import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { UserModel, LoggedInUser } from '../models/users';
-import { GroupModel } from '../models/groups';
-import { ChannelModel } from '../models/channels';
-import { MessageModel } from '../models/messages';
+import { PromoteModal } from "../promote-modal/promote-modal";
 @Component({
   selector: 'app-profile',
-  imports: [FormsModule, RouterModule, HttpClientModule, CommonModule],
+  imports: [FormsModule, RouterModule, HttpClientModule, CommonModule, PromoteModal],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
@@ -23,6 +20,8 @@ export class Profile implements OnInit {
   userJSON: any;
   users: any;
   usersJSON: any;
+  groups: any;
+  groupsJSON: any;
 
   ngOnInit() {
       this.user = (localStorage.getItem("user"))
@@ -36,6 +35,15 @@ export class Profile implements OnInit {
             this.usersJSON = users;
             console.log(this.usersJSON); 
           })
+
+          this.http.get(`http://localhost:3000/api/groups`).subscribe((groups: any) => {
+            this.groups = JSON.stringify(groups);
+            console.log("Groups: ", this.groups)
+            this.groupsJSON = groups;
+            console.log(this.groupsJSON); 
+          })
+
+
       } else {
         this.router.navigate([''])
       }
@@ -56,9 +64,12 @@ export class Profile implements OnInit {
   }
 
   getGroupById(groupID: string){
-    const groups = JSON.parse(localStorage.getItem('groups') || '[]')
-    const group = groups.find((group: any) => group.groupID === groupID)
-    return group ? group.groupName : 'Unknown';
+    if(this.groupsJSON){
+      const group = this.groupsJSON.find((group: any) => group.groupID === groupID)
+      return group ? group.groupName : 'Unknown';
+    } else {
+      
+    }
   }
 
   checkGroupAdminRole(user: any){

@@ -1,0 +1,31 @@
+<!-- Modal -->
+<div class="modal fade" [id]="'user' + user.id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Choose Group to Promote User</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Choose Group
+                </button>
+                <ul class="dropdown-menu">
+                    @for(group of checkGroupAdminRole(user); track group.group){
+                        <li>
+                            <button class="dropdown-item" (click)="checkUser(user, group)">
+                                {{ getGroupById(group.group) }}
+                            </button>
+                        </li>
+                    }
+                </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
