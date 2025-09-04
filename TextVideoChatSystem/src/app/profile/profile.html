@@ -102,8 +102,40 @@
             }
         </tbody>
         </table>
-} @else if(isSuperOrGroupAdmin(userJSON)) {
+} @else if(userJSON.roles.includes('groupAdmin')) {
     <p>Group Admin View</p>
+    <button>Create New Group</button>
+    @for(group of userJSON.groups; track group.group){
+        @if(isSuperOrGroupAdmin(group)){
+            <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{getGroupById(group.group)}}</h5>
+                <button>Delete Group</button>
+                <div class="row">
+                    <div class="col-6">
+                        <p>Channel List: </p>
+                        @for(channel of getChannelById(group.group); track channel.channelID){
+                            <li>{{channel.channelName}}</li>
+                        }
+                    </div>
+                    <div class="col-6">
+                        <p>Members: </p>
+                        @for(member of getUserById(group.group); track member){
+                            <li>{{getUsernameById(member)}}</li>
+                        }
+                    </div>
+
+                </div>
+                <button>Add User</button>
+                <button>Add Channel</button>
+                <button>Manage Users</button>
+                <button>Manage Channels</button>
+            </div>
+            </div>
+
+
+        }
+    }
 } @else{
     <p>what the helly</p>
 }

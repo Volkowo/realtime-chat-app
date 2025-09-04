@@ -72,6 +72,32 @@ export class Profile implements OnInit {
     }
   }
 
+  // returns a list/array of channel of a group
+  getChannelById(groupID: string){
+    if(this.groupsJSON){
+      const group = this.groupsJSON.find((group: any) => group.groupID === groupID)
+      return group ? group.channels : "Unknown";
+    } else {
+      
+    }
+  }
+
+  getUserById(groupID: string){
+    if(this.groupsJSON){
+      const group = this.groupsJSON.find((group: any) => group.groupID === groupID)
+      return group ? group.users : "Unknown";
+    } else {
+      
+    }
+  }
+
+  getUsernameById(memberID: string){
+    if(this.usersJSON){
+      const user = this.usersJSON.find((user: any) => user.id === memberID)
+      return user ? user.username : "Unknown";
+    }
+  }
+
   // Check if user is a chatUser or not
   checkGroupAdminRole(user: any){
     // console.log("User groups:", user.groups);
@@ -88,8 +114,8 @@ export class Profile implements OnInit {
     return nonSuperAdmin;
   }
 
-  isSuperOrGroupAdmin(user: any){
-    return user.roles.includes("superAdmin") || user.roles.includes('groupAdmin')
+  isSuperOrGroupAdmin(group: any){
+    return group.role == "groupAdmin" || group.role == "superAdmin"
   }
 
   //Promote to GroupAdmin
