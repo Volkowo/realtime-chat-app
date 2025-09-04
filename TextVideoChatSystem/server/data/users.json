@@ -97,12 +97,13 @@
     "username": "userFive",
     "pass": "123",
     "roles": [
-      "chatUser"
+      "chatUser",
+      "groupAdmin"
     ],
     "groups": [
       {
         "group": "3",
-        "role": "chatUser"
+        "role": "groupAdmin"
       }
     ],
     "signedIn": false
@@ -140,7 +141,7 @@
       },
       {
         "group": "2",
-        "role": "chatUser"
+        "role": "groupAdmin"
       }
     ],
     "signedIn": false
@@ -151,12 +152,29 @@
     "username": "userEight",
     "pass": "123",
     "roles": [
-      "chatUser"
+      "chatUser",
+      "superAdmin"
     ],
     "groups": [
       {
+        "group": "1",
+        "role": "superAdmin"
+      },
+      {
+        "group": "2",
+        "role": "superAdmin"
+      },
+      {
         "group": "3",
-        "role": "chatUser"
+        "role": "superAdmin"
+      },
+      {
+        "group": "4",
+        "role": "superAdmin"
+      },
+      {
+        "group": "5",
+        "role": "superAdmin"
       }
     ],
     "signedIn": false

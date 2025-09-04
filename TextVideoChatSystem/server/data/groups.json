@@ -7,28 +7,61 @@
         "channelID": "c1",
         "channelName": "general",
         "messages": [
-          { "messageID": "m1", "userID": "1", "message": "Welcome to TestGroup!", "datetime": "2025-09-03T12:00:00.000Z" },
-          { "messageID": "m2", "userID": "2", "message": "Hi everyone!", "datetime": "2025-09-03T12:01:00.000Z" }
+          {
+            "messageID": "m1",
+            "userID": "1",
+            "message": "Welcome to TestGroup!",
+            "datetime": "2025-09-03T12:00:00.000Z"
+          },
+          {
+            "messageID": "m2",
+            "userID": "2",
+            "message": "Hi everyone!",
+            "datetime": "2025-09-03T12:01:00.000Z"
+          }
         ]
       },
       {
         "channelID": "c2",
         "channelName": "random",
         "messages": [
-          { "messageID": "m3", "userID": "4", "message": "Random thoughts here...", "datetime": "2025-09-03T12:05:00.000Z" }
+          {
+            "messageID": "m3",
+            "userID": "4",
+            "message": "Random thoughts here...",
+            "datetime": "2025-09-03T12:05:00.000Z"
+          }
         ]
       }
     ],
-    "users": ["1", "2", "4"]
+    "users": [
+      "1",
+      "2",
+      "4",
+      "8"
+    ]
   },
   {
     "groupID": "2",
     "groupName": "FunGroup",
     "channels": [
-      { "channelID": "c3", "channelName": "general", "messages": [] },
-      { "channelID": "c4", "channelName": "memes", "messages": [] }
+      {
+        "channelID": "c3",
+        "channelName": "general",
+        "messages": []
+      },
+      {
+        "channelID": "c4",
+        "channelName": "memes",
+        "messages": []
+      }
     ],
-    "users": ["1", "2", "3"]
+    "users": [
+      "1",
+      "2",
+      "3",
+      "8"
+    ]
   },
   {
     "groupID": "3",
@@ -38,11 +71,20 @@
         "channelID": "c5",
         "channelName": "projects",
         "messages": [
-          { "messageID": "m4", "userID": "5", "message": "Working on project phase 1", "datetime": "2025-09-03T12:10:00.000Z" }
+          {
+            "messageID": "m4",
+            "userID": "5",
+            "message": "Working on project phase 1",
+            "datetime": "2025-09-03T12:10:00.000Z"
+          }
         ]
       }
     ],
-    "users": ["1", "5"]
+    "users": [
+      "1",
+      "5",
+      "8"
+    ]
   },
   {
     "groupID": "4",
@@ -52,7 +94,12 @@
         "channelID": "c6",
         "channelName": "general",
         "messages": [
-          { "messageID": "m5", "userID": "6", "message": "Anyone into model trains?", "datetime": "2025-09-03T12:15:00.000Z" }
+          {
+            "messageID": "m5",
+            "userID": "6",
+            "message": "Anyone into model trains?",
+            "datetime": "2025-09-03T12:15:00.000Z"
+          }
         ]
       },
       {
@@ -61,7 +108,12 @@
         "messages": []
       }
     ],
-    "users": ["1", "6", "7"]
+    "users": [
+      "1",
+      "6",
+      "7",
+      "8"
+    ]
   },
   {
     "groupID": "5",
@@ -78,6 +130,10 @@
         "messages": []
       }
     ],
-    "users": ["1", "3", "8"]
+    "users": [
+      "1",
+      "3",
+      "8"
+    ]
   }
 ]

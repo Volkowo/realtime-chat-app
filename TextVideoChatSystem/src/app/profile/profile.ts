@@ -72,6 +72,7 @@ export class Profile implements OnInit {
     }
   }
 
+  // Check if user is a chatUser or not
   checkGroupAdminRole(user: any){
     // console.log("User groups:", user.groups);
     const nonAdmin = user.groups.filter((group: any) => group.role == "chatUser");
@@ -79,13 +80,34 @@ export class Profile implements OnInit {
     return nonAdmin;
   }
 
-  checkUser(user: any, group: any){
+  // Check if user is a superAdmin or not
+  checkSuperAdminRole(user: any){
+    // console.log("User groups:", user.groups);
+    const nonSuperAdmin = user.groups.filter((group: any) => group.role != "superAdmin");
+    // console.log(nonSuperAdmin);
+    return nonSuperAdmin;
+  }
+
+  isSuperOrGroupAdmin(user: any){
+    return user.roles.includes("superAdmin") || user.roles.includes('groupAdmin')
+  }
+
+  //Promote to GroupAdmin
+  checkUser(user: any, group: any, newRole: any){
     console.log("Button check", user);
     console.log("what is group: ", group)
 
-    this.http.put(`http://localhost:3000/api/user/${user.id}/group/${group.group}/role`, {}).subscribe((updatedUser: any) => {
+    this.http.put(`http://localhost:3000/api/user/${user.id}/group/${group.group}/role`, {role: newRole}).subscribe((updatedUser: any) => {
       const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
       this.usersJSON[index] = updatedUser
+    })
+  }
+
+  // Promote to SuperAdmin
+  promoteToSuperAdmin(userID: any){
+      this.http.put(`http://localhost:3000/api/user/${userID}/superAdminPromotion`, {}).subscribe((updatedUser: any) => {
+        const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
+        this.usersJSON[index] = updatedUser
     })
   }
 }

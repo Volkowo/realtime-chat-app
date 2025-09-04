@@ -9,6 +9,6 @@ import { Component, Input } from '@angular/core';
 export class PromoteModal {
   @Input() user: any;   // comes from parent
   @Input() checkGroupAdminRole!: (user: any) => any[];
-  @Input() checkUser!: (user: any, group: any) => void;
+  @Input() checkUser!: (user: any, group: any, newRole: any) => void;
   @Input() getGroupById!: (groupID: string) => string;
 }
