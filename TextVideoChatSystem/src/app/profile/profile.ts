@@ -23,6 +23,8 @@ export class Profile implements OnInit {
   groups: any;
   groupsJSON: any;
   newChannel: string = "";
+  newGroup: string = "";
+  newGroup_channel: string = "";
 
   ngOnInit() {
       this.user = (localStorage.getItem("user"))
@@ -159,15 +161,42 @@ export class Profile implements OnInit {
     })
   }
 
+  // create new group
+  createNewGroup(newGroup: string, newGroup_channel: string, userID: string) {
+    this.http.post(`http://localhost:3000/api/group/newGroup/${userID}/${newGroup}/${newGroup_channel}`, {}).subscribe((res: any) => {
+      const updatedUser = res.user;
+      const newGroup = res.group;
+
+      // Update groupsJSON for template
+      if (this.groupsJSON) {
+        this.groupsJSON.push(newGroup);
+      }
+
+      // Update the logged-in user's groups
+      this.userJSON.groups = updatedUser.groups;
+
+      // Update usersJSON
+      const userIndex = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
+      this.usersJSON[userIndex] = updatedUser;
+
+      // Optional: Update localStorage so refresh keeps state
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      console.log("New group created: ", newGroup);
+      });
+  }
+
   //Promote to GroupAdmin
   checkUser(user: any, group: any, newRole: any){
     console.log("Button check", user);
     console.log("what is group: ", group)
 
-    this.http.put(`http://localhost:3000/api/user/${user.id}/group/${group.group}/role`, {role: newRole}).subscribe((updatedUser: any) => {
-      const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
-      this.usersJSON[index] = updatedUser
-    })
+    if(this.newChannel){
+      this.http.put(`http://localhost:3000/api/user/${user.id}/group/${group.group}/role`, {role: newRole}).subscribe((updatedUser: any) => {
+        const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
+        this.usersJSON[index] = updatedUser
+      })
+    }
   }
 
   // Promote to SuperAdmin

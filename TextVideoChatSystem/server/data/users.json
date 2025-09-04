@@ -10,23 +10,23 @@
     ],
     "groups": [
       {
-        "group": "1",
+        "group": "g1",
         "role": "superAdmin"
       },
       {
-        "group": "2",
+        "group": "g2",
         "role": "superAdmin"
       },
       {
-        "group": "3",
+        "group": "g3",
         "role": "superAdmin"
       },
       {
-        "group": "4",
+        "group": "g4",
         "role": "superAdmin"
       },
       {
-        "group": "5",
+        "group": "g5",
         "role": "superAdmin"
       }
     ],
@@ -43,11 +43,23 @@
     ],
     "groups": [
       {
-        "group": "1",
+        "group": "g1",
         "role": "groupAdmin"
       },
       {
-        "group": "2",
+        "group": "g2",
+        "role": "groupAdmin"
+      },
+      {
+        "group": "gSep04_23272612",
+        "role": "groupAdmin"
+      },
+      {
+        "group": "gSep04_2342314",
+        "role": "groupAdmin"
+      },
+      {
+        "group": "gSep04_2344565",
         "role": "groupAdmin"
       }
     ],
@@ -64,15 +76,15 @@
     ],
     "groups": [
       {
-        "group": "2",
+        "group": "g2",
         "role": "groupAdmin"
       },
       {
-        "group": "3",
+        "group": "g3",
         "role": "chatUser"
       },
       {
-        "group": "1",
+        "group": "g1",
         "role": "chatUser"
       }
     ],
@@ -89,11 +101,11 @@
     ],
     "groups": [
       {
-        "group": "1",
+        "group": "g1",
         "role": "groupAdmin"
       },
       {
-        "group": "2",
+        "group": "g2",
         "role": "chatUser"
       }
     ],
@@ -110,11 +122,11 @@
     ],
     "groups": [
       {
-        "group": "3",
+        "group": "g3",
         "role": "groupAdmin"
       },
       {
-        "group": "1",
+        "group": "g1",
         "role": "chatUser"
       }
     ],
@@ -131,11 +143,11 @@
     ],
     "groups": [
       {
-        "group": "2",
+        "group": "g2",
         "role": "groupAdmin"
       },
       {
-        "group": "1",
+        "group": "g1",
         "role": "chatUser"
       }
     ],
@@ -152,15 +164,15 @@
     ],
     "groups": [
       {
-        "group": "1",
+        "group": "g1",
         "role": "groupAdmin"
       },
       {
-        "group": "2",
+        "group": "g2",
         "role": "groupAdmin"
       },
       {
-        "group": "2",
+        "group": "g3",
         "role": "chatUser"
       }
     ],
@@ -177,23 +189,23 @@
     ],
     "groups": [
       {
-        "group": "1",
+        "group": "g1",
         "role": "superAdmin"
       },
       {
-        "group": "2",
+        "group": "g2",
         "role": "superAdmin"
       },
       {
-        "group": "3",
+        "group": "g3",
         "role": "superAdmin"
       },
       {
-        "group": "4",
+        "group": "g4",
         "role": "superAdmin"
       },
       {
-        "group": "5",
+        "group": "g5",
         "role": "superAdmin"
       }
     ],

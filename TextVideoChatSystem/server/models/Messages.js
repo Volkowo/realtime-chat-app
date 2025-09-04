@@ -1,5 +1,5 @@
 class Message{
-    constructor(messageID, userID, message, date){
+    constructor(messageID, userID, message){
         this.messageID = messageID;
         this.userID = userID
         this.message = message;

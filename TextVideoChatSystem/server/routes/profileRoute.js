@@ -1,4 +1,6 @@
 const { readJSON, writeJSON } = require('../models/jsonHelper');
+const { Group } = require("../models/Groups");
+const { Channel } = require("../models/Channel");
 
 function route(app, path) {
     // ROUTE
@@ -113,12 +115,46 @@ function route(app, path) {
         var date = new Date().toString()
         var date_split = date.split(" ")
         var dateForID = date_split[4].split(":").join("");
-        var newChannelID = `${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+        var newChannelID = `c${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
 
-        group.channels.push({channelID: newChannelID, channelName: newChannel})
+        group.channels.push({channelID: newChannelID, channelName: newChannel, messages: []})
 
         writeJSON('../data/groups.json', groups);
         res.json(group)
+    })
+
+    // add a new group
+    app.post('/api/group/newGroup/:userID/:newGroup/:newGroup_channel', function(req, res){
+        const userID = req.params.userID;
+        const newGroup = req.params.newGroup;
+        const newGroup_channel = req.params.newGroup_channel;
+        const groups = readJSON('../data/groups.json');
+        const users = readJSON('../data/users.json');
+
+        // Making the ID for new group
+        var date = new Date().toString()
+        var date_split = date.split(" ")
+        var dateForID = date_split[4].split(":").join("");
+        var newGroupID = `g${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+        // Making the ID for new channel
+        var newChannelID = `c${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+        // Make channel
+        const channel = new Channel(newChannelID, newGroup_channel);
+
+        // Make group (with this channel inside channels array)
+        const group = new Group(newGroupID, newGroup, [channel], [userID]);
+        groups.push(group)
+
+        // find user in users.json
+        const user = users.find(user => user.id == userID)
+        user.groups.push({group: newGroupID, role: "groupAdmin"})
+
+        writeJSON('../data/users.json', users);
+        writeJSON('../data/groups.json', groups);
+        
+        res.json({user, group})
     })
 
     // Get users
