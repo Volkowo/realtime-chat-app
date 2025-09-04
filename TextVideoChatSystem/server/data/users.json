@@ -70,6 +70,10 @@
       {
         "group": "3",
         "role": "chatUser"
+      },
+      {
+        "group": "1",
+        "role": "chatUser"
       }
     ],
     "signedIn": false
@@ -87,6 +91,10 @@
       {
         "group": "1",
         "role": "groupAdmin"
+      },
+      {
+        "group": "2",
+        "role": "chatUser"
       }
     ],
     "signedIn": false
@@ -104,6 +112,10 @@
       {
         "group": "3",
         "role": "groupAdmin"
+      },
+      {
+        "group": "1",
+        "role": "chatUser"
       }
     ],
     "signedIn": false
@@ -121,6 +133,10 @@
       {
         "group": "2",
         "role": "groupAdmin"
+      },
+      {
+        "group": "1",
+        "role": "chatUser"
       }
     ],
     "signedIn": false
@@ -142,6 +158,10 @@
       {
         "group": "2",
         "role": "groupAdmin"
+      },
+      {
+        "group": "2",
+        "role": "chatUser"
       }
     ],
     "signedIn": false

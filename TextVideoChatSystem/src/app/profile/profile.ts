@@ -82,6 +82,7 @@ export class Profile implements OnInit {
     }
   }
 
+  // returns a list of users in a group
   getUserById(groupID: string){
     if(this.groupsJSON){
       const group = this.groupsJSON.find((group: any) => group.groupID === groupID)
@@ -91,10 +92,22 @@ export class Profile implements OnInit {
     }
   }
 
+  // returns the username of a user based on their memberID
   getUsernameById(memberID: string){
     if(this.usersJSON){
       const user = this.usersJSON.find((user: any) => user.id === memberID)
       return user ? user.username : "Unknown";
+    }
+  }
+
+  // get users that are NOT in the group
+  getUserNotInGroup(groupID: string){
+    if(this.usersJSON){
+      const listOfUsers =  this.getUserById(groupID);
+
+      return this.usersJSON.filter((user: any) => !listOfUsers.includes(user.id))
+    } else {
+      
     }
   }
 
@@ -114,8 +127,26 @@ export class Profile implements OnInit {
     return nonSuperAdmin;
   }
 
+  // check if user is superadmin and/or groupadmin
   isSuperOrGroupAdmin(group: any){
     return group.role == "groupAdmin" || group.role == "superAdmin"
+  }
+
+  // add user to a group
+  addUserToGroup(groupID: string, userID: string){
+    this.http.put(`http://localhost:3000/api/group/${groupID}/add/${userID}`, {}).subscribe((res: any) => {
+      const updatedUser = res.user;
+      const updatedGroup = res.group;
+
+      // Update usersJSON and groupsJSON
+      const userIndex = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
+      console.log("user index", userIndex)
+      this.usersJSON[userIndex] = updatedUser
+
+      const groupIndex = this.groupsJSON.findIndex((group: any) => group.groupID == updatedGroup.groupID)
+      console.log("group index", groupIndex)
+      this.groupsJSON[groupIndex] = updatedGroup
+    })
   }
 
   //Promote to GroupAdmin

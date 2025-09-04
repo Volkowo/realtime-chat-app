@@ -126,10 +126,53 @@
                     </div>
 
                 </div>
-                <button>Add User</button>
-                <button>Add Channel</button>
-                <button>Manage Users</button>
-                <button>Manage Channels</button>
+                <!-- ADD USER -->
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" [attr.data-bs-target]="'#addUser' + group.group" >
+                Add User
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" [id]="'addUser' + group.group" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add User To This Group</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Add User
+                        </button>
+                        <ul class="dropdown-menu">
+                            @for(nonUser of getUserNotInGroup(group.group); track nonUser){
+                                <li>
+                                    <button class="dropdown-item" (click)="addUserToGroup(group.group, nonUser.id)">
+                                        {{ getUsernameById(nonUser.id) }}
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+
+
+                <!-- ADD CHANNEL -->
+
+
+                <!-- REMOVE USER -->
+
+
+                <!-- RENAME CHANNEL -->
+
+
             </div>
             </div>
 

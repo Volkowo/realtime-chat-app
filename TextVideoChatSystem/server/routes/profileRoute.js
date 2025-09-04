@@ -2,7 +2,7 @@ const { readJSON, writeJSON } = require('../models/jsonHelper');
 
 function route(app, path) {
     // ROUTE
-    
+    // promote to group admin
     app.put('/api/user/:userID/group/:groupID/role', function (req, res) {
         const users = readJSON('../data/users.json');
         const groups = readJSON('../data/groups.json');
@@ -71,13 +71,41 @@ function route(app, path) {
         res.json(user)
     })
 
-    //2. Get users
+    // Add user to channel
+    app.put('/api/group/:groupID/add/:userID', function (req, res){
+        const users = readJSON('../data/users.json');
+        const groups = readJSON('../data/groups.json');
+        const userID = req.params.userID;
+        const groupID = req.params.groupID;
+
+        // find user in users.json
+        const user = users.find(user => user.id == userID)
+        // console.log(user.groups)
+
+        // add group to user.groups
+        user.groups.push({
+            group: groupID,
+            role: "chatUser" 
+        })
+
+        // add userID to groups
+        // getting group in groups.json
+        const group = groups.find(group => group.groupID == groupID);
+        group.users.push(userID)
+
+        writeJSON('../data/users.json', users);
+        writeJSON('../data/groups.json', groups);
+
+        res.json({user, group})
+    })
+
+    // Get users
     app.get('/api/users', function (req, res){
         const users = readJSON('../data/users.json');
         res.json(users)
     })
 
-    //3. Get groups
+    // Get groups
     app.get('/api/groups', function(req, res){
         const groups = readJSON('../data/groups.json');
         res.json(groups)
