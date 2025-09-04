@@ -99,6 +99,28 @@ function route(app, path) {
         res.json({user, group})
     })
 
+    // add new channel to an existing group
+    app.put('/api/group/:groupID/addChannel/:newChannel', function(req, res){
+        const groups = readJSON('../data/groups.json');
+        const groupID = req.params.groupID;
+        const newChannel = req.params.newChannel;
+        console.log(newChannel)
+
+        const group = groups.find(group => group.groupID == groupID);
+        console.log(group.channels)
+
+        // Making the ID for new channel
+        var date = new Date().toString()
+        var date_split = date.split(" ")
+        var dateForID = date_split[4].split(":").join("");
+        var newChannelID = `${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+        group.channels.push({channelID: newChannelID, channelName: newChannel})
+
+        writeJSON('../data/groups.json', groups);
+        res.json(group)
+    })
+
     // Get users
     app.get('/api/users', function (req, res){
         const users = readJSON('../data/users.json');

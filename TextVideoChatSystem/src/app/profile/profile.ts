@@ -22,6 +22,7 @@ export class Profile implements OnInit {
   usersJSON: any;
   groups: any;
   groupsJSON: any;
+  newChannel: string = "";
 
   ngOnInit() {
       this.user = (localStorage.getItem("user"))
@@ -146,6 +147,15 @@ export class Profile implements OnInit {
       const groupIndex = this.groupsJSON.findIndex((group: any) => group.groupID == updatedGroup.groupID)
       console.log("group index", groupIndex)
       this.groupsJSON[groupIndex] = updatedGroup
+    })
+  }
+
+  // add new channel to an existing group
+  addChannel(groupID: string, newChannel: string){
+    this.http.put(`http://localhost:3000/api/group/${groupID}/addChannel/${newChannel}`, {}).subscribe((updatedGroup: any) => {
+      const index = this.groupsJSON.findIndex((group: any) => group.groupID == updatedGroup.groupID)
+      this.groupsJSON[index] = updatedGroup
+      console.log("New channel: ", updatedGroup)
     })
   }
 
