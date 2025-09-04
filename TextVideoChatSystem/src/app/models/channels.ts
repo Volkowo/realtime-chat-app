@@ -7,7 +7,7 @@ export class ChannelModel{
         public messages: MessageModel[] = []
     ){}
 
-    addMessage(userID: string, message: string){
-        this.messages.push(new MessageModel(userID, message))
+    addMessage(messageID: string, userID: string, message: string){
+        this.messages.push(new MessageModel(messageID, userID, message))
     }
 }

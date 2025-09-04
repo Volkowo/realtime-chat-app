@@ -3,12 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Collapsible Sidebar · Bootstrap v5.3</title>
+    <title>what the helly</title>
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
     <link href="./groupBootstrap.css" rel="stylesheet">
 </head>
 <body>
@@ -18,10 +15,9 @@
             <div class="col-2 pt-1 ps-3 bg-light position-fixed min-vh-100">
                 <ul class="list-unstyled ps-0" id="groupsAccordion">
                     {{userJSON.username}}
-                    <li 
-                        *ngFor = "let group of groupsJSON" 
-                        class="mb-1">
-                        <button 
+                    @for(group of groupsJSON; track group.groupID){
+                        <li class="mb-1">
+                            <button 
                             class="btn btn-toggle d-inline-flex align-items-center rounded border-0"  
                             [attr.data-bs-target]="'#group' + group.groupID" 
                             aria-expanded="true" 
@@ -29,29 +25,37 @@
                             data-bs-toggle="collapse" 
                             aria-expanded="false" 
                             [attr.aria-controls]="'#group' + group.groupID">
-                        {{group.groupName}}
-                        </button>
-                        <div class="collapse" [id]="'group' + group.groupID" data-bs-parent="#groupsAccordion">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li *ngFor = "let channel of group.channels" class="ps-4" (click)="getMessage(channel.channelID)">
-                                    {{channel.channelName}}
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
+                                {{group.groupName}}
+                            </button>
+                            <div class="collapse" [id]="'group' + group.groupID" data-bs-parent="#groupsAccordion">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                    @for(channel of group.channels; track channel.channelID){
+                                        <li class="ps-4" (click)="getMessage(group.groupID, channel.channelID)">
+                                            {{channel.channelName}}
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                    }
                 </ul>
             </div>
+
+            <!-- Messages -->
             <div class="col-10 min-vh-100 p-4 offset-2" id="chatContainer">
                 <p>group works!</p>
-                <ng-container *ngIf = "messagesJSON">
-                    <div *ngFor="let message of messagesJSON" class="mb-4">
-                        {{message.datetime | date:'medium'}} - ID: {{message.userID}}
-                        <li>
-                            {{message.message}}
-                        </li>
-
-                    </div>
-                </ng-container>
+                <div class="mb-4">
+                    @if (messagesJSON.length > 0) {
+                        @for(message of messagesJSON; track message.messageID){
+                                {{message.datetime | date:'medium'}} - ID: {{message.userID}}
+                                <li>
+                                    {{message.message}}
+                                </li>
+                            }
+                        } @else {
+                            <p>No messages yet.</p>
+                        }
+                </div>
                 <button type="button" class="btn btn-primary" (click)="reset()">Reset</button>
             </div>
         </div>

@@ -119,6 +119,16 @@ Migrated hard-coded stuff on back-end to front-end so I can integrate it with Lo
     - I did add a `reset()` function that does that in case I need it for whatever reason.
 4. Ensures that the user cannot open 'Group' before they are logged in.
 
+-- 2nd commit
+1. Added the component `Profile`.
+    - Very very rough UI for now. Displays username and email.
+    - Moved log out button from `Group` to `Profile`.
+2. Slight changes on `group.html`.
+    - Removed the `logout()` function.
+    - Added some stuff here and there but it still looks the same overall.
+
+-- 3rd Commit
+Fixed seeding, again. I realized that I need the models on **both** front-end and back-end to mirror each other. Future commits is gonna be about admin page since that's what this branch is supposed to be about.
 
 
 # Routes

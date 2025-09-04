@@ -1,4 +1,113 @@
 <p>profile works!</p>
 <p> {{userJSON.email}}</p>
 <p> {{userJSON.username}}</p>
+@if(userJSON.roles.includes('superAdmin')){
+    <p>Admin View</p>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+            <th>Username</th>
+            <th>Groups</th>
+            <th>Global Roles</th>
+            <th>Admin Roles</th>
+            <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(user of usersJSON; track user.id; let user.id = $index){
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>
+                        <ul>
+                            <li>
+                                @for(group of user.groups; track group.group){
+                                    <li>
+                                        {{getGroupById(group.group)}}
+                                    </li>
+                                }
+                            </li>
+                        </ul>
+                    </td>
+
+                    <!-- Global Roles -->
+                    <td>
+                        <ul>
+                            @for(role of user.roles; track $index){
+                                <li>
+                                    {{ role }}
+                                    <button class="btn btn-sm btn-danger">dummy button</button>
+                                </li>
+                            }
+                        </ul>
+                        <!-- <input #newRole type="text" placeholder="Add role">
+                        <button class="btn btn-sm btn-success">+</button> -->
+                    </td>
+
+                    <!-- Group Roles -->
+                    <td>
+                        @if(hasAdmin(user).length > 0){
+                            <ul>
+                                @for(groupRole of hasAdmin(user); track $index){
+                                    <li>
+                                        {{getGroupById(groupRole.group)}}: {{groupRole.role}}
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </td>
+
+                    <td>
+                        <div>
+                            <!-- Button - Promote -->
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" 
+                            [attr.data-bs-target]="'#promoteUser' + user.id" (click)="checkGroupAdminRole(user)" [disabled]="isSuperAdmin(user)">
+                            Promote to Group Admin
+                            </button>
+                            
+                            <promote-modal 
+                            [user]="user" 
+                            [checkGroupAdminRole]="checkGroupAdminRole.bind(this)" 
+                            [checkUser]="checkUser.bind(this)" 
+                            [getGroupById]="getGroupById.bind(this)">
+                            </promote-modal>
+                        </div>
+
+                        <div>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" [attr.data-bs-target]="'#manageUser' + user.id" (click)="checkSuperAdminRole(user)" [disabled]="isSuperAdmin(user)">
+                            Promote to Super Admin
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" [id]="'manageUser' + user.id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Promote {{user.username}} to Super Admin?</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to promote this user as a Super Admin? This change is irreversible!
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-primary" (click)="promoteToSuperAdmin(user.id)">Promote</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        </table>
+} @else if(isSuperOrGroupAdmin(userJSON)) {
+    <p>Group Admin View</p>
+} @else{
+    <p>what the helly</p>
+}
 <button type="button" class="btn btn-primary" (click)="logOut()">Logout</button>
+
+<!-- (click)="removeRole(i, j)"
+(click)="addRole(i, newRole.value); newRole.value=''" -->

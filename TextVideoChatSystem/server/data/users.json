@@ -1,0 +1,182 @@
+[
+  {
+    "id": "1",
+    "email": "og@email.com",
+    "username": "super",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "superAdmin"
+    ],
+    "groups": [
+      {
+        "group": "1",
+        "role": "superAdmin"
+      },
+      {
+        "group": "2",
+        "role": "superAdmin"
+      },
+      {
+        "group": "3",
+        "role": "superAdmin"
+      },
+      {
+        "group": "4",
+        "role": "superAdmin"
+      },
+      {
+        "group": "5",
+        "role": "superAdmin"
+      }
+    ],
+    "signedIn": false
+  },
+  {
+    "id": "2",
+    "email": "user2@email.com",
+    "username": "userTwo",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "groupAdmin"
+    ],
+    "groups": [
+      {
+        "group": "1",
+        "role": "groupAdmin"
+      },
+      {
+        "group": "2",
+        "role": "groupAdmin"
+      }
+    ],
+    "signedIn": false
+  },
+  {
+    "id": "3",
+    "email": "user3@email.com",
+    "username": "userThree",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "groupAdmin"
+    ],
+    "groups": [
+      {
+        "group": "2",
+        "role": "groupAdmin"
+      },
+      {
+        "group": "3",
+        "role": "chatUser"
+      }
+    ],
+    "signedIn": false
+  },
+  {
+    "id": "4",
+    "email": "user4@email.com",
+    "username": "userFour",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "groupAdmin"
+    ],
+    "groups": [
+      {
+        "group": "1",
+        "role": "groupAdmin"
+      }
+    ],
+    "signedIn": false
+  },
+  {
+    "id": "5",
+    "email": "user5@email.com",
+    "username": "userFive",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "groupAdmin"
+    ],
+    "groups": [
+      {
+        "group": "3",
+        "role": "groupAdmin"
+      }
+    ],
+    "signedIn": false
+  },
+  {
+    "id": "6",
+    "email": "user6@email.com",
+    "username": "userSix",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "groupAdmin"
+    ],
+    "groups": [
+      {
+        "group": "2",
+        "role": "groupAdmin"
+      }
+    ],
+    "signedIn": false
+  },
+  {
+    "id": "7",
+    "email": "user7@email.com",
+    "username": "userSeven",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "groupAdmin"
+    ],
+    "groups": [
+      {
+        "group": "1",
+        "role": "groupAdmin"
+      },
+      {
+        "group": "2",
+        "role": "groupAdmin"
+      }
+    ],
+    "signedIn": false
+  },
+  {
+    "id": "8",
+    "email": "user8@email.com",
+    "username": "userEight",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "superAdmin"
+    ],
+    "groups": [
+      {
+        "group": "1",
+        "role": "superAdmin"
+      },
+      {
+        "group": "2",
+        "role": "superAdmin"
+      },
+      {
+        "group": "3",
+        "role": "superAdmin"
+      },
+      {
+        "group": "4",
+        "role": "superAdmin"
+      },
+      {
+        "group": "5",
+        "role": "superAdmin"
+      }
+    ],
+    "signedIn": false
+  }
+]

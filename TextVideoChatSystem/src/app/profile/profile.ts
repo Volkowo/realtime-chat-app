@@ -5,13 +5,10 @@ import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { UserModel, LoggedInUser } from '../models/users';
-import { GroupModel } from '../models/groups';
-import { ChannelModel } from '../models/channels';
-import { MessageModel } from '../models/messages';
+import { PromoteModal } from "../promote-modal/promote-modal";
 @Component({
   selector: 'app-profile',
-  imports: [FormsModule, RouterModule, HttpClientModule, CommonModule],
+  imports: [FormsModule, RouterModule, HttpClientModule, CommonModule, PromoteModal],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
@@ -21,12 +18,32 @@ export class Profile implements OnInit {
 
   user: any;
   userJSON: any;
+  users: any;
+  usersJSON: any;
+  groups: any;
+  groupsJSON: any;
 
   ngOnInit() {
       this.user = (localStorage.getItem("user"))
       if (this.user){
           this.userJSON = JSON.parse(this.user);
           console.log("USER: ", this.user)
+          
+          this.http.get(`http://localhost:3000/api/users`).subscribe((users: any) => {
+            this.users = JSON.stringify(users);
+            console.log("Users: ", this.users)
+            this.usersJSON = users;
+            console.log(this.usersJSON); 
+          })
+
+          this.http.get(`http://localhost:3000/api/groups`).subscribe((groups: any) => {
+            this.groups = JSON.stringify(groups);
+            console.log("Groups: ", this.groups)
+            this.groupsJSON = groups;
+            console.log(this.groupsJSON); 
+          })
+
+
       } else {
         this.router.navigate([''])
       }
@@ -36,5 +53,61 @@ export class Profile implements OnInit {
     localStorage.removeItem("user");
     alert("Logged out!");
     this.router.navigate([''])
+  }
+
+  hasAdmin(user: any){
+    return user.groups.filter((group: any) => group.role == 'groupAdmin' || group.role == 'superAdmin')
+  }
+
+  isSuperAdmin(user: any): boolean {
+    return user.roles.includes('superAdmin');
+  }
+
+  getGroupById(groupID: string){
+    if(this.groupsJSON){
+      const group = this.groupsJSON.find((group: any) => group.groupID === groupID)
+      return group ? group.groupName : 'Unknown';
+    } else {
+      
+    }
+  }
+
+  // Check if user is a chatUser or not
+  checkGroupAdminRole(user: any){
+    // console.log("User groups:", user.groups);
+    const nonAdmin = user.groups.filter((group: any) => group.role == "chatUser");
+    // console.log(nonAdmin);
+    return nonAdmin;
+  }
+
+  // Check if user is a superAdmin or not
+  checkSuperAdminRole(user: any){
+    // console.log("User groups:", user.groups);
+    const nonSuperAdmin = user.groups.filter((group: any) => group.role != "superAdmin");
+    // console.log(nonSuperAdmin);
+    return nonSuperAdmin;
+  }
+
+  isSuperOrGroupAdmin(user: any){
+    return user.roles.includes("superAdmin") || user.roles.includes('groupAdmin')
+  }
+
+  //Promote to GroupAdmin
+  checkUser(user: any, group: any, newRole: any){
+    console.log("Button check", user);
+    console.log("what is group: ", group)
+
+    this.http.put(`http://localhost:3000/api/user/${user.id}/group/${group.group}/role`, {role: newRole}).subscribe((updatedUser: any) => {
+      const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
+      this.usersJSON[index] = updatedUser
+    })
+  }
+
+  // Promote to SuperAdmin
+  promoteToSuperAdmin(userID: any){
+      this.http.put(`http://localhost:3000/api/user/${userID}/superAdminPromotion`, {}).subscribe((updatedUser: any) => {
+        const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
+        this.usersJSON[index] = updatedUser
+    })
   }
 }

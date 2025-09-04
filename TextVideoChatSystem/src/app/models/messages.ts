@@ -1,7 +1,8 @@
 export class MessageModel {
     constructor(
-    public userID: string,
-    public message: string,
-    public datetime: Date = new Date()
+        public messageID: string,
+        public userID: string,
+        public message: string,
+        public datetime: Date = new Date()
     ) {}
 }

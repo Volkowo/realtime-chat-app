@@ -3,7 +3,6 @@ import { RouterOutlet } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { Seed } from './services/seed';
 
 @Component({
   selector: 'app-root',
@@ -13,9 +12,9 @@ import { Seed } from './services/seed';
 })
 export class App implements OnInit {
   protected readonly title = signal('TextVideoChatSystem');
-  constructor(private seedService: Seed){}
+  constructor(){}
 
   ngOnInit(){
-    this.seedService.runSeed();
+    // this.seedService.runSeed();
   }
 }

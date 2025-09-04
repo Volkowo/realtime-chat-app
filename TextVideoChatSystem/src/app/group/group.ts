@@ -25,8 +25,6 @@ export class Group implements OnInit {
   groupsJSON: GroupModel[] = [];
   channelsJSON: ChannelModel[] = [];
   messagesJSON: MessageModel[] = [];
-  groupID: string = "";
-  channelID: string = "";
 
   ngOnInit(){
     this.user = (localStorage.getItem("user"))
@@ -35,11 +33,7 @@ export class Group implements OnInit {
         this.http.get<GroupModel[]>(`http://localhost:3000/api/groups/${this.userJSON.id}`).subscribe((groups: GroupModel[]) => {
           this.groupsJSON = groups
           const groupsString = JSON.stringify(groups)
-          localStorage.setItem("groups", groupsString);
           console.log("GROUP: " + groupsString);
-
-          this.groupID = localStorage.getItem("selectedGroup") || "";
-          this.channelID = localStorage.getItem("selectedChannel") || "";
         })
     } else {
       this.router.navigate([''])
@@ -47,10 +41,6 @@ export class Group implements OnInit {
   }
 
   selectGroup(groupID: string){
-    localStorage.setItem("selectedGroup", groupID);
-    this.groupID = localStorage.getItem("selectedGroup") || "";
-    console.log("Selected Group: ", this.groupID)
-
     this.http.get<ChannelModel[]>(`http://localhost:3000/api/groups/${groupID}/channels`).subscribe((channels: ChannelModel[]) => {
       this.channelsJSON = channels;
       const channelString = JSON.stringify(channels)
@@ -65,12 +55,8 @@ export class Group implements OnInit {
       2. Error message for validation
   */
 
-  getMessage(channelID: string){
-    localStorage.setItem("selectedChannel", channelID);
-    this.channelID = localStorage.getItem("selectedChannel") || "";
-    console.log("Selected Channel: ", this.channelID)
-
-    this.http.get<MessageModel[]>(`http://localhost:3000/api/groups/${this.groupID}/channels/${this.channelID}`).subscribe((messages: MessageModel[]) => {
+  getMessage(groupID: string, channelID: string){
+    this.http.get<MessageModel[]>(`http://localhost:3000/api/groups/${groupID}/channels/${channelID}`).subscribe((messages: MessageModel[]) => {
       this.messagesJSON = messages;
       const messageString = JSON.stringify(messages);
       console.log("messages: ", messageString)

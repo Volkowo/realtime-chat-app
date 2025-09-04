@@ -19,11 +19,6 @@ export class Login implements OnInit {
   constructor(private router: Router, private http: HttpClient){}
 
   ngOnInit(){
-    const testCheckUser = localStorage.getItem("users")
-    const testCheckGroup = localStorage.getItem("groups")
-
-    console.log(testCheckUser)
-    console.log(testCheckGroup)
   }
 
   resetInput(){

@@ -1,3 +1,5 @@
+const { Message } = require("./Messages");
+
 class Channel{
     constructor(channelID, channelName, messages = []){
         this.channelID = channelID
@@ -5,12 +7,8 @@ class Channel{
         this.messages = messages;
     }
 
-    addMessage(userID, message){
-        this.messages.push({
-            datetime: new Date(),
-            userID: userID,
-            message: message
-        })
+    addMessage(messageID, userID, message){
+        this.messages.push(new Message(messageID, userID, message))
     }
 }
 

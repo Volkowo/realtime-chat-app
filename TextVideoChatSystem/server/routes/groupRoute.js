@@ -1,9 +1,10 @@
-const { groups } = require('../models/Groups');
+const { readJSON, writeJSON } = require('../models/jsonHelper');
 
 function route(app, path) {
     // ROUTE
     app.get('/api/groups/:userID', function(req, res) {
         const userID = req.params.userID;
+        const groups = readJSON('../data/groups.json')
         console.log("userID (backend): ", userID)
         if (!userID) {
             return res.sendStatus(400);
@@ -16,7 +17,6 @@ function route(app, path) {
         } else{
             console.log("no grpups..?")
         }
-
     })
 }
 module.exports = { route };

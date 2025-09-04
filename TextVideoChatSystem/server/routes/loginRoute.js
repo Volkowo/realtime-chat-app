@@ -1,4 +1,4 @@
-const { users } = require('../models/ChatUsers');
+const { readJSON } = require('../models/jsonHelper');
 
 function route(app, path) {
     // ROUTE
@@ -8,6 +8,7 @@ function route(app, path) {
         }
 
         const { username, pass } = req.body;
+        const users = readJSON('../data/users.json')
         console.log(users);
         console.log(req.body);
         console.log("AAAAAA " + username, pass);

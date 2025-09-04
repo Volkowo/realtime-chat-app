@@ -1,7 +1,8 @@
-const { groups } = require('../models/Groups');
+const { readJSON, writeJSON } = require('../models/jsonHelper');
 
 function route(app, path) {
     // ROUTE
+    const groups = readJSON('../data/groups.json')
     // 1. Get the list of channel
     app.get('/api/groups/:groupID/channels', function (req, res) {
     const groupID = req.params.groupID;
