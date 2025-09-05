@@ -1,0 +1,8 @@
+.hideMsg{
+    display: none;
+}
+
+.showMsg{
+    display: block;
+    color: red
+}

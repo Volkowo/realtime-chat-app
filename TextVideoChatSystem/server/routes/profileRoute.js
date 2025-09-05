@@ -1,6 +1,7 @@
 const { readJSON, writeJSON } = require('../models/jsonHelper');
 const { Group } = require("../models/Groups");
 const { Channel } = require("../models/Channel");
+const { Banned } = require("../models/Banned");
 
 function route(app, path) {
     // ROUTE
@@ -164,7 +165,7 @@ function route(app, path) {
         // find user in users.json
         const user = users.find(user => user.id == userID)
         user.groups.push({group: newGroupID, role: "groupAdmin"})
-        const groupID = req.params.groupID;
+        // const groupID = req.params.groupID;
 
         writeJSON('../data/users.json', users);
         writeJSON('../data/groups.json', groups);
@@ -204,6 +205,73 @@ function route(app, path) {
         writeJSON('../data/groups.json', groups);
 
         res.json(group)
+    })
+
+    // KICK user
+    app.delete('/api/group/:groupID/user/:userID/kick', function(req, res){
+        let users = readJSON('../data/users.json')
+        let groups = readJSON('../data/groups.json');
+        const groupID = req.params.groupID;
+        const userID = req.params.userID;
+        
+        let group = groups.find(group => group.groupID == groupID);
+        let user = users.find(user => user.id == userID);
+        if (!group || !user) {
+            return res.status(404).json({ error: 'Group or user not found' });
+        }
+
+        group.users = group.users.filter(user => 
+            user !== userID
+        )
+
+        user.groups = user.groups.filter(group =>
+            group.group !== groupID
+        )
+
+        
+        writeJSON('../data/users.json', users);
+        writeJSON('../data/groups.json', groups);
+        
+        res.json({users, groups})
+    })
+
+    // BAN user
+    app.post('/api/group/:groupID/user/:userID/ban', function(req, res){
+        let users = readJSON('../data/users.json')
+        let groups = readJSON('../data/groups.json');
+        const groupID = req.params.groupID;
+        const userID = req.params.userID;
+        const banReason = req.body.kickBanReason;
+        
+        let group = groups.find(group => group.groupID == groupID);
+        let user = users.find(user => user.id == userID);
+        if (!group || !user) {
+            return res.status(404).json({ error: 'Group or user not found' });
+        }
+
+        // Remove user from group
+        group.users = group.users.filter(user => 
+            user !== userID
+        )
+
+        // remove group from user
+        user.groups = user.groups.filter(group =>
+            group.group !== groupID
+        )
+
+        const ban = new Banned(userID, banReason)
+
+        if(!group.bannedUsers.some(ban => ban.userID === userID)){
+            group.bannedUsers.push(ban)
+        }
+
+        
+        writeJSON('../data/users.json', users);
+        writeJSON('../data/groups.json', groups);
+
+        console.log("BANNED USER(S): ", group.bannedUsers);
+        
+        res.json({users, groups})
     })
 
     // Get users

@@ -28,6 +28,9 @@ export class Profile implements OnInit {
   newChannel: string = "";
   newGroup: string = "";
   newGroup_channel: string = "";
+  kickBanReason: string = "";
+  selectedUser: string = "";
+  showError: boolean = false
 
   ngOnInit() {
       this.user = (localStorage.getItem("user"))
@@ -106,6 +109,16 @@ closeModal(modalId: string) {
     }
   }
 
+  // Return the user's role
+  getUserRoles(groupID: string, userID: string){
+    if(this.usersJSON){
+      const user = this.usersJSON.find((user: any) => user.id === userID)
+      const role = user.groups.find((group: any) => group.group === groupID)
+
+      return role ? role.role : "unknown"
+    }
+  }
+
   // returns the username of a user based on their memberID
   getUsernameById(memberID: string){
     if(this.usersJSON){
@@ -123,6 +136,13 @@ closeModal(modalId: string) {
     } else {
       
     }
+  }
+
+  // get users that are in the group
+  getUserInGroup(groupID: string){
+    const listOfUsers =  this.getUserById(groupID);
+
+    return this.usersJSON.filter((user: any) => listOfUsers.includes(user.id))
   }
 
   // Check if user is a chatUser or not
@@ -180,24 +200,21 @@ closeModal(modalId: string) {
   createNewGroup(newGroup: string, newGroup_channel: string, userID: string) {
     this.http.post(`http://localhost:3000/api/group/newGroup/${userID}/${newGroup}/${newGroup_channel}`, {}).subscribe((res: any) => {
       const updatedUser = res.user;
-      const newGroup = res.group;
 
-      // Update groupsJSON for template
-      if (this.groupsJSON) {
-        this.groupsJSON.push(newGroup);
-      }
+      // Get groups from backend
+      this.http.get(`http://localhost:3000/api/groups`).subscribe((groups: any) => {
+        this.groupsJSON = groups;
+      });
 
-      // Update the logged-in user's groups
-      this.userJSON.groups = updatedUser.groups;
+      // Get users from backend
+      this.http.get(`http://localhost:3000/api/users`).subscribe((users: any) => {
+        this.usersJSON = users;
 
-      // Update usersJSON
-      const userIndex = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
-      this.usersJSON[userIndex] = updatedUser;
-
-      // Update localStorage so refresh keeps state
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-
-      console.log("New group created: ", newGroup);
+        // update user again just to be sure idk
+        const updatedUserFull = users.find((u: any) => u.id == updatedUser.id);
+        this.userJSON = updatedUserFull;
+        localStorage.setItem("user", JSON.stringify(updatedUserFull));
+      });
 
       this.closeModal('newGroup')
     });
@@ -247,6 +264,48 @@ closeModal(modalId: string) {
         const index = this.groupsJSON.findIndex((group: any) => group.groupID == updatedGroup.groupID)
         this.groupsJSON[index] = updatedGroup
     })
+  }
+
+  manageUser(selectedUser: string, groupID: string, kickBanReason: string, action: string){
+    if(selectedUser == ""){
+      this.showError = true;
+    } else {
+      this.showError = false;
+      
+      switch(action){
+        case "kick":{
+          console.log(`${action} the selected user! (${selectedUser})`)
+          this.http.delete(`http://localhost:3000/api/group/${groupID}/user/${selectedUser}/kick`, {}).subscribe((res: any) => {
+            this.groupsJSON = res.groups;
+            this.usersJSON = res.users;
+
+            this.selectedUser = ""
+            this.closeModal('manageUser' + groupID)
+          })
+          break;
+        }
+        case "ban":{
+          console.log(`${action} the selected user! (${selectedUser})`)
+          this.http.post(`http://localhost:3000/api/group/${groupID}/user/${selectedUser}/ban`, {kickBanReason}).subscribe((res: any) => {
+            this.groupsJSON = res.groups;
+            this.usersJSON = res.users;
+
+            this.selectedUser = ""
+            this.closeModal('manageUser' + groupID)
+          })
+          break;
+        }
+        default:{
+          console.log("what the helly youre not supposed to break this");
+
+          this.selectedUser = ""
+          this.closeModal('manageUser' + groupID)
+          break;
+        }
+      }
+
+
+    }
   }
 
 

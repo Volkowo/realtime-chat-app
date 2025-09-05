@@ -1,6 +1,7 @@
 <p>profile works!</p>
 <p> {{userJSON.email}}</p>
 <p> {{userJSON.username}}</p>
+<p> {{userJSON.id}}</p>
 @if(userJSON.roles.includes('superAdmin')){
     <p>Admin View</p>
     <table class="table table-bordered">
@@ -195,7 +196,7 @@
                     <div class="col-6">
                         <p>Members: </p>
                         @for(member of getUserById(group.group); track member){
-                            <li>{{getUsernameById(member)}}</li>
+                            <li>{{getUsernameById(member)}} - {{getUserRoles(group.group, member)}}</li>
                         }
                     </div>
 
@@ -266,10 +267,44 @@
 
 
                 <!-- REMOVE USER -->
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#manageUser' + group.group" >
+                Manage User(s)
+                </button>
 
-
-                <!-- RENAME CHANNEL -->
-
+                <!-- Modal -->
+                <div class="modal fade" [id]="'manageUser' + group.group" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Manage Users</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <select [(ngModel)]="selectedUser" class="form-select" name="dropwdown">
+                                    <option value="" selected>Choose User</option>
+                                    @for(user of getUserInGroup(group.group); track user.id){
+                                        @if(!user.roles.includes("superAdmin") && user.id !== userJSON.id){
+                                            <option value="{{user.id}}">{{getUsernameById(user.id)}}</option>
+                                        }
+                                    }
+                                </select>
+                                @if(showError){
+                                    <div class="text-danger">
+                                        Please choose a user.
+                                    </div>
+                                }
+                                <label for="groupInput">Reason</label>
+                                <input type="text" class="form-control" id="groupInput" [(ngModel)]="kickBanReason" name="kickBanReason">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-warning" (click)="manageUser(selectedUser, group.group, kickBanReason, 'kick')">Kick</button>
+                                <button type="button" class="btn btn-danger"  (click)="manageUser(selectedUser, group.group, kickBanReason, 'ban')">Ban</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
             </div>

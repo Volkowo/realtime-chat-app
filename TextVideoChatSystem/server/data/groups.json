@@ -47,7 +47,8 @@
       "3",
       "5",
       "6"
-    ]
+    ],
+    "bannedUsers": []
   },
   {
     "groupID": "g2",
@@ -67,11 +68,10 @@
     "users": [
       "1",
       "2",
-      "3",
       "8",
-      "4",
       "7"
-    ]
+    ],
+    "bannedUsers": []
   },
   {
     "groupID": "g3",
@@ -94,7 +94,8 @@
       "1",
       "5",
       "8"
-    ]
+    ],
+    "bannedUsers": []
   },
   {
     "groupID": "g4",
@@ -123,7 +124,8 @@
       "6",
       "7",
       "8"
-    ]
+    ],
+    "bannedUsers": []
   },
   {
     "groupID": "g5",
@@ -144,7 +146,8 @@
       "1",
       "3",
       "8"
-    ]
+    ],
+    "bannedUsers": []
   },
   {
     "groupID": "gSep05_1007132",
@@ -159,17 +162,16 @@
     "users": [
       "2",
       "1",
-      "8",
-      "4",
-      "5"
-    ]
+      "8"
+    ],
+    "bannedUsers": []
   },
   {
-    "groupID": "gSep05_12100512",
-    "groupName": "Bruh",
+    "groupID": "gSep05_1626400",
+    "groupName": "test123",
     "channels": [
       {
-        "channelID": "cSep05_12100511",
+        "channelID": "cSep05_16264017",
         "channelName": "123",
         "messages": []
       }
@@ -178,6 +180,42 @@
       "2",
       "1",
       "8"
+    ],
+    "bannedUsers": [
+      {
+        "userID": "6",
+        "reason": ""
+      },
+      {
+        "userID": "3",
+        "reason": "test"
+      }
+    ]
+  },
+  {
+    "groupID": "gSep05_16302713",
+    "groupName": "etet",
+    "channels": [
+      {
+        "channelID": "cSep05_16302718",
+        "channelName": "dsfg",
+        "messages": []
+      }
+    ],
+    "users": [
+      "2",
+      "1",
+      "8"
+    ],
+    "bannedUsers": [
+      {
+        "userID": "3",
+        "reason": "stinky"
+      },
+      {
+        "userID": "4",
+        "reason": "racism what the helly?!?!?!?"
+      }
     ]
   }
 ]

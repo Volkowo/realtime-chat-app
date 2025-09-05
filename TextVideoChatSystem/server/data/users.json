@@ -34,7 +34,11 @@
         "role": "superAdmin"
       },
       {
-        "group": "gSep05_12100512",
+        "group": "gSep05_1626400",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_16302713",
         "role": "superAdmin"
       }
     ],
@@ -63,7 +67,11 @@
         "role": "groupAdmin"
       },
       {
-        "group": "gSep05_12100512",
+        "group": "gSep05_1626400",
+        "role": "groupAdmin"
+      },
+      {
+        "group": "gSep05_16302713",
         "role": "groupAdmin"
       }
     ],
@@ -79,10 +87,6 @@
       "groupAdmin"
     ],
     "groups": [
-      {
-        "group": "g2",
-        "role": "groupAdmin"
-      },
       {
         "group": "g3",
         "role": "chatUser"
@@ -107,14 +111,6 @@
       {
         "group": "g1",
         "role": "groupAdmin"
-      },
-      {
-        "group": "g2",
-        "role": "chatUser"
-      },
-      {
-        "group": "gSep05_1007132",
-        "role": "chatUser"
       }
     ],
     "signedIn": false
@@ -135,10 +131,6 @@
       },
       {
         "group": "g1",
-        "role": "chatUser"
-      },
-      {
-        "group": "gSep05_1007132",
         "role": "chatUser"
       }
     ],
@@ -225,7 +217,11 @@
         "role": "superAdmin"
       },
       {
-        "group": "gSep05_12100512",
+        "group": "gSep05_1626400",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_16302713",
         "role": "superAdmin"
       }
     ],
