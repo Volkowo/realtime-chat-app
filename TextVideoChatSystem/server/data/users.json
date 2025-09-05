@@ -44,6 +44,10 @@
       {
         "group": "gSep05_1846285",
         "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_2357059",
+        "role": "superAdmin"
       }
     ],
     "signedIn": false
@@ -142,8 +146,7 @@
     "username": "userSix",
     "pass": "123",
     "roles": [
-      "chatUser",
-      "groupAdmin"
+      "chatUser"
     ],
     "groups": [
       {
@@ -226,6 +229,10 @@
       },
       {
         "group": "gSep05_1846285",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_2357059",
         "role": "superAdmin"
       }
     ],

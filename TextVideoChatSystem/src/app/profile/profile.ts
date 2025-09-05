@@ -25,11 +25,14 @@ export class Profile implements OnInit {
   usersJSON: any;
   groups: any;
   groupsJSON: any;
+  requestsJSON: any;
   newChannel: string = "";
   newGroup: string = "";
   newGroup_channel: string = "";
   kickBanReason: string = "";
   selectedUser: string = "";
+  applyGroup: string = "";
+  reasonToJoin: string = "";
   showError: boolean = false
 
   ngOnInit() {
@@ -50,6 +53,11 @@ export class Profile implements OnInit {
             console.log("Groups: ", this.groups)
             this.groupsJSON = groups;
             console.log(this.groupsJSON); 
+          })
+
+          this.http.get(`http://localhost:3000/api/requests`).subscribe((requests: any) => {
+            this.requestsJSON = requests;
+            console.log(this.requestsJSON); 
           })
 
 
@@ -125,6 +133,11 @@ closeModal(modalId: string) {
       const user = this.usersJSON.find((user: any) => user.id === memberID)
       return user ? user.username : "Unknown";
     }
+  }
+
+  // returns the group the user is not in
+  getGroupUserIsNotIn(userID: string){
+    return this.groupsJSON.filter((group: any) => !group.users.includes(userID))
   }
 
   // get users that are NOT in the group
@@ -303,8 +316,22 @@ closeModal(modalId: string) {
           break;
         }
       }
+    }
+  }
 
+  apply(groupID: string, userID:string, reasonToJoin: string){
+    if(!groupID){
+      this.showError = true
+    } else {
+      this.showError = false
 
+    this.http.post(`http://localhost:3000/api/request/join/${groupID}/${userID}`, {reasonToJoin}).subscribe((res: any) => {
+        this.requestsJSON = res.requests;
+
+        this.applyGroup = ""
+        this.reasonToJoin = ""
+      })
+      
     }
   }
 

@@ -313,7 +313,24 @@
         }
     }
 } @else{
-    <p>what the helly</p>
+    <p>Apply to a group here</p>
+    <select [(ngModel)]="applyGroup" class="form-select" name="dropdown">
+        <option value="" selected>Choose Group</option>
+        @for(group of getGroupUserIsNotIn(userJSON.id); track group.groupID){
+            <option value="{{group.groupID}}">{{group.groupName}}</option>
+        }
+    </select>
+    @if(showError){
+        <div class="text-danger">
+            Please choose a group.
+        </div>
+    }
+    <div class="form-floating">
+    <textarea class="form-control" placeholder="Leave a reason on why you wanted to join the group here" id="floatingTextarea2" style="height: 100px" [(ngModel)]="reasonToJoin"></textarea>
+    <label for="floatingTextarea2">Reason</label>
+    </div>
+
+    <button type="button" class="btn btn-primary" (click)="apply(applyGroup, userJSON.id, reasonToJoin)">Apply</button>
 }
 <button type="button" class="btn btn-primary" (click)="logOut()">Logout</button>
 

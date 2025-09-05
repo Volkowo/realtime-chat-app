@@ -232,5 +232,21 @@
       "8"
     ],
     "bannedUsers": []
+  },
+  {
+    "groupID": "gSep05_2357059",
+    "groupName": "PLEASE WORK",
+    "channels": [
+      {
+        "channelID": "cSep05_23570516",
+        "channelName": "maimai",
+        "messages": []
+      }
+    ],
+    "users": [
+      "1",
+      "8"
+    ],
+    "bannedUsers": []
   }
 ]

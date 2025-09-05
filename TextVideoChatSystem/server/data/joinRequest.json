@@ -1,0 +1,44 @@
+[
+  {
+    "requestID": "1",
+    "userID": "2",
+    "groupID": "g1",
+    "reasonToJoin": "I want to collaborate on this project.",
+    "datetime": "2025-09-06T05:15:00.000Z"
+  },
+  {
+    "requestID": "2",
+    "userID": "3",
+    "groupID": "g1",
+    "reasonToJoin": "My friends are in this group.",
+    "datetime": "2025-09-06T06:20:00.000Z"
+  },
+  {
+    "requestID": "3",
+    "userID": "5",
+    "groupID": "g2",
+    "reasonToJoin": "Interested in the topic discussed here.",
+    "datetime": "2025-09-06T07:00:00.000Z"
+  },
+  {
+    "requestID": "4",
+    "userID": "7",
+    "groupID": "g3",
+    "reasonToJoin": "Want to share resources with the group.",
+    "datetime": "2025-09-06T07:45:00.000Z"
+  },
+  {
+    "requestID": "5",
+    "userID": "8",
+    "groupID": "g4",
+    "reasonToJoin": "Looking for study partners.",
+    "datetime": "2025-09-06T08:10:00.000Z"
+  },
+  {
+    "requestID": "rSep06_0122581",
+    "userID": "6",
+    "groupID": "g4",
+    "reasonToJoin": "asd",
+    "datetime": "2025-09-05T15:22:58.815Z"
+  }
+]

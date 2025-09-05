@@ -2,6 +2,7 @@ const { readJSON, writeJSON } = require('../models/jsonHelper');
 const { Group } = require("../models/Groups");
 const { Channel } = require("../models/Channel");
 const { Banned } = require("../models/Banned");
+const {JoinRequest} = require("../models/JoinRequest");
 
 function route(app, path) {
     // ROUTE
@@ -274,6 +275,26 @@ function route(app, path) {
         res.json({users, groups})
     })
 
+    // request to join
+    app.post('/api/request/join/:groupID/:userID', function(req, res){
+        const groupID = req.params.groupID;
+        const userID = req.params.userID;
+        const reasonToJoin = req.body.reasonToJoin;
+        let requests = readJSON('../data/joinRequest.json');
+
+        // Making the ID for request
+        var date = new Date().toString()
+        var date_split = date.split(" ")
+        var dateForID = date_split[4].split(":").join("");
+        var requestID = `r${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+        const request = new JoinRequest(requestID, userID, groupID, reasonToJoin);
+        requests.push(request)
+
+        writeJSON('../data/joinRequest.json', requests)
+        res.json(requests)
+    })
+
     // Get users
     app.get('/api/users', function (req, res){
         const users = readJSON('../data/users.json');
@@ -284,6 +305,12 @@ function route(app, path) {
     app.get('/api/groups', function(req, res){
         const groups = readJSON('../data/groups.json');
         res.json(groups)
+    })
+
+    // get requests
+    app.get('/api/requests', function(req, res){
+        const requests = readJSON('../data/joinRequest.json');
+        res.json(requests)
     })
 }
 module.exports = { route };
