@@ -147,45 +147,47 @@
     ]
   },
   {
-    "groupID": "gSep04_23272612",
-    "groupName": "PLEASE WORK",
+    "groupID": "gSep05_1007132",
+    "groupName": "Burrito",
     "channels": [
       {
-        "channelID": "cSep04_2327261",
-        "channelName": "AAAAAAAAA",
+        "channelID": "cSep05_10071312",
+        "channelName": "Ken is stinky",
+        "messages": []
+      },
+      {
+        "channelID": "cSep05_11002318",
+        "channelName": "KenRagebait",
+        "messages": []
+      },
+      {
+        "channelID": "cSep05_12102411",
+        "channelName": "tets",
         "messages": []
       }
     ],
     "users": [
-      "2"
+      "2",
+      "1",
+      "8",
+      "4",
+      "5"
     ]
   },
   {
-    "groupID": "gSep04_2342314",
-    "groupName": "asd",
+    "groupID": "gSep05_12100512",
+    "groupName": "Bruh",
     "channels": [
       {
-        "channelID": "cSep04_2342311",
-        "channelName": "asd",
+        "channelID": "cSep05_12100511",
+        "channelName": "123",
         "messages": []
       }
     ],
     "users": [
-      "2"
-    ]
-  },
-  {
-    "groupID": "gSep04_2344565",
-    "groupName": "TEST",
-    "channels": [
-      {
-        "channelID": "cSep04_2344569",
-        "channelName": "waaaaa",
-        "messages": []
-      }
-    ],
-    "users": [
-      "2"
+      "2",
+      "1",
+      "8"
     ]
   }
 ]

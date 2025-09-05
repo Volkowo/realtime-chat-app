@@ -6,6 +6,9 @@ import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { PromoteModal } from "../promote-modal/promote-modal";
+
+declare var bootstrap: any; 
+
 @Component({
   selector: 'app-profile',
   imports: [FormsModule, RouterModule, HttpClientModule, CommonModule, PromoteModal],
@@ -51,6 +54,14 @@ export class Profile implements OnInit {
         this.router.navigate([''])
       }
   }
+
+closeModal(modalId: string) {
+  const modalElement = document.getElementById(modalId);
+  if (modalElement) {
+    const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+    modal.hide();
+  }
+}
   
   logOut(){
     localStorage.removeItem("user");
@@ -149,6 +160,8 @@ export class Profile implements OnInit {
       const groupIndex = this.groupsJSON.findIndex((group: any) => group.groupID == updatedGroup.groupID)
       console.log("group index", groupIndex)
       this.groupsJSON[groupIndex] = updatedGroup
+
+      this.closeModal('addUser' + groupID)
     })
   }
 
@@ -158,6 +171,8 @@ export class Profile implements OnInit {
       const index = this.groupsJSON.findIndex((group: any) => group.groupID == updatedGroup.groupID)
       this.groupsJSON[index] = updatedGroup
       console.log("New channel: ", updatedGroup)
+
+      this.closeModal('addChannel' + groupID)
     })
   }
 
@@ -179,11 +194,13 @@ export class Profile implements OnInit {
       const userIndex = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
       this.usersJSON[userIndex] = updatedUser;
 
-      // Optional: Update localStorage so refresh keeps state
+      // Update localStorage so refresh keeps state
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
       console.log("New group created: ", newGroup);
-      });
+
+      this.closeModal('newGroup')
+    });
   }
 
   //Promote to GroupAdmin
@@ -206,4 +223,22 @@ export class Profile implements OnInit {
         this.usersJSON[index] = updatedUser
     })
   }
+
+  // Delete Group
+  deleteGroup(groupID: string){
+    this.http.delete(`http://localhost:3000/api/group/${groupID}/remove`, {}).subscribe((res: any) => {
+      this.closeModal('deleteGroup' + groupID)
+      this.usersJSON = res.users;
+      this.groupsJSON = res.groups;
+
+      // update the logged-in user from fresh usersJSON
+      const updatedUser = this.usersJSON.find((u: any) => u.id == this.userJSON.id);
+      if (updatedUser) {
+        this.userJSON = updatedUser;
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+    })
+  }
+
+
 }

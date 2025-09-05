@@ -147,14 +147,46 @@ function route(app, path) {
         const group = new Group(newGroupID, newGroup, [channel], [userID]);
         groups.push(group)
 
+        
+        // Add superAdmin to the thing as well
+        const superAdmin = users.filter(user => user.roles.includes("superAdmin"))
+        
+        superAdmin.forEach(admin => {
+            if (!admin.groups.some(g => g.group === newGroupID)) {
+                admin.groups.push({ group: newGroupID, role: "superAdmin" });
+            }
+
+            if(!group.users.includes(admin.id)){
+                group.users.push(admin.id)
+            }
+        })
+
         // find user in users.json
         const user = users.find(user => user.id == userID)
         user.groups.push({group: newGroupID, role: "groupAdmin"})
+        const groupID = req.params.groupID;
 
         writeJSON('../data/users.json', users);
         writeJSON('../data/groups.json', groups);
         
         res.json({user, group})
+    })
+
+    // Delete Group
+    app.delete('/api/group/:groupID/remove', function(req, res){
+        let groups = readJSON('../data/groups.json');
+        let users = readJSON('../data/users.json');
+        const groupID = req.params.groupID;
+
+        groups = groups.filter(group => group.groupID !== groupID)
+        users.forEach(user => {
+            user.groups = user.groups.filter(group => group.group !== groupID)
+        })
+
+        writeJSON('../data/groups.json', groups);
+        writeJSON('../data/users.json', users);
+
+        res.json({users, groups})
     })
 
     // Get users

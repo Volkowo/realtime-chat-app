@@ -105,12 +105,12 @@
 } @else if(userJSON.roles.includes('groupAdmin')) {
     <p>Group Admin View</p>
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" >
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGroup" >
     Create New Group
     </button>
 
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="newGroup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -136,7 +136,31 @@
             <div class="card">
             <div class="card-body">
                 <h5 class="card-title">{{getGroupById(group.group)}}</h5>
-                <button>Delete Group</button>
+                <!-- DELETE GROUP -->
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#deleteGroup' + group.group" >
+                Delete Group
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" [id]="'deleteGroup' + group.group" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete {{getGroupById(group.group)}}?</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you wanted to delete {{getGroupById(group.group)}}? This action is irreversible!
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" (click)="deleteGroup(group.group)">Delete Group</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-6">
                         <p>Channel List: </p>
@@ -154,12 +178,12 @@
                 </div>
                 <!-- ADD USER -->
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" [attr.data-bs-target]="'#addUser' + group.group" >
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#addUser' + group.group" >
                 Add User
                 </button>
 
                 <!-- Modal -->
-                <div class="modal fade" [id]="'addUser' + group.group" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" [id]="'addUser' + group.group" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -192,12 +216,12 @@
 
                 <!-- ADD CHANNEL -->
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" [attr.data-bs-target]="'#addChannel' + group.group" >
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#addChannel' + group.group" >
                 Add New Channel
                 </button>
 
                 <!-- Modal -->
-                <div class="modal fade" [id]="'addChannel' + group.group" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" [id]="'addChannel' + group.group" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
