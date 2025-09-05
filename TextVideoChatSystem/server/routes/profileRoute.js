@@ -1,8 +1,11 @@
 const { readJSON, writeJSON } = require('../models/jsonHelper');
+const { Group } = require("../models/Groups");
+const { Channel } = require("../models/Channel");
+const { Banned } = require("../models/Banned");
 
 function route(app, path) {
     // ROUTE
-    
+    // promote to group admin
     app.put('/api/user/:userID/group/:groupID/role', function (req, res) {
         const users = readJSON('../data/users.json');
         const groups = readJSON('../data/groups.json');
@@ -71,13 +74,213 @@ function route(app, path) {
         res.json(user)
     })
 
-    //2. Get users
+    // Add user to channel
+    app.put('/api/group/:groupID/add/:userID', function (req, res){
+        const users = readJSON('../data/users.json');
+        const groups = readJSON('../data/groups.json');
+        const userID = req.params.userID;
+        const groupID = req.params.groupID;
+
+        // find user in users.json
+        const user = users.find(user => user.id == userID)
+        // console.log(user.groups)
+
+        // add group to user.groups
+        user.groups.push({
+            group: groupID,
+            role: "chatUser" 
+        })
+
+        // add userID to groups
+        // getting group in groups.json
+        const group = groups.find(group => group.groupID == groupID);
+        group.users.push(userID)
+
+        writeJSON('../data/users.json', users);
+        writeJSON('../data/groups.json', groups);
+
+        res.json({user, group})
+    })
+
+    // add new channel to an existing group
+    app.put('/api/group/:groupID/addChannel/:newChannel', function(req, res){
+        const groups = readJSON('../data/groups.json');
+        const groupID = req.params.groupID;
+        const newChannel = req.params.newChannel;
+        console.log(newChannel)
+
+        const group = groups.find(group => group.groupID == groupID);
+        console.log(group.channels)
+
+        // Making the ID for new channel
+        var date = new Date().toString()
+        var date_split = date.split(" ")
+        var dateForID = date_split[4].split(":").join("");
+        var newChannelID = `c${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+        group.channels.push({channelID: newChannelID, channelName: newChannel, messages: []})
+
+        writeJSON('../data/groups.json', groups);
+        res.json(group)
+    })
+
+    // add a new group
+    app.post('/api/group/newGroup/:userID/:newGroup/:newGroup_channel', function(req, res){
+        const userID = req.params.userID;
+        const newGroup = req.params.newGroup;
+        const newGroup_channel = req.params.newGroup_channel;
+        const groups = readJSON('../data/groups.json');
+        const users = readJSON('../data/users.json');
+
+        // Making the ID for new group
+        var date = new Date().toString()
+        var date_split = date.split(" ")
+        var dateForID = date_split[4].split(":").join("");
+        var newGroupID = `g${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+        // Making the ID for new channel
+        var newChannelID = `c${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+        // Make channel
+        const channel = new Channel(newChannelID, newGroup_channel);
+
+        // Make group (with this channel inside channels array)
+        const group = new Group(newGroupID, newGroup, [channel], [userID]);
+        groups.push(group)
+
+        
+        // Add superAdmin to the thing as well
+        const superAdmin = users.filter(user => user.roles.includes("superAdmin"))
+        
+        superAdmin.forEach(admin => {
+            if (!admin.groups.some(g => g.group === newGroupID)) {
+                admin.groups.push({ group: newGroupID, role: "superAdmin" });
+            }
+
+            if(!group.users.includes(admin.id)){
+                group.users.push(admin.id)
+            }
+        })
+
+        // find user in users.json
+        const user = users.find(user => user.id == userID)
+        user.groups.push({group: newGroupID, role: "groupAdmin"})
+        // const groupID = req.params.groupID;
+
+        writeJSON('../data/users.json', users);
+        writeJSON('../data/groups.json', groups);
+        
+        res.json({user, group})
+    })
+
+    // Delete Group
+    app.delete('/api/group/:groupID/remove', function(req, res){
+        let groups = readJSON('../data/groups.json');
+        let users = readJSON('../data/users.json');
+        const groupID = req.params.groupID;
+
+        groups = groups.filter(group => group.groupID !== groupID)
+        users.forEach(user => {
+            user.groups = user.groups.filter(group => group.group !== groupID)
+        })
+
+        writeJSON('../data/groups.json', groups);
+        writeJSON('../data/users.json', users);
+
+        res.json({users, groups})
+    })
+
+    // Delete Channel
+    app.delete('/api/group/:groupID/channel/:channelID/remove', function(req, res){
+        let groups = readJSON('../data/groups.json');
+        const groupID = req.params.groupID;
+        const channelID = req.params.channelID;
+
+        let group = groups.find(group => group.groupID == groupID);
+        group.channels = group.channels.filter(channel => 
+            channel.channelID != channelID
+        )
+
+
+        writeJSON('../data/groups.json', groups);
+
+        res.json(group)
+    })
+
+    // KICK user
+    app.delete('/api/group/:groupID/user/:userID/kick', function(req, res){
+        let users = readJSON('../data/users.json')
+        let groups = readJSON('../data/groups.json');
+        const groupID = req.params.groupID;
+        const userID = req.params.userID;
+        
+        let group = groups.find(group => group.groupID == groupID);
+        let user = users.find(user => user.id == userID);
+        if (!group || !user) {
+            return res.status(404).json({ error: 'Group or user not found' });
+        }
+
+        group.users = group.users.filter(user => 
+            user !== userID
+        )
+
+        user.groups = user.groups.filter(group =>
+            group.group !== groupID
+        )
+
+        
+        writeJSON('../data/users.json', users);
+        writeJSON('../data/groups.json', groups);
+        
+        res.json({users, groups})
+    })
+
+    // BAN user
+    app.post('/api/group/:groupID/user/:userID/ban', function(req, res){
+        let users = readJSON('../data/users.json')
+        let groups = readJSON('../data/groups.json');
+        const groupID = req.params.groupID;
+        const userID = req.params.userID;
+        const banReason = req.body.kickBanReason;
+        
+        let group = groups.find(group => group.groupID == groupID);
+        let user = users.find(user => user.id == userID);
+        if (!group || !user) {
+            return res.status(404).json({ error: 'Group or user not found' });
+        }
+
+        // Remove user from group
+        group.users = group.users.filter(user => 
+            user !== userID
+        )
+
+        // remove group from user
+        user.groups = user.groups.filter(group =>
+            group.group !== groupID
+        )
+
+        const ban = new Banned(userID, banReason)
+
+        if(!group.bannedUsers.some(ban => ban.userID === userID)){
+            group.bannedUsers.push(ban)
+        }
+
+        
+        writeJSON('../data/users.json', users);
+        writeJSON('../data/groups.json', groups);
+
+        console.log("BANNED USER(S): ", group.bannedUsers);
+        
+        res.json({users, groups})
+    })
+
+    // Get users
     app.get('/api/users', function (req, res){
         const users = readJSON('../data/users.json');
         res.json(users)
     })
 
-    //3. Get groups
+    // Get groups
     app.get('/api/groups', function(req, res){
         const groups = readJSON('../data/groups.json');
         res.json(groups)

@@ -1,6 +1,6 @@
 [
   {
-    "groupID": "1",
+    "groupID": "g1",
     "groupName": "TestGroup",
     "channels": [
       {
@@ -32,17 +32,26 @@
             "datetime": "2025-09-03T12:05:00.000Z"
           }
         ]
+      },
+      {
+        "channelID": "cSep04_22204219",
+        "channelName": "Ragebait",
+        "messages": []
       }
     ],
     "users": [
       "1",
       "2",
       "4",
-      "8"
-    ]
+      "8",
+      "3",
+      "5",
+      "6"
+    ],
+    "bannedUsers": []
   },
   {
-    "groupID": "2",
+    "groupID": "g2",
     "groupName": "FunGroup",
     "channels": [
       {
@@ -59,12 +68,13 @@
     "users": [
       "1",
       "2",
-      "3",
-      "8"
-    ]
+      "8",
+      "7"
+    ],
+    "bannedUsers": []
   },
   {
-    "groupID": "3",
+    "groupID": "g3",
     "groupName": "ProjectGroup",
     "channels": [
       {
@@ -84,10 +94,11 @@
       "1",
       "5",
       "8"
-    ]
+    ],
+    "bannedUsers": []
   },
   {
-    "groupID": "4",
+    "groupID": "g4",
     "groupName": "HobbyGroup",
     "channels": [
       {
@@ -113,10 +124,11 @@
       "6",
       "7",
       "8"
-    ]
+    ],
+    "bannedUsers": []
   },
   {
-    "groupID": "5",
+    "groupID": "g5",
     "groupName": "StudyGroup",
     "channels": [
       {
@@ -134,6 +146,76 @@
       "1",
       "3",
       "8"
+    ],
+    "bannedUsers": []
+  },
+  {
+    "groupID": "gSep05_1007132",
+    "groupName": "Burrito",
+    "channels": [
+      {
+        "channelID": "cSep05_13224218",
+        "channelName": "KenIsStinky",
+        "messages": []
+      }
+    ],
+    "users": [
+      "2",
+      "1",
+      "8"
+    ],
+    "bannedUsers": []
+  },
+  {
+    "groupID": "gSep05_1626400",
+    "groupName": "test123",
+    "channels": [
+      {
+        "channelID": "cSep05_16264017",
+        "channelName": "123",
+        "messages": []
+      }
+    ],
+    "users": [
+      "2",
+      "1",
+      "8"
+    ],
+    "bannedUsers": [
+      {
+        "userID": "6",
+        "reason": ""
+      },
+      {
+        "userID": "3",
+        "reason": "test"
+      }
+    ]
+  },
+  {
+    "groupID": "gSep05_16302713",
+    "groupName": "etet",
+    "channels": [
+      {
+        "channelID": "cSep05_16302718",
+        "channelName": "dsfg",
+        "messages": []
+      }
+    ],
+    "users": [
+      "2",
+      "1",
+      "8"
+    ],
+    "bannedUsers": [
+      {
+        "userID": "3",
+        "reason": "stinky"
+      },
+      {
+        "userID": "4",
+        "reason": "racism what the helly?!?!?!?"
+      }
     ]
   }
 ]

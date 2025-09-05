@@ -1,6 +1,7 @@
 <p>profile works!</p>
 <p> {{userJSON.email}}</p>
 <p> {{userJSON.username}}</p>
+<p> {{userJSON.id}}</p>
 @if(userJSON.roles.includes('superAdmin')){
     <p>Admin View</p>
     <table class="table table-bordered">
@@ -14,13 +15,13 @@
             </tr>
         </thead>
         <tbody>
-            @for(user of usersJSON; track user.id; let user.id = $index){
+            @for(user of usersJSON; track user.id){
                 <tr>
                     <td>{{ user.username }}</td>
                     <td>
                         <ul>
                             <li>
-                                @for(group of user.groups; track group.group){
+                                @for(group of user.groups; track group.group + '-' + group.role){
                                     <li>
                                         {{getGroupById(group.group)}}
                                     </li>
@@ -102,8 +103,215 @@
             }
         </tbody>
         </table>
-} @else if(isSuperOrGroupAdmin(userJSON)) {
+} @else if(userJSON.roles.includes('groupAdmin')) {
     <p>Group Admin View</p>
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGroup" >
+    Create New Group
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="newGroup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Create New Group</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="groupInput">Group Name</label>
+                    <input type="text" class="form-control" id="groupInput" [(ngModel)]="newGroup" name="newGroup">
+
+                    <label for="groupInput">Channel Name</label>
+                    <input type="text" class="form-control" id="groupInput" [(ngModel)]="newGroup_channel" name="newGroup_channel">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" (click)="createNewGroup(newGroup, newGroup_channel, userJSON.id)">Create Group</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @for(group of userJSON.groups; track group.group){
+        @if(isSuperOrGroupAdmin(group)){
+            <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{getGroupById(group.group)}}</h5>
+                <!-- DELETE GROUP -->
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#deleteGroup' + group.group" >
+                Delete Group
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" [id]="'deleteGroup' + group.group" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete {{getGroupById(group.group)}}?</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you wanted to delete {{getGroupById(group.group)}}? This action is irreversible!
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" (click)="deleteGroup(group.group)">Delete Group</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <p>Channel List: </p>
+                        @for(channel of getChannelById(group.group); track channel.channelID){
+                            <li>{{channel.channelName}}</li>
+
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" [attr.data-bs-target]="'#deleteChannel' + channel.channelID" >
+                            X
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" [id]="'deleteChannel' + channel.channelID" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Remove {{channel.channelName}}?</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you wanted to remove {{channel.channelName}}? This action is irreversible!
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary" (click)="deleteChannel(group.group, channel.channelID)">Remove Channel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-6">
+                        <p>Members: </p>
+                        @for(member of getUserById(group.group); track member){
+                            <li>{{getUsernameById(member)}} - {{getUserRoles(group.group, member)}}</li>
+                        }
+                    </div>
+
+                </div>
+                <!-- ADD USER -->
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#addUser' + group.group" >
+                Add User
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" [id]="'addUser' + group.group" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Add User To This Group</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Add User
+                                </button>
+                                <ul class="dropdown-menu">
+                                    @for(nonUser of getUserNotInGroup(group.group); track nonUser.id){
+                                        <li>
+                                            <button class="dropdown-item" (click)="addUserToGroup(group.group, nonUser.id)">
+                                                {{ getUsernameById(nonUser.id) }}
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- ADD CHANNEL -->
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#addChannel' + group.group" >
+                Add New Channel
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" [id]="'addChannel' + group.group" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Channel to this Group</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label for="groupInput">Name</label>
+                                <input type="text" class="form-control" id="groupInput" [(ngModel)]="newChannel" name="newChannel">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" (click)="addChannel(group.group, newChannel)">Create Channel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- REMOVE USER -->
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#manageUser' + group.group" >
+                Manage User(s)
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" [id]="'manageUser' + group.group" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Manage Users</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <select [(ngModel)]="selectedUser" class="form-select" name="dropwdown">
+                                    <option value="" selected>Choose User</option>
+                                    @for(user of getUserInGroup(group.group); track user.id){
+                                        @if(!user.roles.includes("superAdmin") && user.id !== userJSON.id){
+                                            <option value="{{user.id}}">{{getUsernameById(user.id)}}</option>
+                                        }
+                                    }
+                                </select>
+                                @if(showError){
+                                    <div class="text-danger">
+                                        Please choose a user.
+                                    </div>
+                                }
+                                <label for="groupInput">Reason</label>
+                                <input type="text" class="form-control" id="groupInput" [(ngModel)]="kickBanReason" name="kickBanReason">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-warning" (click)="manageUser(selectedUser, group.group, kickBanReason, 'kick')">Kick</button>
+                                <button type="button" class="btn btn-danger"  (click)="manageUser(selectedUser, group.group, kickBanReason, 'ban')">Ban</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+
+
+        }
+    }
 } @else{
     <p>what the helly</p>
 }

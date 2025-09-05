@@ -45,16 +45,16 @@
             <div class="col-10 min-vh-100 p-4 offset-2" id="chatContainer">
                 <p>group works!</p>
                 <div class="mb-4">
-                    @if (messagesJSON.length > 0) {
+                    @if (messagesJSON) {
                         @for(message of messagesJSON; track message.messageID){
                                 {{message.datetime | date:'medium'}} - ID: {{message.userID}}
                                 <li>
                                     {{message.message}}
                                 </li>
                             }
-                        } @else {
-                            <p>No messages yet.</p>
-                        }
+                    } @else {
+                        <p>No messages yet.</p>
+                    }
                 </div>
                 <button type="button" class="btn btn-primary" (click)="reset()">Reset</button>
             </div>
