@@ -68,4 +68,14 @@ export class Group implements OnInit {
     alert("All data has been reset.");
     this.router.navigate([''])
   }
+
+  leaveGroup(groupID: string, userID: string){
+    console.log(groupID)
+    this.http.delete(`http://localhost:3000/api/group/${groupID}/${userID}/leave`, {}).subscribe((res: any) => {
+      this.groupsJSON = res.groups.filter((group: any) => group.users.includes(userID));
+      this.userJSON = res.user;
+
+      localStorage.setItem("user", JSON.stringify(this.userJSON));
+    })
+  }
 }

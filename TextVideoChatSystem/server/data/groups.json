@@ -69,7 +69,8 @@
       "1",
       "2",
       "8",
-      "7"
+      "7",
+      "6"
     ],
     "bannedUsers": []
   },
@@ -121,7 +122,6 @@
     ],
     "users": [
       "1",
-      "6",
       "7",
       "8"
     ],
@@ -177,7 +177,6 @@
       }
     ],
     "users": [
-      "2",
       "1",
       "8"
     ],
@@ -203,9 +202,9 @@
       }
     ],
     "users": [
-      "2",
       "1",
-      "8"
+      "8",
+      "5"
     ],
     "bannedUsers": [
       {
@@ -217,5 +216,21 @@
         "reason": "racism what the helly?!?!?!?"
       }
     ]
+  },
+  {
+    "groupID": "gSep05_1846285",
+    "groupName": "asasdadada",
+    "channels": [
+      {
+        "channelID": "cSep05_18462811",
+        "channelName": "dadadadadad",
+        "messages": []
+      }
+    ],
+    "users": [
+      "1",
+      "8"
+    ],
+    "bannedUsers": []
   }
 ]
