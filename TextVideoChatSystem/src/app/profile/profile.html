@@ -166,6 +166,30 @@
                         <p>Channel List: </p>
                         @for(channel of getChannelById(group.group); track channel.channelID){
                             <li>{{channel.channelName}}</li>
+
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" [attr.data-bs-target]="'#deleteChannel' + channel.channelID" >
+                            X
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" [id]="'deleteChannel' + channel.channelID" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Remove {{channel.channelName}}?</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you wanted to remove {{channel.channelName}}? This action is irreversible!
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary" (click)="deleteChannel(group.group, channel.channelID)">Remove Channel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         }
                     </div>
                     <div class="col-6">

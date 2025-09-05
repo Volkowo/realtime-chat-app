@@ -240,5 +240,14 @@ closeModal(modalId: string) {
     })
   }
 
+  // Delete Channel
+  deleteChannel(groupID: string, channelID: string){
+    this.http.delete(`http://localhost:3000/api/group/${groupID}/channel/${channelID}/remove`, {}).subscribe((updatedGroup: any) => {
+      this.closeModal('deleteChannel' + channelID)
+        const index = this.groupsJSON.findIndex((group: any) => group.groupID == updatedGroup.groupID)
+        this.groupsJSON[index] = updatedGroup
+    })
+  }
+
 
 }

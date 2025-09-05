@@ -189,6 +189,23 @@ function route(app, path) {
         res.json({users, groups})
     })
 
+    // Delete Channel
+    app.delete('/api/group/:groupID/channel/:channelID/remove', function(req, res){
+        let groups = readJSON('../data/groups.json');
+        const groupID = req.params.groupID;
+        const channelID = req.params.channelID;
+
+        let group = groups.find(group => group.groupID == groupID);
+        group.channels = group.channels.filter(channel => 
+            channel.channelID != channelID
+        )
+
+
+        writeJSON('../data/groups.json', groups);
+
+        res.json(group)
+    })
+
     // Get users
     app.get('/api/users', function (req, res){
         const users = readJSON('../data/users.json');
