@@ -348,11 +348,13 @@ function route(app, path) {
     app.delete('/api/user/:userID/delete', (req, res) => {
         let users = readJSON('../data/users.json');
         let groups = readJSON('../data/groups.json');
+        let requests = readJSON('../data/joinRequest.json');
 
         const userID = req.params.userID;
 
         // Remove user from users.json
         users = users.filter(user => user.id !== userID);
+        requests = requests.filter(request => request.userID !== userID);
 
         // Remove user from all groups
         groups.forEach(group => {
@@ -365,8 +367,9 @@ function route(app, path) {
 
         writeJSON('../data/users.json', users);
         writeJSON('../data/groups.json', groups);
+        writeJSON('../data/joinRequest.json', requests);
 
-        res.json({users, groups});
+        res.json({users, groups, requests});
     });
 
 

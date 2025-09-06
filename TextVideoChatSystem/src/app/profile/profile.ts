@@ -399,6 +399,7 @@ setCurrentView(currentView: string){
     this.http.delete(`http://localhost:3000/api/user/${userID}/delete`).subscribe({
       next: (res: any) => {
         this.usersJSON = this.usersJSON.filter((user: any) => user.id !== userID);
+        this.requestsJSON = this.requestsJSON.filter((request: any) => request.userID !== userID);
         this.closeModal('deleteUser' + userID);
         alert("User deleted!");
       },
