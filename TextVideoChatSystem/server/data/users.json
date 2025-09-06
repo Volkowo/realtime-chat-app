@@ -44,6 +44,10 @@
       {
         "group": "gSep05_1846285",
         "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_2357059",
+        "role": "superAdmin"
       }
     ],
     "signedIn": false
@@ -85,10 +89,18 @@
     "groups": [
       {
         "group": "g3",
-        "role": "chatUser"
+        "role": "groupAdmin"
       },
       {
         "group": "g1",
+        "role": "chatUser"
+      },
+      {
+        "group": "g2",
+        "role": "chatUser"
+      },
+      {
+        "group": "g5",
         "role": "chatUser"
       }
     ],
@@ -132,6 +144,10 @@
       {
         "group": "gSep05_16302713",
         "role": "chatUser"
+      },
+      {
+        "group": "g2",
+        "role": "chatUser"
       }
     ],
     "signedIn": false
@@ -142,8 +158,7 @@
     "username": "userSix",
     "pass": "123",
     "roles": [
-      "chatUser",
-      "groupAdmin"
+      "chatUser"
     ],
     "groups": [
       {
@@ -168,15 +183,19 @@
     ],
     "groups": [
       {
-        "group": "g1",
-        "role": "groupAdmin"
-      },
-      {
         "group": "g2",
         "role": "groupAdmin"
       },
       {
         "group": "g3",
+        "role": "chatUser"
+      },
+      {
+        "group": "g1",
+        "role": "chatUser"
+      },
+      {
+        "group": "g4",
         "role": "chatUser"
       }
     ],
@@ -226,6 +245,10 @@
       },
       {
         "group": "gSep05_1846285",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_2357059",
         "role": "superAdmin"
       }
     ],

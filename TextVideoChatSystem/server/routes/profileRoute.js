@@ -2,6 +2,7 @@ const { readJSON, writeJSON } = require('../models/jsonHelper');
 const { Group } = require("../models/Groups");
 const { Channel } = require("../models/Channel");
 const { Banned } = require("../models/Banned");
+const {JoinRequest} = require("../models/JoinRequest");
 
 function route(app, path) {
     // ROUTE
@@ -274,6 +275,67 @@ function route(app, path) {
         res.json({users, groups})
     })
 
+    // request to join
+    app.post('/api/request/join/:groupID/:userID', function(req, res){
+        const groupID = req.params.groupID;
+        const userID = req.params.userID;
+        const reasonToJoin = req.body.reasonToJoin;
+        let requests = readJSON('../data/joinRequest.json');
+
+        // Making the ID for request
+        var date = new Date().toString()
+        var date_split = date.split(" ")
+        var dateForID = date_split[4].split(":").join("");
+        var requestID = `r${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+        const request = new JoinRequest(requestID, userID, groupID, reasonToJoin);
+        requests.push(request)
+
+        writeJSON('../data/joinRequest.json', requests)
+        res.json(requests)
+    })
+
+    //
+    app.put('/api/request/join/:groupID/:userID/:requestID/:action', function(req, res){
+        const groupID = req.params.groupID;
+        const userID = req.params.userID;
+        const requestID = req.params.requestID;
+        const action = req.params.action;
+        let users = readJSON('../data/users.json')
+        let groups = readJSON('../data/groups.json');
+        let requests = readJSON('../data/joinRequest.json');
+
+        let group = groups.find(group => group.groupID == groupID);
+        let user = users.find(user => user.id == userID);
+        let request = requests.find(request => request.requestID == requestID)
+
+        if (!group || !user || !request) {
+            return res.status(404).json({ error: "Group, user, or request not found" });
+        }
+
+        if(action == "approve"){
+            // Add group to user if not already there
+            if (!user.groups.some(g => g.group === groupID)) {
+                user.groups.push({
+                    group: groupID,
+                    role: "chatUser" 
+                });
+            }
+
+            // Add user to group if not already there
+            if (!group.users.includes(userID)) {
+                group.users.push(userID);
+            }
+        }
+        requests = requests.filter(request => request.requestID !== requestID)
+
+        writeJSON('../data/users.json', users);
+        writeJSON('../data/groups.json', groups);
+        writeJSON('../data/joinRequest.json', requests);
+
+        res.json({users, groups, requests})
+    })
+
     // Get users
     app.get('/api/users', function (req, res){
         const users = readJSON('../data/users.json');
@@ -284,6 +346,12 @@ function route(app, path) {
     app.get('/api/groups', function(req, res){
         const groups = readJSON('../data/groups.json');
         res.json(groups)
+    })
+
+    // get requests
+    app.get('/api/requests', function(req, res){
+        const requests = readJSON('../data/joinRequest.json');
+        res.json(requests)
     })
 }
 module.exports = { route };
