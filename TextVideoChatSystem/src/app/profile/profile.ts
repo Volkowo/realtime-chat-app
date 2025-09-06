@@ -6,6 +6,13 @@ import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { PromoteModal } from "../promote-modal/promote-modal";
+import { UserModel } from '../models/users';
+import { GroupModel } from '../models/groups';
+import { ChannelModel } from '../models/channels';
+import { MessageModel } from '../models/messages';
+import { JoinRequestModel } from '../models/joinRequest'; 
+import { BannedUserModel } from '../models/bannedUsers';   
+
 
 declare var bootstrap: any; 
 
@@ -42,21 +49,21 @@ export class Profile implements OnInit {
           this.userJSON = JSON.parse(this.user);
           console.log("USER: ", this.user)
           
-          this.http.get(`http://localhost:3000/api/users`).subscribe((users: any) => {
+          this.http.get<UserModel>(`http://localhost:3000/api/users`).subscribe((users) => {
             this.users = JSON.stringify(users);
             console.log("Users: ", this.users)
             this.usersJSON = users;
             console.log(this.usersJSON); 
           })
 
-          this.http.get(`http://localhost:3000/api/groups`).subscribe((groups: any) => {
+          this.http.get<GroupModel[]>(`http://localhost:3000/api/groups`).subscribe((groups) => {
             this.groups = JSON.stringify(groups);
             console.log("Groups: ", this.groups)
             this.groupsJSON = groups;
             console.log(this.groupsJSON); 
           })
 
-          this.http.get(`http://localhost:3000/api/requests`).subscribe((requests: any) => {
+          this.http.get<JoinRequestModel[]>(`http://localhost:3000/api/requests`).subscribe((requests) => {
             this.requestsJSON = requests;
             console.log(this.requestsJSON); 
           })

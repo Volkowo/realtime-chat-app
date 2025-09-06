@@ -48,6 +48,14 @@
       {
         "group": "gSep05_2357059",
         "role": "superAdmin"
+      },
+      {
+        "group": "gSep06_21101417",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep06_2113193",
+        "role": "superAdmin"
       }
     ],
     "signedIn": false
@@ -72,6 +80,10 @@
       },
       {
         "group": "gSep05_1007132",
+        "role": "groupAdmin"
+      },
+      {
+        "group": "gSep06_21101417",
         "role": "groupAdmin"
       }
     ],
@@ -226,6 +238,14 @@
       {
         "group": "gSep05_2357059",
         "role": "superAdmin"
+      },
+      {
+        "group": "gSep06_21101417",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep06_2113193",
+        "role": "superAdmin"
       }
     ],
     "signedIn": false
@@ -278,6 +298,14 @@
       },
       {
         "group": "gSep05_2357059",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep06_21101417",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep06_2113193",
         "role": "superAdmin"
       }
     ],

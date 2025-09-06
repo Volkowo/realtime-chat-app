@@ -169,7 +169,10 @@ function route(app, path) {
 
         // find user in users.json
         const user = users.find(user => user.id == userID)
-        user.groups.push({group: newGroupID, role: "groupAdmin"})
+        if (!user.roles.includes("superAdmin")) {
+            // Only give groupAdmin role if the creator is not already a superAdmin
+            user.groups.push({ group: newGroupID, role: "groupAdmin" });
+        }
         // const groupID = req.params.groupID;
 
         writeJSON('../data/users.json', users);

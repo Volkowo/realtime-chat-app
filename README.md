@@ -1,136 +1,334 @@
-# 3813ICT_Assignment
-One bad day away from hanging myself and this assignment is probably going to be that one bad day :fire:
-
-okay this readme is gonna be messy as hell until milestone 1 is officially done.
-
-# Links (Will be removed probably idk)
+## 3813ICT_Assignment by Jason Kenaz - s5330262
 ---
-- [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
-- [Markdown Basic Syntax](https://www.markdownguide.org/basic-syntax/)
+# Repository Organization
+## Folder Structure
+- `TextVideoChatSystem`: Root project folder containing the Angular frontend and Node.js backend.
+- `README.md`: Documentation file describing the project setup, architecture, and usage.
 
-# journal that list what I did
-<!-- this is for commit so i can add these in the description since im using github desktop teehee -->
-I will not remove this on the final version of README.md just as a prove that I did commit stuff incrementally.
-### 27 Aug 2025
--- 1st commit
-1. Created the project with `ng new TextVideoChatSystem`
-2. Created the frontend and backend; Angular and Node respectively.
-    - Angular (Frontend) is in the folder /TextVideoChatSystem/src
-    - Node (Backend) is in the folder /TextVideoChatSystem/server
-3. Added `.server/node_modules` in .gitignore so node_modules in server won't get pushed.
-4. Installed Bootstrap, Nodemon, Express, and CORS
-    - Bootstrap - Frontend: `npm install bootstrap --save`
-    - Nodemon - Backend: `npm install nodemon --save`
-    - CORS - Backend: `npm install cors --save`
-    - Express - Backend: `npm install express --save`
+### Frontend (`TextVideoChatSystem/src`)
+Handles the front-end of the website with Angular.
+- `/app`: Main Angular application folder containing all components, services, and models.
+- `/app/group`: Component for displaying groups; users can also leave groups from here.
+- `/app/login`: Component for handling user authentication.
+- `/app/models`: TypeScript interfaces for User, Group, Channel, and Message. (Scrapped mid-way through development as it was replaced with JSON (backend) and Local Storage (frontend) for data persistence.)
+- `/app/profile`: Component for managing groups, users, and channels depending on user roles.
+- `/app/promote-modal`: Modal component (used with `profile.html`) for promoting a user to an admin role.
+- `/app/register`: Component for creating a new user account.
+- `/app/services`: Intended for shared logic and API calls, but was not used in this implementation.
+- `TextVideoChatSystem/server`
+    - `/data`: JSON files for join requests, users, and groups.
+    - `/models`: Defines the data schema used by the server.
+    - `/routes`: Express.js route handlers defining API endpoints
+    - `/services`: Initially used to handle certain functions but was scrapped not long in the development.
+## Branching Strategy
+- `main`: Reserved for stable releases. Minor updates are occasionally pushed here, but most development happens on feature branches.
+- Branches are created for each page or major functionality. It will get merged once I feel said page/functionality is working properly.
+![screenshot of branches in GitHub repo](./Assets/Branch%20Screenshot.png)
+    - `Group_displayingChannelAndMessages`: Branch for the `group` component. I developed the feature to show individual group, channel, and messages in this branch.
+    - `migratingHardCodedData`: I was under the wrong assumption during this point of development and thought I needed Local Storage for data persistence.
+    - `adminView`: Branch for the `profile` component. This branch mostly focuses on the functionalities of a Super Admin.
+    - `superAdminView`: Second branch for the `profile` component. This branch mostly focuses on the functionalities of a Group Admin.
+    - `requestAndApproval`: Final branch for the `profile` component. This branch focuses on what a regular user can do on said page. Some of the UI overhauls were also done in this branch.
+## Commit/Update Frequency
+Commits are consistently pushed after completing a significant progress during the development.
 
--- 2nd commit
-<!-- okay my plan is gonna define the uhhhh models was it called? since thats the backbone of this whole project, so ill probably need that done first before I can actually do anything LOL -->
-1. Created /models inside /server. This is to define the structure of users, admins, group, channel, etc.
-2. Created the following in /models:
-    - `Channel.js` - Define the overall structure of channel
-    - `ChatUsers.js` - Define the overall structure of every user in the website.
-    - `Groups.js` - Define the overall structure of groups.
-3. Created /service inside /server, not sure what I'll use that for now (I know the purpose of the folder, I just dunno what services will be there). But better be safe than sorry.
+# Data Structures
+## Users
+### Client-Side
+users.ts
+```ts
+    export class UserModel {
+        constructor(
+            public id: string = "",
+            public email: string = "",
+            public username: string = "",
+            public pass: string = "",
+            public roles: any[] = [],
+            public groups: any[] = [],
+            public signedIn: boolean = false
+        ){}
+    }
 
--- 3rd commit
-1. Created component for login and group (for now)
-    - `ng generate component login`
-    - `ng generate component group`
-    Mostly I wanted this two for now so I can test backend/frontend stuff.
-2. Updated `angular.json` to include Bootstrap and `src/assets`.
-    - Any media will go to `src/assets`
-3. Added `server.js` in backend.
-    This handles the listening and all that.
-4. Worked through login component. 
-    So far I've only pasted what I have from my workshop, of course I will adjust as needed but at least I have my workshop code as a 'blueprint' of some sorts.
-5. Modified `app.routes.ts` to have proper routing.
+    export class LoggedInUser{
+        constructor(
+            public id: string = "",
+            public email: string = "",
+            public username: string = "",
+            public roles: any[] = [],
+            public groups: any[] = [],
+            public signedIn: boolean = false
+        ){}
+    }
+```
+Represents each user in the system.
+- `Roles` define the permissions for a user.
+- `groups` tracks which groups the user is a member of.
+- `LoggedInUser` is a safe version for storing client-side session info without the password.
 
--- 4th Commit
-1. Verify that login (frontend&backend) are both working.
-    I verified by running the whole thing and tried to login
-2. Added `<router-outlet />` to app.html since this one line is what displays the component. (I accidentally deleted them before whoops)
-3. Adjusted `login.ts` and `loginRoute.ts`.
-    On the old workshop I used to have a variable called `valid` inside the class `User`. However, when I created `ChatUsers` here I used `signedIn` instead. They serve the same purpose though.
-4. Added and imported `provideHttpClient` at `app.config.ts`
+### Server-side
+users.json
+```json
+[
+  {
+    "id": "1",
+    "email": "og@email.com",
+    "username": "super",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "superAdmin"
+    ],
+    "groups": [
+      {
+        "group": "g1",
+        "role": "superAdmin"
+      },
+      {
+        "group": "g2",
+        "role": "superAdmin"
+      },
+      {
+        "group": "g3",
+        "role": "superAdmin"
+      },
+      {
+        "group": "g4",
+        "role": "superAdmin"
+      },
+      {
+        "group": "g5",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_1007132",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_1626400",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_16302713",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_1846285",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_2357059",
+        "role": "superAdmin"
+      }
+    ],
+    "signedIn": false
+  },
+  {
+    "id": "2",
+    "email": "user2@email.com",
+    "username": "userTwo",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "groupAdmin"
+    ],
+    "groups": [
+      {
+        "group": "g1",
+        "role": "groupAdmin"
+      },
+      {
+        "group": "g2",
+        "role": "groupAdmin"
+      },
+      {
+        "group": "gSep05_1007132",
+        "role": "groupAdmin"
+      }
+    ],
+    "signedIn": false
+  }
+]
+```
+Stored in `users.json` on the server for authentication, authorization, and group management.
+## Groups
+### Front-end
+groups.ts
+```ts
+    import { ChannelModel } from './channels';
+    export class GroupModel{
+        constructor(
+            public groupID: string = "",
+            public groupName: string = "",
+            public channels: ChannelModel[] = [],
+            public users: string[] = []
+        ){}
+    }
+```
+Represents a group, which may contain multiple channels and users.
+- `channels` store all conversations inside the group.
+- `users` track the members of the group by their IDs.
 
-### 30 Aug 2025
--- 1st Commit
-1. Changed how login works.
-    - I initally set the validation w/ email and password, assignment wanted username and password instead so yeah I adjusted the validation as needed.
-2. Made the route to get groups on both front end and back end.
-    - Fetches the appropriate group (as in the group the user is in.).
-    - No front-end display yet though, that'll come soon.
+### Back-end
+groups.json
+```json
+[
+  {
+    "groupID": "g1",
+    "groupName": "TestGroup",
+    "channels": [
+      {
+        "channelID": "c1",
+        "channelName": "general",
+        "messages": [
+          {
+            "messageID": "m1",
+            "userID": "1",
+            "message": "Welcome to TestGroup!",
+            "datetime": "2025-09-03T12:00:00.000Z"
+          },
+          {
+            "messageID": "m2",
+            "userID": "2",
+            "message": "Hi everyone!",
+            "datetime": "2025-09-03T12:01:00.000Z"
+          }
+        ]
+      },
+      {
+        "channelID": "c2",
+        "channelName": "random",
+        "messages": [
+          {
+            "messageID": "m3",
+            "userID": "4",
+            "message": "Random thoughts here...",
+            "datetime": "2025-09-03T12:05:00.000Z"
+          }
+        ]
+      },
+      {
+        "channelID": "cSep04_22204219",
+        "channelName": "Ragebait",
+        "messages": []
+      }
+    ],
+    "users": [
+      "1",
+      "2",
+      "4",
+      "8",
+      "3",
+      "5",
+      "6",
+      "7"
+    ],
+    "bannedUsers": []
+  },
+  {
+    "groupID": "g2",
+    "groupName": "FunGroup",
+    "channels": [
+      {
+        "channelID": "c3",
+        "channelName": "general",
+        "messages": []
+      },
+      {
+        "channelID": "c4",
+        "channelName": "memes",
+        "messages": []
+      }
+    ],
+    "users": [
+      "1",
+      "2",
+      "8",
+      "7",
+      "6",
+      "5",
+      "3",
+      "Sep06_1903296"
+    ],
+    "bannedUsers": []
+  },
+  {
+    "groupID": "g3",
+    "groupName": "ProjectGroup",
+    "channels": [
+      {
+        "channelID": "c5",
+        "channelName": "projects",
+        "messages": [
+          {
+            "messageID": "m4",
+            "userID": "5",
+            "message": "Working on project phase 1",
+            "datetime": "2025-09-03T12:10:00.000Z"
+          }
+        ]
+      }
+    ],
+    "users": [
+      "1",
+      "5",
+      "8",
+      "7"
+    ],
+    "bannedUsers": []
+  }
+]
+```
+## Channels
+### Client-side
+channels.ts
+```ts
+import { MessageModel } from "./messages"
 
--- 2nd Commit
-1. Added unique ID for `channel`.
-    - I added a unique ID under the assumption that a channel across different group can have the same name. So we need an ID to actually get the correct channel.
-2. Populated `ChatUsers`, `Channels`, and `Groups`.
-    - Added some dummy data just so I can test the front end (which is what I'm gonna do after this.)
-3. Implemented front-end's model of user (`users.ts`) in `login.ts`.
-4. Added route for channel as well (backend only for now).
-    - I haven't tested them yet. That's what I'll do after this commit.
+export class ChannelModel{
+    constructor(
+        public channelID: string, 
+        public channelName: string, 
+        public messages: MessageModel[] = []
+    ){}
 
--- 3rd Commit
-1. Added list of groups in `group.html`
-    - Displays the groups the user is in.
-    - Clicking the group logs the id and also the channels of said group. The UI is coming next.
-2. Fixed dictionary values in `ChatUsers.js`
-    - Forgot that the dictionary for group/role pair uses **groupID** instead of **groupName**. So yeah I just fixed that real quick.
-3. Fixed routes in `channelRoute.js`
-    - Deleted the trailing slash(I think thats what it's called?) for one of the route. I forgot you don't need any trailing slash at the end of a route.
+    addMessage(messageID: string, userID: string, message: string){
+        this.messages.push(new MessageModel(messageID, userID, message))
+    }
+}
+```
+Represents a thread filled with conversations within a group. Stores an array of messages. 
 
--- 4th commit
-1. New branch and readme updated
-
--- 5th Commit
-1. Each group can display their respective channels now.
-    - Loop through group.channels to show channels per group.
-    - Fixes issue where all groups were showing the same channels.
-
-## 31 Aug 2025
--- 1st commit
-Started adding UI to the group page. Most of the UI are copied (and adjusted accordingly) from [Bootstrap Examples](https://getbootstrap.com/docs/5.3/examples/sidebars/).
-- All the group and channels are in the sidebars.
-- No messages yet (as in it's not being displayed yet.)
-- Will adjust the UI further before starting to work on messages.
-
--- 2nd Commit
-1. Added a new CSS file specifically for the one that I copied from Bootstrap (Named `groupBootstrap.css`)
-2. Modified `group.ts` so it can read `groupBootstrap.css` and `group.css`.
-    - I just changed `styleUrl` to `styleUrls` and made whatever inside into an array.
-3. Messages are now displayed when we click on a channel.
-    - Changed the dropdown in `group.html` to accordion so only one dropdown can be active at the same time.
-    - Modifed `channelRoute.js` so that it actually passes the messages of a channel.
-    - Used LocalStorage to store the selected GroupID and ChannelID in `group.ts`.
-    - Modified `group.html` (obviously) so it shows the messages.
-
-## 1 Sept 2025
-Migrated hard-coded stuff on back-end to front-end so I can integrate it with Local Storage.
-- Made models on front-end. It mirrors what I have on the back-end.
-- Made 2 services: `data.ts` and `seed.ts`. The one I'll use for now is `seed.ts` which will seed the initial data to Local Storage.
-
-## 2 Sept 2025
--- 1st commit
-1. Finished migrating the models.
-2. Updated both `login.ts` and `group.ts` to import the related models.
-3. Fixed how logout works in `group.ts`.
-    - Initially I made it so that everytime the user logs out, it just clears the whole Local Storage. But since I have actual data now I can't do that.
-    - I did add a `reset()` function that does that in case I need it for whatever reason.
-4. Ensures that the user cannot open 'Group' before they are logged in.
-
--- 2nd commit
-1. Added the component `Profile`.
-    - Very very rough UI for now. Displays username and email.
-    - Moved log out button from `Group` to `Profile`.
-2. Slight changes on `group.html`.
-    - Removed the `logout()` function.
-    - Added some stuff here and there but it still looks the same overall.
-
--- 3rd Commit
-Fixed seeding, again. I realized that I need the models on **both** front-end and back-end to mirror each other. Future commits is gonna be about admin page since that's what this branch is supposed to be about.
-
-
+### Server-side
+Channels are included together with group.
+```json
+    {
+    "channelID": "c5",
+    "channelName": "projects",
+    "messages": [
+        {
+        "messageID": "m4",
+        "userID": "5",
+        "message": "Working on project phase 1",
+        "datetime": "2025-09-03T12:10:00.000Z"
+        }
+    ]
+    }
+```
+## Messages
+### Front-end
+messages.ts
+```ts
+    export class MessageModel {
+        constructor(
+            public messageID: string,
+            public userID: string,
+            public message: string,
+            public datetime: Date = new Date()
+        ) {}
+    }
+```
+Represents a single message in a channel. userID associates the message with the sender.
+For the 1st phase of the assignment, all messages are hard-coded.
 # Routes
 | Route Name | Parameter | Return Values | Purpose |
 |---|---|---|---|
