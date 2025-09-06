@@ -15,10 +15,16 @@ import { UserModel } from '../models/users';
 export class Login implements OnInit {
   username = "";
   pass = "";
+  loggedInUser: any
 
   constructor(private router: Router, private http: HttpClient){}
 
   ngOnInit(){
+    this.loggedInUser = localStorage.getItem("user");
+    if(this.loggedInUser){
+      this.router.navigate(['/profile'])
+    }
+    console.log(this.loggedInUser)
   }
 
   resetInput(){

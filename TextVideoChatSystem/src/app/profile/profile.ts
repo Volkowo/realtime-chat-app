@@ -181,6 +181,10 @@ closeModal(modalId: string) {
       console.log("group index", groupIndex)
       this.groupsJSON[groupIndex] = updatedGroup
 
+      this.requestsJSON = this.requestsJSON.filter((r: any) => 
+        !(r.userID === updatedUser.id && r.groupID === updatedGroup.groupID)
+      );
+
       this.closeModal('addUser' + groupID)
     })
   }

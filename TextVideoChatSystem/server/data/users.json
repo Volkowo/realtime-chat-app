@@ -153,6 +153,10 @@
       {
         "group": "g2",
         "role": "chatUser"
+      },
+      {
+        "group": "gSep05_1626400",
+        "role": "chatUser"
       }
     ],
     "signedIn": false
