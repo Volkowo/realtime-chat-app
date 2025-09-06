@@ -136,6 +136,10 @@
       {
         "group": "gSep05_16302713",
         "role": "chatUser"
+      },
+      {
+        "group": "g2",
+        "role": "chatUser"
       }
     ],
     "signedIn": false

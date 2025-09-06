@@ -33,7 +33,8 @@ export class Profile implements OnInit {
   selectedUser: string = "";
   applyGroup: string = "";
   reasonToJoin: string = "";
-  showError: boolean = false
+  showError: boolean = false;
+  currentView: string = "";
 
   ngOnInit() {
       this.user = (localStorage.getItem("user"))
@@ -72,6 +73,10 @@ closeModal(modalId: string) {
     const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
     modal.hide();
   }
+}
+
+setCurrentView(currentView: string){
+  this.currentView = currentView;
 }
   
   logOut(){
@@ -158,7 +163,7 @@ closeModal(modalId: string) {
     return this.usersJSON.filter((user: any) => listOfUsers.includes(user.id))
   }
 
-  // Check if user is a chatUser or not
+  // Check if user FROM AN ARRAY is a chatUser or not
   checkGroupAdminRole(user: any){
     // console.log("User groups:", user.groups);
     const nonAdmin = user.groups.filter((group: any) => group.role == "chatUser");
@@ -166,12 +171,24 @@ closeModal(modalId: string) {
     return nonAdmin;
   }
 
-  // Check if user is a superAdmin or not
+  // Check if user FROM AN ARRAY is a superAdmin or not
   checkSuperAdminRole(user: any){
     // console.log("User groups:", user.groups);
     const nonSuperAdmin = user.groups.filter((group: any) => group.role != "superAdmin");
     // console.log(nonSuperAdmin);
     return nonSuperAdmin;
+  }
+
+  isUserSuperAdmin(): boolean {
+    return this.userJSON.roles.includes('superAdmin');
+  }
+
+  isUserGroupAdmin(): boolean {
+    return this.userJSON.roles.includes('groupAdmin');
+  }
+
+  isUserChatUser(): boolean {
+    return this.userJSON.roles.includes('chatUser');
   }
 
   // check if user is superadmin and/or groupadmin
@@ -261,7 +278,7 @@ closeModal(modalId: string) {
       this.usersJSON = res.users;
       this.groupsJSON = res.groups;
 
-      // update the logged-in user from fresh usersJSON
+      // update the logged-in user
       const updatedUser = this.usersJSON.find((u: any) => u.id == this.userJSON.id);
       if (updatedUser) {
         this.userJSON = updatedUser;
@@ -331,8 +348,22 @@ closeModal(modalId: string) {
         this.applyGroup = ""
         this.reasonToJoin = ""
       })
-      
     }
+  }
+
+  manageRequest(groupID: string, userID: string, requestID: string, action: string){
+    this.http.put(`http://localhost:3000/api/request/join/${groupID}/${userID}/${requestID}/${action}`, {}).subscribe((res: any) => {
+      this.usersJSON = res.users;
+      this.groupsJSON = res.groups;
+      this.requestsJSON = res.requests;
+
+      const updatedUser = this.usersJSON.find((u: any) => u.id == this.userJSON.id);
+      if (updatedUser) {
+        this.userJSON = updatedUser;
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+
+    })
   }
 
 
