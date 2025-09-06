@@ -93,7 +93,7 @@
       },
       {
         "group": "g1",
-        "role": "chatUser"
+        "role": "groupAdmin"
       },
       {
         "group": "g2",
@@ -183,24 +183,49 @@
     "pass": "123",
     "roles": [
       "chatUser",
-      "groupAdmin"
+      "groupAdmin",
+      "superAdmin"
     ],
     "groups": [
       {
+        "group": "g1",
+        "role": "superAdmin"
+      },
+      {
         "group": "g2",
-        "role": "groupAdmin"
+        "role": "superAdmin"
       },
       {
         "group": "g3",
-        "role": "chatUser"
-      },
-      {
-        "group": "g1",
-        "role": "chatUser"
+        "role": "superAdmin"
       },
       {
         "group": "g4",
-        "role": "chatUser"
+        "role": "superAdmin"
+      },
+      {
+        "group": "g5",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_1007132",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_1626400",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_16302713",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_1846285",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep05_2357059",
+        "role": "superAdmin"
       }
     ],
     "signedIn": false
@@ -256,6 +281,34 @@
         "role": "superAdmin"
       }
     ],
+    "signedIn": false
+  },
+  {
+    "id": "Sep06_1903296",
+    "email": "gooner@email.com",
+    "username": "bruh",
+    "pass": "123",
+    "roles": [
+      "chatUser",
+      "groupAdmin"
+    ],
+    "groups": [
+      {
+        "group": "g2",
+        "role": "groupAdmin"
+      }
+    ],
+    "signedIn": false
+  },
+  {
+    "id": "Sep06_19123119",
+    "email": "asdf@email.com",
+    "username": "walahi",
+    "pass": "123",
+    "roles": [
+      "chatUser"
+    ],
+    "groups": [],
     "signedIn": false
   }
 ]

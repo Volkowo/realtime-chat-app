@@ -259,12 +259,12 @@ setCurrentView(currentView: string){
     console.log("Button check", user);
     console.log("what is group: ", group)
 
-    if(this.newChannel){
+    
       this.http.put(`http://localhost:3000/api/user/${user.id}/group/${group.group}/role`, {role: newRole}).subscribe((updatedUser: any) => {
         const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
         this.usersJSON[index] = updatedUser
       })
-    }
+    
   }
 
   // Promote to SuperAdmin
@@ -272,6 +272,8 @@ setCurrentView(currentView: string){
       this.http.put(`http://localhost:3000/api/user/${userID}/superAdminPromotion`, {}).subscribe((updatedUser: any) => {
         const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
         this.usersJSON[index] = updatedUser
+
+        this.closeModal("manageUser" + userID)
     })
   }
 
@@ -287,6 +289,8 @@ setCurrentView(currentView: string){
       if (updatedUser) {
         this.userJSON = updatedUser;
         localStorage.setItem("user", JSON.stringify(updatedUser));
+
+        this.closeModal("deleteGroup" + groupID)
       }
     })
   }
@@ -366,7 +370,6 @@ setCurrentView(currentView: string){
         this.userJSON = updatedUser;
         localStorage.setItem("user", JSON.stringify(updatedUser));
       }
-
     })
   }
 

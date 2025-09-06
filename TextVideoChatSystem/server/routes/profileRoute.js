@@ -2,6 +2,7 @@ const { readJSON, writeJSON } = require('../models/jsonHelper');
 const { Group } = require("../models/Groups");
 const { Channel } = require("../models/Channel");
 const { Banned } = require("../models/Banned");
+const { JoinRequest } = require("../models/JoinRequest");
 
 function route(app, path) {
     // ROUTE
@@ -350,6 +351,12 @@ function route(app, path) {
     app.get('/api/groups', function(req, res){
         const groups = readJSON('../data/groups.json');
         res.json(groups)
+    })
+
+    // get request
+    app.get('/api/requests', function(req, res){
+        const requests = readJSON('../data/joinRequest.json');
+        res.json(requests)
     })
 }
 module.exports = { route };
