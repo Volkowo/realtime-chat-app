@@ -42,7 +42,6 @@
     "users": [
       "1",
       "2",
-      "4",
       "8",
       "3",
       "5",
@@ -227,10 +226,6 @@
       {
         "userID": "3",
         "reason": "stinky"
-      },
-      {
-        "userID": "4",
-        "reason": "racism what the helly?!?!?!?"
       }
     ]
   },

@@ -10,3 +10,7 @@
 #promoteButtons{
     align-items: center;
 }
+
+#sidebarMenu {
+  z-index: 1;
+}

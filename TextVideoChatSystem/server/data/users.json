@@ -119,23 +119,6 @@
     "signedIn": false
   },
   {
-    "id": "4",
-    "email": "user4@email.com",
-    "username": "userFour",
-    "pass": "123",
-    "roles": [
-      "chatUser",
-      "groupAdmin"
-    ],
-    "groups": [
-      {
-        "group": "g1",
-        "role": "groupAdmin"
-      }
-    ],
-    "signedIn": false
-  },
-  {
     "id": "5",
     "email": "user5@email.com",
     "username": "userFive",
@@ -371,17 +354,6 @@
         "role": "superAdmin"
       }
     ],
-    "signedIn": false
-  },
-  {
-    "id": "Sep06_19123119",
-    "email": "asdf@email.com",
-    "username": "walahi",
-    "pass": "123",
-    "roles": [
-      "chatUser"
-    ],
-    "groups": [],
     "signedIn": false
   }
 ]

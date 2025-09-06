@@ -380,5 +380,33 @@ setCurrentView(currentView: string){
     })
   }
 
+  deleteAccount() {
+    const userID = this.userJSON.id;
+    this.http.delete(`http://localhost:3000/api/user/${userID}/delete`).subscribe({
+      next: (res: any) => {
+        // Clear localStorage and redirect to login
+        localStorage.removeItem("user");
+        this.closeModal('deleteAccount')
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error("Failed to delete account:", err);
+      }
+    });
+  }
+
+  deleteUser(userID: string){
+    this.http.delete(`http://localhost:3000/api/user/${userID}/delete`).subscribe({
+      next: (res: any) => {
+        this.usersJSON = this.usersJSON.filter((user: any) => user.id !== userID);
+        this.closeModal('deleteUser' + userID);
+        alert("User deleted!");
+      },
+      error: (err) => {
+        console.error("Failed to delete account:", err);
+      }
+    });
+  }
+
 
 }

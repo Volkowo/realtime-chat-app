@@ -344,6 +344,32 @@ function route(app, path) {
         res.json({users, groups, requests})
     })
 
+    // delete user
+    app.delete('/api/user/:userID/delete', (req, res) => {
+        let users = readJSON('../data/users.json');
+        let groups = readJSON('../data/groups.json');
+
+        const userID = req.params.userID;
+
+        // Remove user from users.json
+        users = users.filter(user => user.id !== userID);
+
+        // Remove user from all groups
+        groups.forEach(group => {
+            group.users = group.users.filter(id => id !== userID);
+            // Also remove from bannedUsers if needed
+            if (group.bannedUsers) {
+                group.bannedUsers = group.bannedUsers.filter(ban => ban.userID !== userID);
+            }
+        });
+
+        writeJSON('../data/users.json', users);
+        writeJSON('../data/groups.json', groups);
+
+        res.json({users, groups});
+    });
+
+
     // Get users
     app.get('/api/users', function (req, res){
         const users = readJSON('../data/users.json');
