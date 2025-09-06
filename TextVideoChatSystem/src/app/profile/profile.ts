@@ -276,7 +276,7 @@ setCurrentView(currentView: string){
 
   // Promote to SuperAdmin
   promoteToSuperAdmin(userID: any){
-      this.http.put(`http://localhost:3000/api/user/${userID}/superAdminPromotion`, {}).subscribe((updatedUser: any) => {
+      this.http.put<UserModel>(`http://localhost:3000/api/user/${userID}/superAdminPromotion`, {}).subscribe((updatedUser) => {
         const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
         this.usersJSON[index] = updatedUser
 
