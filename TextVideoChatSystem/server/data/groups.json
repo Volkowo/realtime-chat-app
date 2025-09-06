@@ -37,6 +37,11 @@
         "channelID": "cSep04_22204219",
         "channelName": "Ragebait",
         "messages": []
+      },
+      {
+        "channelID": "cSep06_16073514",
+        "channelName": "bestFriendRemix",
+        "messages": []
       }
     ],
     "users": [
@@ -46,7 +51,8 @@
       "8",
       "3",
       "5",
-      "6"
+      "6",
+      "7"
     ],
     "bannedUsers": []
   },
@@ -71,7 +77,8 @@
       "8",
       "7",
       "6",
-      "5"
+      "5",
+      "3"
     ],
     "bannedUsers": []
   },

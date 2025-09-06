@@ -342,8 +342,8 @@ setCurrentView(currentView: string){
     } else {
       this.showError = false
 
-    this.http.post(`http://localhost:3000/api/request/join/${groupID}/${userID}`, {reasonToJoin}).subscribe((res: any) => {
-        this.requestsJSON = res.requests;
+    this.http.post(`http://localhost:3000/api/request/join/${groupID}/${userID}`, {reasonToJoin}).subscribe((requests: any) => {
+        this.requestsJSON = requests;
 
         this.applyGroup = ""
         this.reasonToJoin = ""

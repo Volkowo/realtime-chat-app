@@ -89,10 +89,18 @@
     "groups": [
       {
         "group": "g3",
-        "role": "chatUser"
+        "role": "groupAdmin"
       },
       {
         "group": "g1",
+        "role": "chatUser"
+      },
+      {
+        "group": "g2",
+        "role": "chatUser"
+      },
+      {
+        "group": "g5",
         "role": "chatUser"
       }
     ],
@@ -175,15 +183,19 @@
     ],
     "groups": [
       {
-        "group": "g1",
-        "role": "groupAdmin"
-      },
-      {
         "group": "g2",
         "role": "groupAdmin"
       },
       {
         "group": "g3",
+        "role": "chatUser"
+      },
+      {
+        "group": "g1",
+        "role": "chatUser"
+      },
+      {
+        "group": "g4",
         "role": "chatUser"
       }
     ],
