@@ -6,3 +6,7 @@
     display: block;
     color: red
 }
+
+#promoteButtons{
+    align-items: center;
+}

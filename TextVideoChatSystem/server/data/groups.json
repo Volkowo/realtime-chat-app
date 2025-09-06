@@ -37,6 +37,11 @@
         "channelID": "cSep04_22204219",
         "channelName": "Ragebait",
         "messages": []
+      },
+      {
+        "channelID": "cSep06_16073514",
+        "channelName": "bestFriendRemix",
+        "messages": []
       }
     ],
     "users": [
@@ -46,7 +51,8 @@
       "8",
       "3",
       "5",
-      "6"
+      "6",
+      "7"
     ],
     "bannedUsers": []
   },
@@ -70,7 +76,9 @@
       "2",
       "8",
       "7",
-      "6"
+      "6",
+      "5",
+      "3"
     ],
     "bannedUsers": []
   },
@@ -225,6 +233,22 @@
       {
         "channelID": "cSep05_18462811",
         "channelName": "dadadadadad",
+        "messages": []
+      }
+    ],
+    "users": [
+      "1",
+      "8"
+    ],
+    "bannedUsers": []
+  },
+  {
+    "groupID": "gSep05_2357059",
+    "groupName": "PLEASE WORK",
+    "channels": [
+      {
+        "channelID": "cSep05_23570516",
+        "channelName": "maimai",
         "messages": []
       }
     ],

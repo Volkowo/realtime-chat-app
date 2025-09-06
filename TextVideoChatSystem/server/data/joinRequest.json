@@ -8,9 +8,16 @@
   },
   {
     "requestID": "5",
-    "userID": "8",
+    "userID": "8",S
     "groupID": "g4",
     "reasonToJoin": "Looking for study partners.",
     "datetime": "2025-09-06T08:10:00.000Z"
+  },
+  {
+    "requestID": "rSep06_1104176",
+    "userID": "6",
+    "groupID": "gSep05_1626400",
+    "reasonToJoin": "",
+    "datetime": "2025-09-06T01:04:17.006Z"
   }
 ]

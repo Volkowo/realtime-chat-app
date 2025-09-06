@@ -278,8 +278,6 @@ function route(app, path) {
         res.json({users, groups})
     })
 
-<<<<<<< Updated upstream
-=======
     // request to join
     app.post('/api/request/join/:groupID/:userID', function(req, res){
         const groupID = req.params.groupID;
@@ -342,7 +340,6 @@ function route(app, path) {
         res.json({users, groups, requests})
     })
 
->>>>>>> Stashed changes
     // Get users
     app.get('/api/users', function (req, res){
         const users = readJSON('../data/users.json');
