@@ -2,6 +2,7 @@ const { readJSON, writeJSON } = require('../models/jsonHelper');
 
 function route(app, path) {
     // ROUTE
+    // get user's group list
     app.get('/api/groups/:userID', function(req, res) {
         const userID = req.params.userID;
         const groups = readJSON('../data/groups.json')
