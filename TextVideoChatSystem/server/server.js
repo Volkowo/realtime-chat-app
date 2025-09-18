@@ -1,3 +1,7 @@
+const { ObjectId, MongoClient } = require('mongodb');
+const dbName = "assignment";
+const client = new MongoClient('mongodb://localhost:27017');
+
 var express = require('express'); //used for routing
 var app = express();
 
@@ -9,24 +13,32 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
-app.use(bodyParser.json());
-
 const loginRoute = require('./routes/loginRoute');
 const groupRoute = require('./routes/groupRoute');
 const channelRoute = require('./routes/channelRoute');
 const profileRoute = require('./routes/profileRoute')
-loginRoute.route(app); // Pass the app instance and path
-groupRoute.route(app);
-channelRoute.route(app);
-profileRoute.route(app);
 
-// app.use(express.static(__dirname + '../dist/week4/browser'));
+async function main(){
+    await client.connect();
+    const db = client.db(dbName)
 
+    // collection(s)
+    const collectionUsers = db.collection("users");
 
-let server = http.listen(3000, function() {
-    let host = server.address().address;
-    let port = server.address().port;
-    console.log("Server is running (i think).");
-    console.log(`Server listening on: ${host} || port: ${port}`);
-})
+    // routes
+    loginRoute.route(app); // Pass the app instance and path
+    groupRoute.route(app);
+    channelRoute.route(app);
+    profileRoute.route(app);
+
+    // listen
+    let server = http.listen(3000, function() {
+        let host = server.address().address;
+        let port = server.address().port;
+        console.log("Server is running (i think).");
+        console.log(`Server listening on: ${host} || port: ${port}`);
+    })
+}
+
+main();
 

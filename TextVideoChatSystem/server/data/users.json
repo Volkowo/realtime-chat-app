@@ -56,6 +56,14 @@
       {
         "group": "gSep06_2113193",
         "role": "superAdmin"
+      },
+      {
+        "group": "gSep11_09093619",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep11_0910496",
+        "role": "superAdmin"
       }
     ],
     "signedIn": false
@@ -85,6 +93,10 @@
       {
         "group": "gSep06_21101417",
         "role": "groupAdmin"
+      },
+      {
+        "group": "gSep11_09093619",
+        "role": "chatUser"
       }
     ],
     "signedIn": false
@@ -142,6 +154,10 @@
       },
       {
         "group": "g2",
+        "role": "chatUser"
+      },
+      {
+        "group": "gSep11_09093619",
         "role": "chatUser"
       }
     ],
@@ -229,66 +245,13 @@
       {
         "group": "gSep06_2113193",
         "role": "superAdmin"
-      }
-    ],
-    "signedIn": false
-  },
-  {
-    "id": "8",
-    "email": "user8@email.com",
-    "username": "userEight",
-    "pass": "123",
-    "roles": [
-      "chatUser",
-      "superAdmin"
-    ],
-    "groups": [
+      },
       {
-        "group": "g1",
+        "group": "gSep11_09093619",
         "role": "superAdmin"
       },
       {
-        "group": "g2",
-        "role": "superAdmin"
-      },
-      {
-        "group": "g3",
-        "role": "superAdmin"
-      },
-      {
-        "group": "g4",
-        "role": "superAdmin"
-      },
-      {
-        "group": "g5",
-        "role": "superAdmin"
-      },
-      {
-        "group": "gSep05_1007132",
-        "role": "superAdmin"
-      },
-      {
-        "group": "gSep05_1626400",
-        "role": "superAdmin"
-      },
-      {
-        "group": "gSep05_16302713",
-        "role": "superAdmin"
-      },
-      {
-        "group": "gSep05_1846285",
-        "role": "superAdmin"
-      },
-      {
-        "group": "gSep05_2357059",
-        "role": "superAdmin"
-      },
-      {
-        "group": "gSep06_21101417",
-        "role": "superAdmin"
-      },
-      {
-        "group": "gSep06_2113193",
+        "group": "gSep11_0910496",
         "role": "superAdmin"
       }
     ],
@@ -351,6 +314,14 @@
       },
       {
         "group": "gSep06_2113193",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep11_09093619",
+        "role": "superAdmin"
+      },
+      {
+        "group": "gSep11_0910496",
         "role": "superAdmin"
       }
     ],
