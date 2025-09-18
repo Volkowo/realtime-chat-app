@@ -1,5 +1,5 @@
 const { ObjectId, MongoClient } = require('mongodb');
-const dbName = "assignment";
+const dbName = "assignmentSF";
 const client = new MongoClient('mongodb://localhost:27017');
 
 var express = require('express'); //used for routing
