@@ -1,8 +1,8 @@
 const {MongoClient} = require('mongodb');
-const {addUser} = require('./addUsers');
-const {addChannel} = require('./addChannel');
+const {addUsers} = require('./addUsers');
+const {addChannels} = require('./addChannel');
 const {addMessages} = require('./addMessages');
-const addJoinRequest = require('./addJoinRequest')
+const {addJoinRequest} = require('./addJoinRequest')
 const {addGroups} = require('./addGroups');
 const {addMembership} = require('./addMembership');
 
@@ -21,12 +21,12 @@ async function main(){
     const groupCollection = db.collection('group');
     const channelCollection = db.collection('channel');
 
-    await addUser(userCollection);
+    await addUsers(userCollection);
     await addMessages(messageCollection);
     await addMembership(membershipCollection);
     await addJoinRequest(requestCollection);
     await addGroups(groupCollection);
-    await addChannel(channelCollection);
+    await addChannels(channelCollection);
 
     return 'done..?';
 }

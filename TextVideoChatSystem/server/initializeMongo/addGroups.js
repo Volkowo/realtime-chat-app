@@ -177,3 +177,5 @@ async function addGroups(collection){
     )
 }
 
+module.exports = {addGroups}
+
