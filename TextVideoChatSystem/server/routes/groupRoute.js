@@ -1,47 +1,51 @@
 const { readJSON, writeJSON } = require('../models/jsonHelper');
 
-function route(app, path) {
+function route(app, membershipCollection, groupCollection) {
     // ROUTE
+
     // get user's group list
-    app.get('/api/groups/:userID', function(req, res) {
+    app.get('/api/groups/:userID', async function(req, res) {
         const userID = req.params.userID;
-        const groups = readJSON('../data/groups.json')
         console.log("userID (backend): ", userID)
         if (!userID) {
             return res.sendStatus(400);
         }
 
-        const userGroup = groups.filter(group => group.users.includes(userID));
-        if(userGroup){
-            console.log("GROUPS (backend):", userGroup);
-            res.json(userGroup)
+        const groupsUserIn = await membershipCollection.find({userID: userID}).toArray()
+        const groupIDs = groupsUserIn.map(group => group.groupID);
+        console.log("BACKEND LIST OF GROUP ID: ", groupIDs);
+
+        const groupDetails = await groupCollection.find({
+            groupID : {$in: groupIDs}
+        }).toArray();
+
+        console.log("GROUP DETAILS: ", groupDetails);
+
+        if(groupDetails){
+            res.json(groupDetails)
         } else{
             console.log("no grpups..?")
         }
     })
 
     // Leave Group
-    app.delete('/api/group/:groupID/:userID/leave', function(req, res){
-        let users = readJSON('../data/users.json')
-        let groups = readJSON('../data/groups.json');
+    app.delete('/api/group/:groupID/:userID/leave', async function(req, res){
         const groupID = req.params.groupID;
         const userID = req.params.userID;
 
-        let group = groups.find(group => group.groupID == groupID);
-        let user = users.find(user => user.id == userID);
+        const membership = await membershipCollection.deleteOne({groupID: groupID, userID: userID})
 
-        group.users = group.users.filter(user => 
-            user !== userID
-        )
+        const groupsUserIn = await membershipCollection.find({userID: userID}).toArray()
+        const groupIDs = groupsUserIn.map(group => group.groupID);
+        console.log("BACKEND LIST OF GROUP ID: ", groupIDs);
 
-        user.groups = user.groups.filter(group =>
-            group.group !== groupID
-        )
+        const groupDetails = await groupCollection.find({
+            groupID : {$in: groupIDs}
+        }).toArray();
 
-        writeJSON('../data/users.json', users);
-        writeJSON('../data/groups.json', groups);
         
-        res.json({user, groups})
+        res.json(groupDetails)
     })
 }
+
 module.exports = { route };
