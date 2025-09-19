@@ -37,6 +37,7 @@ function route(app, userCollection) {
         var userID = createID();
 
         const user = await userCollection.findOne( {username: username.toLowerCase() });
+        console.log(user);
 
         if(user){
             res.json({register: false})

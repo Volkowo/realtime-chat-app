@@ -23,10 +23,17 @@ async function main(){
     const db = client.db(dbName)
 
     // collection(s)
-    const collectionUsers = db.collection("users");
+    const userCollection = db.collection('users');
+    const messageCollection = db.collection('message');
+    const membershipCollection = db.collection('membership');
+    const requestCollection = db.collection('request');
+    const groupCollection = db.collection('group');
+    const channelCollection = db.collection('channel');
+
+    // console.log(userCollection)
 
     // routes
-    loginRoute.route(app); // Pass the app instance and path
+    loginRoute.route(app, userCollection); 
     groupRoute.route(app);
     channelRoute.route(app);
     profileRoute.route(app);
