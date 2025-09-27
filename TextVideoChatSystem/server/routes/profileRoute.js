@@ -4,12 +4,11 @@ const { Channel } = require("../models/Channel");
 const { Banned } = require("../models/Banned");
 const { JoinRequest } = require("../models/JoinRequest");
 
-function route(app, path) {
+function route(app, path, userCollection, membershipCollection, groupCollection, requestCollection, channelCollection) {
     // ROUTE
+
     // promote to group admin
-    app.put('/api/user/:userID/group/:groupID/role', function (req, res) {
-        const users = readJSON('../data/users.json');
-        const groups = readJSON('../data/groups.json');
+    app.put('/api/user/:userID/group/:groupID/role', async function (req, res) {
         if (!req.body) {
             return res.sendStatus(400);
         }
@@ -18,104 +17,113 @@ function route(app, path) {
         const groupID = req.params.groupID;
         const newRole = req.body.role;
 
-        const user = users.find(user => user.id == userID)
-        console.log(user)
-        const group = user.groups.find(group => group.group == groupID);
-        console.log(group)
+        const user = await userCollection.find({id: userID})
 
-        group.role = newRole
+        // update membership
+        await membershipCollection.updateOne(
+            {userID: userID, groupID: groupID},
+            { $set: {
+                role: "superAdmin"
+            }}
+        )
 
         if(!user.roles.includes(newRole)){
-            user.roles.push(newRole)
+            await userCollection.updateOne(
+                {id: userID},
+                {$push: {
+                    roles: newRole
+                }}
+            )
         }
 
-        writeJSON('../data/users.json', users)
+        const updatedUsers = await userCollection.findOne({}).toArray();
 
-        res.json(user)
+        res.json(updatedUsers)
     });
 
     // Promote to super admin
-    app.put('/api/user/:userID/superAdminPromotion', function (req, res){
-        const users = readJSON('../data/users.json');
-        const groups = readJSON('../data/groups.json');
+    app.put('/api/user/:userID/superAdminPromotion', async function (req, res){
         if (!req.body) {
             return res.sendStatus(400);
         }
 
         const userID = req.params.userID;
-        // find user in users.json
-        const user = users.find(user => user.id == userID)
+        // find user in Mongo
+        const user = await userCollection.find({id: userID})
 
-        // pushing groupID into an array
-        idOfGroups = [];
-        for (let i = 0; i < groups.length; i++) {
-            idOfGroups.push(groups[i].groupID)
+        // get groupID from groupCollection
+        const groups = await groupCollection.find({}).toArray();
+        const groupID = groups.map(group => group.groupID);
+
+        // Adding groupID + userID to Membership
+        for (const group of groupID){
+            await membershipCollection.updateOne(
+                {userID: userID, groupID: group.groupID},
+                {$set: {
+                    role: "superAdmin"
+                }},
+                // upsert means insert to collection if the userID+groupID doesn't exist in the collection (I think).
+                {upsert: true}
+            )
         }
-
-        // adding user to users in groups.json
-        for (let i = 0; i < groups.length; i++) {
-            // adding user if he's not in the group
-            if(!groups[i].users.includes(userID)){
-                groups[i].users.push(userID)
-            }
-        }
-
-        // adding group to users.json
-        // empty the groups[] -> re-add it? no nevermind I can just use map
-        user.groups = groups.map(group => ({group: group.groupID, role: "superAdmin"}))
 
         // add to roles in users.json
         if(!user.roles.includes('superAdmin')){
-            user.roles.push('superAdmin')
+            await userCollection.updateOne(
+                {id: userID},
+                {$push: {
+                    roles: "superAdmin"
+                }}
+            )
         }
 
-        writeJSON('../data/users.json', users);
-        writeJSON('../data/groups.json', groups);
+        // errr get updated user and membership..?
+        const updatedUser = await userCollection.find({}).toArray();
+        const updatedMembership = await membershipCollection.find({}).toArray();
 
-        res.json(user)
+        res.json({updatedUser, updatedMembership})
     })
 
     // Add user to channel
-    app.put('/api/group/:groupID/add/:userID', function (req, res){
-        const users = readJSON('../data/users.json');
-        const groups = readJSON('../data/groups.json');
-        let requests = readJSON('../data/joinRequest.json');
+    app.put('/api/group/:groupID/add/:userID', async function (req, res){
         const userID = req.params.userID;
         const groupID = req.params.groupID;
 
-        // find user in users.json
-        const user = users.find(user => user.id == userID)
-        // console.log(user.groups)
+        // find user in Mongo
+        const user = await userCollection.find({id: userID});
 
-        // add group to user.groups
-        user.groups.push({
-            group: groupID,
-            role: "chatUser" 
-        })
+        // add group to membership
+        // Making the ID for new membership
+        var date = new Date().toString()
+        var date_split = date.split(" ")
+        var dateForID = date_split[4].split(":").join("");
+        var newMembershipID = `m${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+        await membershipCollection.insertOne(
+            {
+                membershipID: newMembershipID,
+                userID: userID,
+                groupID: groupID,
+                role: "chatUser"
+            }
+        )
 
-        // add userID to groups
-        // getting group in groups.json
-        const group = groups.find(group => group.groupID == groupID);
-        group.users.push(userID)
+        // removing request from user to join said group
+        await requestCollection.deleteMany(
+            {userID: userID, groupID: groupID}
+        );
 
-        requests = requests.filter(r => !(r.userID === userID && r.groupID === groupID));
+        const updatedMembership = await membershipCollection.find({}).toArray();
+        const updatedRequests = await requestCollection.find({}).toArray();
 
-        writeJSON('../data/users.json', users);
-        writeJSON('../data/groups.json', groups);
-        writeJSON('../data/joinRequest.json', requests);
-
-        res.json({user, group, requests})
+        res.json({updatedMembership, updatedRequests})
     })
 
     // add new channel to an existing group
-    app.put('/api/group/:groupID/addChannel/:newChannel', function(req, res){
-        const groups = readJSON('../data/groups.json');
+    app.put('/api/group/:groupID/addChannel/:newChannel', async function(req, res){
         const groupID = req.params.groupID;
         const newChannel = req.params.newChannel;
         console.log(newChannel)
 
-        const group = groups.find(group => group.groupID == groupID);
-        console.log(group.channels)
 
         // Making the ID for new channel
         var date = new Date().toString()
@@ -123,19 +131,23 @@ function route(app, path) {
         var dateForID = date_split[4].split(":").join("");
         var newChannelID = `c${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
 
-        group.channels.push({channelID: newChannelID, channelName: newChannel, messages: []})
+        // adding new channel to Mongo
+        await channelCollection.insertOne({
+            channelID: newChannelID,
+            channelName: newChannel,
+            groupID: groupID
+        })
 
-        writeJSON('../data/groups.json', groups);
-        res.json(group)
+        // get updated channel
+        const updatedChannel = await channelCollection.find({}).toArray();
+        res.json(updatedChannel)
     })
 
     // add a new group
-    app.post('/api/group/newGroup/:userID/:newGroup/:newGroup_channel', function(req, res){
+    app.post('/api/group/newGroup/:userID/:newGroup/:newGroup_channel', async function(req, res){
         const userID = req.params.userID;
         const newGroup = req.params.newGroup;
         const newGroup_channel = req.params.newGroup_channel;
-        const groups = readJSON('../data/groups.json');
-        const users = readJSON('../data/users.json');
 
         // Making the ID for new group
         var date = new Date().toString()
@@ -143,151 +155,161 @@ function route(app, path) {
         var dateForID = date_split[4].split(":").join("");
         var newGroupID = `g${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
 
+        // find the user
+        var user = userCollection.find({id: userID}).toArray();
+
         // Making the ID for new channel
         var newChannelID = `c${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
 
+        // making ID for membership
+        var newMembershipID = `m${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
         // Make channel
-        const channel = new Channel(newChannelID, newGroup_channel);
-
-        // Make group (with this channel inside channels array)
-        const group = new Group(newGroupID, newGroup, [channel], [userID]);
-        groups.push(group)
-
-        
-        // Add superAdmin to the thing as well
-        const superAdmin = users.filter(user => user.roles.includes("superAdmin"))
-        
-        superAdmin.forEach(admin => {
-            if (!admin.groups.some(g => g.group === newGroupID)) {
-                admin.groups.push({ group: newGroupID, role: "superAdmin" });
-            }
-
-            if(!group.users.includes(admin.id)){
-                group.users.push(admin.id)
-            }
+        const channel = await channelCollection.insertOne({
+            channelID: newChannelID,
+            channelName: newGroup_channel,
+            groupID: newGroupID
         })
 
-        // find user in users.json
-        const user = users.find(user => user.id == userID)
-        if (!user.roles.includes("superAdmin")) {
-            // Only give groupAdmin role if the creator is not already a superAdmin
-            user.groups.push({ group: newGroupID, role: "groupAdmin" });
-        }
-        // const groupID = req.params.groupID;
+        // Make group (with this channel inside channels array)
+        const group = await groupCollection.insertOne({
+            groupID: newGroupID,
+            groupName: newGroup,
+            bannedUsers: []
+        })
 
-        writeJSON('../data/users.json', users);
-        writeJSON('../data/groups.json', groups);
+        // add the current user to membership
+        await membershipCollection.insertOne({
+            membershipID: newMembershipID,
+            userID: userID,
+            groupID: newGroupID,
+            role: "groupAdmin"
+        })
+
         
-        res.json({user, group})
+        // Get super admin from collection
+        const superAdmin = await userCollection.find({
+            roles: "superAdmin"
+        }).toArray();
+        
+        // add them to the membership too
+        /*
+            I'm using updateOne instead of insertOne because:
+                1. If the current user that creates the group is a superAdmin, then we can update their role with $set
+                2. upsert: true -> means we're creating a new membership if userID + groupID combo doesn't exist.
+                3. $setOnInsert works together with upsert: true because we're adding newMembershipID *only* when creating a new membership.
+            idk if there's any other better way to do this so uhh yeah
+        */
+        for(const admin of superAdmin){
+            newMembershipID = `m${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+            await membershipCollection.updateOne(
+            {
+                userID: admin.id,
+                groupID: newGroupID,
+            },
+            {$set: {role: "superAdmin"}},
+            {$setOnInsert: {membershipID: newMembershipID}},
+            {upsert: true}
+        )
+        }
+
+        // update user's role if they don't have groupAdmin already
+        if (!user.roles.includes("superAdmin") && !user.roles.includes("groupAdmin")) {
+            await userCollection.updateOne(
+                {id: userID},
+                {$push: {
+                    roles: "groupAdmin"
+                }}
+            )
+        }
+
+        const updatedUser = await userCollection.find({}).toArray();
+        const updatedMembership = await membershipCollection.find({}).toArray();
+        const updatedGroup = await groupCollection.find({}).toArray();
+        
+        res.json({updatedUser, updatedMembership, updatedGroup})
     })
 
     // Delete Group
-    app.delete('/api/group/:groupID/remove', function(req, res){
-        let groups = readJSON('../data/groups.json');
-        let users = readJSON('../data/users.json');
+    app.delete('/api/group/:groupID/remove', async function(req, res){
         const groupID = req.params.groupID;
 
-        groups = groups.filter(group => group.groupID !== groupID)
-        users.forEach(user => {
-            user.groups = user.groups.filter(group => group.group !== groupID)
-        })
+        // removing said group from the collection
+        await groupCollection.deleteOne({groupID: groupID});
 
-        writeJSON('../data/groups.json', groups);
-        writeJSON('../data/users.json', users);
+        // remove any membership for that group too
+        await membershipCollection.deleteMany({groupID: groupID});
 
-        res.json({users, groups})
+        // returns every group and membership..? MIGHT HAVE TO INCLUDE USER ID TOO?        
+        const updatedGroup = groupCollection.find({}).toArray();
+        const updatedMembership = membershipCollection.find({}).toArray();
+
+        res.json({updatedGroup, updatedMembership})
     })
 
     // Delete Channel
-    app.delete('/api/group/:groupID/channel/:channelID/remove', function(req, res){
-        let groups = readJSON('../data/groups.json');
+    app.delete('/api/group/:groupID/channel/:channelID/remove', async function(req, res){
         const groupID = req.params.groupID;
         const channelID = req.params.channelID;
 
-        let group = groups.find(group => group.groupID == groupID);
-        group.channels = group.channels.filter(channel => 
-            channel.channelID != channelID
-        )
+        // remove channel from collection
+        await channelCollection.deleteOne({
+            groupID: groupID, channelID: channelID
+        })
 
+        const updatedChannel = await channelCollection.find({}).toArray();
 
-        writeJSON('../data/groups.json', groups);
-
-        res.json(group)
+        res.json(updatedChannel);
     })
 
     // KICK user
-    app.delete('/api/group/:groupID/user/:userID/kick', function(req, res){
-        let users = readJSON('../data/users.json')
-        let groups = readJSON('../data/groups.json');
+    app.delete('/api/group/:groupID/user/:userID/kick', async function(req, res){
         const groupID = req.params.groupID;
         const userID = req.params.userID;
         
-        let group = groups.find(group => group.groupID == groupID);
-        let user = users.find(user => user.id == userID);
-        if (!group || !user) {
-            return res.status(404).json({ error: 'Group or user not found' });
-        }
+        // remove user from membership
+        await membershipCollection.deleteOne({userID: userID, groupID: groupID});
 
-        group.users = group.users.filter(user => 
-            user !== userID
-        )
-
-        user.groups = user.groups.filter(group =>
-            group.group !== groupID
-        )
-
+        const updatedMembership = await membershipCollection.find({}).toArray();
         
-        writeJSON('../data/users.json', users);
-        writeJSON('../data/groups.json', groups);
-        
-        res.json({users, groups})
+        res.json(updatedMembership)
     })
 
     // BAN user
-    app.post('/api/group/:groupID/user/:userID/ban', function(req, res){
-        let users = readJSON('../data/users.json')
-        let groups = readJSON('../data/groups.json');
+    app.post('/api/group/:groupID/user/:userID/ban', async function(req, res){
         const groupID = req.params.groupID;
         const userID = req.params.userID;
         const banReason = req.body.kickBanReason;
-        
-        let group = groups.find(group => group.groupID == groupID);
-        let user = users.find(user => user.id == userID);
-        if (!group || !user) {
-            return res.status(404).json({ error: 'Group or user not found' });
-        }
 
-        // Remove user from group
-        group.users = group.users.filter(user => 
-            user !== userID
+        // remove user from membership
+        await membershipCollection.deleteOne({userID: userID, groupID: groupID});
+
+        // add user to bannedUsers
+        const bannedUser = {userID: userID, reason: banReason};
+        await groupCollection.updateOne(
+            {groupID: groupID},
+            // its push but prevents any duplicates..?
+            {$addToSet: {
+                bannedUsers: bannedUser
+            }}
         )
-
-        // remove group from user
-        user.groups = user.groups.filter(group =>
-            group.group !== groupID
-        )
-
-        const ban = new Banned(userID, banReason)
-
-        if(!group.bannedUsers.some(ban => ban.userID === userID)){
-            group.bannedUsers.push(ban)
-        }
-
         
-        writeJSON('../data/users.json', users);
-        writeJSON('../data/groups.json', groups);
-
-        console.log("BANNED USER(S): ", group.bannedUsers);
+        // get updated group + membership
+        const bannedGroup = await groupCollection.find({groupID: groupID}).toArray();
+        const updatedGroup = await groupCollection.find({}).toArray();
+        const updatedMembership = await membershipCollection.find({}).toArray();
         
-        res.json({users, groups})
+
+        console.log("BANNED USER(S): ", bannedGroup);
+        
+        res.json({updatedGroup, updatedMembership})
     })
 
     // request to join
-    app.post('/api/request/join/:groupID/:userID', function(req, res){
+    app.post('/api/request/join/:groupID/:userID', async function(req, res){
         const groupID = req.params.groupID;
         const userID = req.params.userID;
         const reasonToJoin = req.body.reasonToJoin;
-        let requests = readJSON('../data/joinRequest.json');
 
         // Making the ID for request
         var date = new Date().toString()
@@ -295,26 +317,29 @@ function route(app, path) {
         var dateForID = date_split[4].split(":").join("");
         var requestID = `r${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
 
-        const request = new JoinRequest(requestID, userID, groupID, reasonToJoin);
-        requests.push(request)
+        if(reasonToJoin == ""){
+            reasonToJoin = "No reason was given"
+        } 
 
-        writeJSON('../data/joinRequest.json', requests)
-        res.json(requests)
+        await requestCollection.insertOne({
+            requestID: requestID,
+            userID: userID,
+            groupID: groupID,
+            reasonToJoin: reasonToJoin,
+            dateTime: date
+        })
+
+        const updatedRequests = await requestCollection.find({}).toArray();
+
+        res.json(updatedRequests)
     })
 
     // Approve/reject request
-    app.put('/api/request/join/:groupID/:userID/:requestID/:action', function(req, res){
+    app.put('/api/request/join/:groupID/:userID/:requestID/:action', async function(req, res){
         const groupID = req.params.groupID;
         const userID = req.params.userID;
         const requestID = req.params.requestID;
         const action = req.params.action;
-        let users = readJSON('../data/users.json')
-        let groups = readJSON('../data/groups.json');
-        let requests = readJSON('../data/joinRequest.json');
-
-        let group = groups.find(group => group.groupID == groupID);
-        let user = users.find(user => user.id == userID);
-        let request = requests.find(request => request.requestID == requestID)
 
         if (!group || !user || !request) {
             return res.status(404).json({ error: "Group, user, or request not found" });
@@ -322,73 +347,68 @@ function route(app, path) {
 
         if(action == "approve"){
             // Add group to user if not already there
-            if (!user.groups.some(g => g.group === groupID)) {
-                user.groups.push({
-                    group: groupID,
-                    role: "chatUser" 
-                });
-            }
-
-            // Add user to group if not already there
-            if (!group.users.includes(userID)) {
-                group.users.push(userID);
-            }
+            await membershipCollection.updateOne(
+                {groupID: groupID, userID: userID},
+                {$setOnInsert: {
+                    role: "chatUser"
+                }},
+                {upsert: true}
+            )
         }
         // removes all requests from this user for this group no matter what
-        requests = requests.filter(r => !(r.userID === userID && r.groupID === groupID));
+        await requestCollection.deleteMany({userID: userID, groupID: groupID});
 
-        writeJSON('../data/users.json', users);
-        writeJSON('../data/groups.json', groups);
-        writeJSON('../data/joinRequest.json', requests);
+        const updatedMembership = await membershipCollection.find({}).toArray();
+        const updatedRequest = await requestCollection.find({}).toArray();
 
-        res.json({users, groups, requests})
+        res.json({updatedMembership, updatedRequest})
     })
 
     // delete user
-    app.delete('/api/user/:userID/delete', (req, res) => {
-        let users = readJSON('../data/users.json');
-        let groups = readJSON('../data/groups.json');
-        let requests = readJSON('../data/joinRequest.json');
-
+    app.delete('/api/user/:userID/delete', async (req, res) => {
         const userID = req.params.userID;
 
-        // Remove user from users.json
-        users = users.filter(user => user.id !== userID);
-        requests = requests.filter(request => request.userID !== userID);
+        // remove user from user + request + membership collection
+        await userCollection.deleteOne({id: userID});
+        await requestCollection.deleteMany({userID: userID})
+        await membershipCollection.deleteMany({userID: userID});
 
-        // Remove user from all groups
-        groups.forEach(group => {
-            group.users = group.users.filter(id => id !== userID);
-            // Also remove from bannedUsers if needed
-            if (group.bannedUsers) {
-                group.bannedUsers = group.bannedUsers.filter(ban => ban.userID !== userID);
-            }
-        });
+        const updatedUsers = await userCollection.find({}).toArray();
+        const updatedRequests = await requestCollection.find({}).toArray();
+        const updatedMemberships = await membershipCollection.find({}).toArray();
 
-        writeJSON('../data/users.json', users);
-        writeJSON('../data/groups.json', groups);
-        writeJSON('../data/joinRequest.json', requests);
-
-        res.json({users, groups, requests});
+        res.json({updatedUsers, updatedRequests, updatedMemberships});
     });
 
 
     // Get users
-    app.get('/api/users', function (req, res){
-        const users = readJSON('../data/users.json');
+    app.get('/api/users', async function (req, res){
+        const users = await userCollection.find({}).toArray();
         res.json(users)
     })
 
     // Get groups
-    app.get('/api/groups', function(req, res){
-        const groups = readJSON('../data/groups.json');
+    app.get('/api/groups', async function(req, res){
+        const groups = await groupCollection.find({}).toArray();
         res.json(groups)
     })
 
     // get request
-    app.get('/api/requests', function(req, res){
-        const requests = readJSON('../data/joinRequest.json');
+    app.get('/api/requests', async function(req, res){
+        const requests = await requestCollection.find({}).toArray();
         res.json(requests)
+    })
+
+    // get channel
+    app.get('/api/channels', async function(req, res){
+        const channels = await channelCollection.find({}).toArray();
+        res.json(channels)
+    })
+
+    // get membership
+    app.get('/api/membership', async function(req, res){
+        const membership = await membershipCollection.find({}).toArray();
+        res.json(membership)
     })
 }
 module.exports = { route };

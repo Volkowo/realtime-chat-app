@@ -36,7 +36,7 @@ async function main(){
     loginRoute.route(app, userCollection); 
     groupRoute.route(app, membershipCollection, groupCollection);
     channelRoute.route(app, channelCollection, messageCollection);
-    profileRoute.route(app);
+    profileRoute.route(app, userCollection, membershipCollection, groupCollection, requestCollection, channelCollection);
 
     // listen
     let server = http.listen(3000, function() {
