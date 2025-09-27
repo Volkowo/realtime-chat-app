@@ -49,40 +49,40 @@ export class Profile implements OnInit {
     this.user = (localStorage.getItem("user"))
     if (this.user){
       this.userJSON = JSON.parse(this.user);
-      console.log("USER: ", this.user)
+      // console.log("USER: ", this.user)
       
       this.http.get<UserModel>(`http://localhost:3000/api/users`).subscribe((users) => {
         this.usersJSON = users;
-        console.log(this.usersJSON); 
+        // console.log(this.usersJSON); 
       })
 
       this.http.get<GroupModel[]>(`http://localhost:3000/api/groups`).subscribe((groups) => {
         this.groupsJSON = groups;
-        console.log(this.groupsJSON); 
+        // console.log(this.groupsJSON); 
       })
 
       this.http.get<JoinRequestModel[]>(`http://localhost:3000/api/requests`).subscribe((requests) => {
         this.requestsJSON = requests;
-        console.log(this.requestsJSON); 
+        // console.log(this.requestsJSON); 
       })
 
       this.http.get<ChannelModel[]>(`http://localhost:3000/api/channels`).subscribe((channels) => {
         this.channelJSON = channels;
-        console.log(this.channelJSON); 
+        // console.log(this.channelJSON); 
       })
 
       this.http.get<any>(`http://localhost:3000/api/membership`).subscribe((membership) => {
         this.membershipJSON = membership;
-        console.log(this.membershipJSON); 
+        // console.log(this.membershipJSON); 
       })
 
       this.http.get<any[]>(`http://localhost:3000/api/groupsNotIn/${this.userJSON.id}`, {}).subscribe(res => {
-        console.log(res);
+        // console.log(res);
         this.nonUsers = res;
       })
 
       this.http.get<any[]>(`http://localhost:3000/api/groupsIn/${this.userJSON.id}`, {}).subscribe(res => {
-        console.log("GROUP USER IS IN: ", res);
+        // console.log("GROUP USER IS IN: ", res);
         this.groupUserIsIn = res;
       })
       } else {
@@ -129,7 +129,7 @@ setCurrentView(currentView: string){
   getChannelById(groupID: string){
     if(this.groupsJSON){
       const channels = this.channelJSON.filter((channel: any) => channel.groupID === groupID);
-      console.log("Channels: ", channels);
+      // console.log("Channels: ", channels);
       return channels.length ? channels : [];
     } else {
       
@@ -138,10 +138,10 @@ setCurrentView(currentView: string){
 
   // returns a list of users in a group
   getUserById(groupID: string){
-    console.log("GROUP ID: ", groupID);
+    // console.log("GROUP ID: ", groupID);
     if(this.membershipJSON){
       const group = this.membershipJSON.filter((membership: any) => membership.groupID === groupID)
-      console.log("MEMBERSHIP: ", group);
+      // console.log("MEMBERSHIP: ", group);
       return group ? group : "Unknown";
     } else {
       
@@ -161,7 +161,7 @@ setCurrentView(currentView: string){
   getUsernameById(memberID: string){
     if(this.usersJSON){
       const user = this.usersJSON.find((user: any) => user.id === memberID)
-      console.log("USER?! :", user.username)
+      // console.log("USER?! :", user.username)
       return user ? user.username : "Unknown";
     }
   }
@@ -181,13 +181,13 @@ setCurrentView(currentView: string){
       const usersInGroup = this.getUserById(groupID);
       const userIDs = usersInGroup.map((user: any) => user.userID)
 
-      console.log(userIDs);
+      // console.log(userIDs);
 
       const usersNotInGroup = this.usersJSON.filter((user: any) => 
         !userIDs.includes(user.id)
       )
 
-      console.log("NOT IN GROUP: ", usersNotInGroup);
+      // console.log("NOT IN GROUP: ", usersNotInGroup);
       return usersNotInGroup;
     }
   }
@@ -196,7 +196,7 @@ setCurrentView(currentView: string){
   getUserInGroup(groupID: string){
     if(this.membershipJSON){
       const usersInGroup = this.getUserById(groupID);
-      console.log("wait what: ", usersInGroup)
+      // console.log("wait what: ", usersInGroup)
       return usersInGroup
     }
   }
@@ -251,8 +251,9 @@ setCurrentView(currentView: string){
   // add new channel to an existing group
   addChannel(groupID: string, newChannel: string){
     this.http.put(`http://localhost:3000/api/group/${groupID}/addChannel/${newChannel}`, {}).subscribe(res => {
-      console.log(res)
+      // console.log(res)
       this.channelJSON = res
+      this.newChannel = ""
 
       this.closeModal('addChannel' + groupID)
     })
@@ -376,16 +377,18 @@ setCurrentView(currentView: string){
 
   manageRequest(groupID: string, userID: string, requestID: string, action: string){
     this.http.put(`http://localhost:3000/api/request/join/${groupID}/${userID}/${requestID}/${action}`, {}).subscribe((res: any) => {
-      this.usersJSON = res.users;
-      this.groupsJSON = res.groups;
-      this.requestsJSON = res.requests;
-
-      const updatedUser = this.usersJSON.find((u: any) => u.id == this.userJSON.id);
-      if (updatedUser) {
-        this.userJSON = updatedUser;
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-      }
+      this.membershipJSON = res.updatedMembership;
+      this.requestsJSON = res.updatedRequest;
     })
+  }
+
+  checkBannedUser(userID: string, groupID: string){
+    if(this.groupsJSON){
+      // console.log("USER ID: ", userID , " | GROUP ID: ", groupID)
+      const isUserBanned = this.groupsJSON.find((group: any) => group.bannedUsers.includes(userID) && group.groupID == groupID)
+
+      return isUserBanned;
+    }
   }
 
   deleteAccount() {

@@ -308,7 +308,7 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
         const updatedMembership = await membershipCollection.find({}).toArray();
         
 
-        console.log("BANNED USER(S): ", bannedGroup);
+        // console.log("BANNED USER(S): ", bannedGroup);
         
         res.json({updatedGroup, updatedMembership})
     })
@@ -349,15 +349,18 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
         const requestID = req.params.requestID;
         const action = req.params.action;
 
-        if (!group || !user || !request) {
-            return res.status(404).json({ error: "Group, user, or request not found" });
-        }
+        // Making the ID for request
+        var date = new Date().toString()
+        var date_split = date.split(" ")
+        var dateForID = date_split[4].split(":").join("");
+        var membershipID = `m${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
 
         if(action == "approve"){
             // Add group to user if not already there
             await membershipCollection.updateOne(
                 {groupID: groupID, userID: userID},
                 {$setOnInsert: {
+                    membershipID: membershipID,
                     role: "chatUser"
                 }},
                 {upsert: true}

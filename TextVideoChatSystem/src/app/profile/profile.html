@@ -364,7 +364,7 @@
                                                         </div>
                                                         <div class="col-6">
                                                             <p>Members: </p>
-                                                            @for(member of getUserById(group.groupID); track member){
+                                                            @for(member of getUserById(group.groupID); track member.userID){
                                                                 <li class="ms-3">{{getUsernameById(member.userID)}} - {{getUserRoles(group.groupID, member.userID)}}</li>
                                                             }
                                                         </div>
@@ -405,9 +405,11 @@
                                                                     <ul class="dropdown-menu">
                                                                         @for(nonUser of getUserNotInGroup(group.groupID); track nonUser.id){
                                                                             <li>
-                                                                                <button class="dropdown-item" (click)="addUserToGroup(group.groupID, nonUser.id)">
-                                                                                    {{ getUsernameById(nonUser.id) }}
-                                                                                </button>
+                                                                                @if(!checkBannedUser(nonUser.id, group.groupID)){
+                                                                                    <button class="dropdown-item" (click)="addUserToGroup(group.groupID, nonUser.id)">
+                                                                                        {{ getUsernameById(nonUser.id) }}
+                                                                                    </button>
+                                                                                }
                                                                             </li>
                                                                         }
                                                                     </ul>
