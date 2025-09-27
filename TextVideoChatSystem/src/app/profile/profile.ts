@@ -28,11 +28,11 @@ export class Profile implements OnInit {
 
   user: any;
   userJSON: any;
-  users: any;
   usersJSON: any;
-  groups: any;
   groupsJSON: any;
   requestsJSON: any;
+  membershipJSON: any;
+  channelJSON: any;
   newChannel: string = "";
   newGroup: string = "";
   newGroup_channel: string = "";
@@ -42,33 +42,49 @@ export class Profile implements OnInit {
   reasonToJoin: string = "";
   showError: boolean = false;
   currentView: string = "";
+  nonUsers: any[] = [];
+  groupUserIsIn: any[] = []
 
   ngOnInit() {
-      this.user = (localStorage.getItem("user"))
-      if (this.user){
-          this.userJSON = JSON.parse(this.user);
-          console.log("USER: ", this.user)
-          
-          this.http.get<UserModel>(`http://localhost:3000/api/users`).subscribe((users) => {
-            this.users = JSON.stringify(users);
-            console.log("Users: ", this.users)
-            this.usersJSON = users;
-            console.log(this.usersJSON); 
-          })
+    this.user = (localStorage.getItem("user"))
+    if (this.user){
+      this.userJSON = JSON.parse(this.user);
+      console.log("USER: ", this.user)
+      
+      this.http.get<UserModel>(`http://localhost:3000/api/users`).subscribe((users) => {
+        this.usersJSON = users;
+        console.log(this.usersJSON); 
+      })
 
-          this.http.get<GroupModel[]>(`http://localhost:3000/api/groups`).subscribe((groups) => {
-            this.groups = JSON.stringify(groups);
-            console.log("Groups: ", this.groups)
-            this.groupsJSON = groups;
-            console.log(this.groupsJSON); 
-          })
+      this.http.get<GroupModel[]>(`http://localhost:3000/api/groups`).subscribe((groups) => {
+        this.groupsJSON = groups;
+        console.log(this.groupsJSON); 
+      })
 
-          this.http.get<JoinRequestModel[]>(`http://localhost:3000/api/requests`).subscribe((requests) => {
-            this.requestsJSON = requests;
-            console.log(this.requestsJSON); 
-          })
+      this.http.get<JoinRequestModel[]>(`http://localhost:3000/api/requests`).subscribe((requests) => {
+        this.requestsJSON = requests;
+        console.log(this.requestsJSON); 
+      })
 
+      this.http.get<ChannelModel[]>(`http://localhost:3000/api/channels`).subscribe((channels) => {
+        this.channelJSON = channels;
+        console.log(this.channelJSON); 
+      })
 
+      this.http.get<any>(`http://localhost:3000/api/membership`).subscribe((membership) => {
+        this.membershipJSON = membership;
+        console.log(this.membershipJSON); 
+      })
+
+      this.http.get<any[]>(`http://localhost:3000/api/groupsNotIn/${this.userJSON.id}`, {}).subscribe(res => {
+        console.log(res);
+        this.nonUsers = res;
+      })
+
+      this.http.get<any[]>(`http://localhost:3000/api/groupsIn/${this.userJSON.id}`, {}).subscribe(res => {
+        console.log("GROUP USER IS IN: ", res);
+        this.groupUserIsIn = res;
+      })
       } else {
         this.router.navigate([''])
       }
@@ -112,8 +128,9 @@ setCurrentView(currentView: string){
   // returns a list/array of channel of a group
   getChannelById(groupID: string){
     if(this.groupsJSON){
-      const group = this.groupsJSON.find((group: any) => group.groupID === groupID)
-      return group ? group.channels : "Unknown";
+      const channels = this.channelJSON.filter((channel: any) => channel.groupID === groupID);
+      console.log("Channels: ", channels);
+      return channels.length ? channels : [];
     } else {
       
     }
@@ -121,9 +138,11 @@ setCurrentView(currentView: string){
 
   // returns a list of users in a group
   getUserById(groupID: string){
-    if(this.groupsJSON){
-      const group = this.groupsJSON.find((group: any) => group.groupID === groupID)
-      return group ? group.users : "Unknown";
+    console.log("GROUP ID: ", groupID);
+    if(this.membershipJSON){
+      const group = this.membershipJSON.filter((membership: any) => membership.groupID === groupID)
+      console.log("MEMBERSHIP: ", group);
+      return group ? group : "Unknown";
     } else {
       
     }
@@ -131,9 +150,8 @@ setCurrentView(currentView: string){
 
   // Return the user's role
   getUserRoles(groupID: string, userID: string){
-    if(this.usersJSON){
-      const user = this.usersJSON.find((user: any) => user.id === userID)
-      const role = user.groups.find((group: any) => group.group === groupID)
+    if(this.membershipJSON){
+      const role = this.membershipJSON.find((membership: any) => membership.userID === userID && membership.groupID === groupID)
 
       return role ? role.role : "unknown"
     }
@@ -143,31 +161,44 @@ setCurrentView(currentView: string){
   getUsernameById(memberID: string){
     if(this.usersJSON){
       const user = this.usersJSON.find((user: any) => user.id === memberID)
+      console.log("USER?! :", user.username)
       return user ? user.username : "Unknown";
     }
   }
 
   // returns the group the user is not in
   getGroupUserIsNotIn(userID: string){
-    return this.groupsJSON.filter((group: any) => !group.users.includes(userID))
+    // this.http.get<any[]>(`http://localhost:3000/api/groupsNotIn/${userID}`, {}).subscribe(res => {
+    //   console.log(res);
+    //   this.nonUsers = res;
+    // })
+    // return this.nonUsers;
   }
 
   // get users that are NOT in the group
   getUserNotInGroup(groupID: string){
-    if(this.usersJSON){
-      const listOfUsers =  this.getUserById(groupID);
+    if(this.membershipJSON){
+      const usersInGroup = this.getUserById(groupID);
+      const userIDs = usersInGroup.map((user: any) => user.userID)
 
-      return this.usersJSON.filter((user: any) => !listOfUsers.includes(user.id))
-    } else {
-      
+      console.log(userIDs);
+
+      const usersNotInGroup = this.usersJSON.filter((user: any) => 
+        !userIDs.includes(user.id)
+      )
+
+      console.log("NOT IN GROUP: ", usersNotInGroup);
+      return usersNotInGroup;
     }
   }
 
   // get users that are in the group
   getUserInGroup(groupID: string){
-    const listOfUsers =  this.getUserById(groupID);
-
-    return this.usersJSON.filter((user: any) => listOfUsers.includes(user.id))
+    if(this.membershipJSON){
+      const usersInGroup = this.getUserById(groupID);
+      console.log("wait what: ", usersInGroup)
+      return usersInGroup
+    }
   }
 
   // Check if user FROM AN ARRAY is a chatUser or not
@@ -199,28 +230,19 @@ setCurrentView(currentView: string){
   }
 
   // check if user is superadmin and/or groupadmin
-  isSuperOrGroupAdmin(group: any){
-    return group.role == "groupAdmin" || group.role == "superAdmin"
+  isSuperOrGroupAdmin(role: any){
+    return role == "groupAdmin" || role == "superAdmin"
   }
 
   // add user to a group
   addUserToGroup(groupID: string, userID: string){
     this.http.put(`http://localhost:3000/api/group/${groupID}/add/${userID}`, {}).subscribe((res: any) => {
-      const updatedUser = res.user;
-      const updatedGroup = res.group;
+      const updatedMembership = res.updatedMembership;
+      const updatedRequests = res.updatedRequests;
 
-      // Update usersJSON and groupsJSON
-      const userIndex = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
-      console.log("user index", userIndex)
-      this.usersJSON[userIndex] = updatedUser
-
-      const groupIndex = this.groupsJSON.findIndex((group: any) => group.groupID == updatedGroup.groupID)
-      console.log("group index", groupIndex)
-      this.groupsJSON[groupIndex] = updatedGroup
-
-      this.requestsJSON = this.requestsJSON.filter((r: any) => 
-        !(r.userID === updatedUser.id && r.groupID === updatedGroup.groupID)
-      );
+      // Update membershipJSON and requestJSON
+      this.membershipJSON = updatedMembership;
+      this.requestsJSON = updatedRequests;
 
       this.closeModal('addUser' + groupID)
     })
@@ -228,10 +250,9 @@ setCurrentView(currentView: string){
 
   // add new channel to an existing group
   addChannel(groupID: string, newChannel: string){
-    this.http.put(`http://localhost:3000/api/group/${groupID}/addChannel/${newChannel}`, {}).subscribe((updatedGroup: any) => {
-      const index = this.groupsJSON.findIndex((group: any) => group.groupID == updatedGroup.groupID)
-      this.groupsJSON[index] = updatedGroup
-      console.log("New channel: ", updatedGroup)
+    this.http.put(`http://localhost:3000/api/group/${groupID}/addChannel/${newChannel}`, {}).subscribe(res => {
+      console.log(res)
+      this.channelJSON = res
 
       this.closeModal('addChannel' + groupID)
     })
@@ -240,22 +261,21 @@ setCurrentView(currentView: string){
   // create new group
   createNewGroup(newGroup: string, newGroup_channel: string, userID: string) {
     this.http.post(`http://localhost:3000/api/group/newGroup/${userID}/${newGroup}/${newGroup_channel}`, {}).subscribe((res: any) => {
-      const updatedUser = res.user;
 
       // Get groups from backend
-      this.http.get(`http://localhost:3000/api/groups`).subscribe((groups: any) => {
-        this.groupsJSON = groups;
+      this.groupsJSON = res.updatedGroup
+      this.membershipJSON = res.updatedMembership
+      this.usersJSON = res.updatedUsers
+      this.channelJSON = res.updatedChannel
+
+      const updatedUserFull = this.usersJSON.find((u: any) => u.id == userID);
+      this.userJSON = updatedUserFull;
+      localStorage.setItem("user", JSON.stringify(updatedUserFull));
+
+      this.http.get<any[]>(`http://localhost:3000/api/groupsIn/${userID}`).subscribe(res => {
+        this.groupUserIsIn = res;
       });
 
-      // Get users from backend
-      this.http.get(`http://localhost:3000/api/users`).subscribe((users: any) => {
-        this.usersJSON = users;
-
-        // update user again just to be sure idk
-        const updatedUserFull = users.find((u: any) => u.id == updatedUser.id);
-        this.userJSON = updatedUserFull;
-        localStorage.setItem("user", JSON.stringify(updatedUserFull));
-      });
 
       this.closeModal('newGroup')
     });
@@ -287,27 +307,20 @@ setCurrentView(currentView: string){
   // Delete Group
   deleteGroup(groupID: string){
     this.http.delete(`http://localhost:3000/api/group/${groupID}/remove`, {}).subscribe((res: any) => {
+      this.groupsJSON = res.updatedGroup;
+      this.membershipJSON = res.updatedMembership;
+      this.channelJSON = res.updatedChannel
+
+      this.groupUserIsIn = this.groupUserIsIn.filter(g => g.groupID !== groupID);
       this.closeModal('deleteGroup' + groupID)
-      this.usersJSON = res.users;
-      this.groupsJSON = res.groups;
-
-      // update the logged-in user
-      const updatedUser = this.usersJSON.find((u: any) => u.id == this.userJSON.id);
-      if (updatedUser) {
-        this.userJSON = updatedUser;
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-
-        this.closeModal("deleteGroup" + groupID)
-      }
     })
   }
 
   // Delete Channel
   deleteChannel(groupID: string, channelID: string){
-    this.http.delete(`http://localhost:3000/api/group/${groupID}/channel/${channelID}/remove`, {}).subscribe((updatedGroup: any) => {
+    this.http.delete(`http://localhost:3000/api/group/${groupID}/channel/${channelID}/remove`, {}).subscribe((updatedChannel: any) => {
+      this.channelJSON = updatedChannel
       this.closeModal('deleteChannel' + channelID)
-        const index = this.groupsJSON.findIndex((group: any) => group.groupID == updatedGroup.groupID)
-        this.groupsJSON[index] = updatedGroup
     })
   }
 
@@ -321,10 +334,7 @@ setCurrentView(currentView: string){
         case "kick":{
           console.log(`${action} the selected user! (${selectedUser})`)
           this.http.delete(`http://localhost:3000/api/group/${groupID}/user/${selectedUser}/kick`, {}).subscribe((res: any) => {
-            this.groupsJSON = res.groups;
-            this.usersJSON = res.users;
-
-            this.selectedUser = ""
+            this.membershipJSON = res
             this.closeModal('manageUser' + groupID)
           })
           break;
@@ -332,10 +342,8 @@ setCurrentView(currentView: string){
         case "ban":{
           console.log(`${action} the selected user! (${selectedUser})`)
           this.http.post(`http://localhost:3000/api/group/${groupID}/user/${selectedUser}/ban`, {kickBanReason}).subscribe((res: any) => {
-            this.groupsJSON = res.groups;
-            this.usersJSON = res.users;
-
-            this.selectedUser = ""
+            this.groupsJSON = res.updatedGroup;
+            this.membershipJSON = res.updatedMembership;
             this.closeModal('manageUser' + groupID)
           })
           break;

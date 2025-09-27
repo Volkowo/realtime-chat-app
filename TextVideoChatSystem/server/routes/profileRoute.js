@@ -4,7 +4,7 @@ const { Channel } = require("../models/Channel");
 const { Banned } = require("../models/Banned");
 const { JoinRequest } = require("../models/JoinRequest");
 
-function route(app, path, userCollection, membershipCollection, groupCollection, requestCollection, channelCollection) {
+function route(app, userCollection, membershipCollection, groupCollection, requestCollection, channelCollection) {
     // ROUTE
 
     // promote to group admin
@@ -156,7 +156,7 @@ function route(app, path, userCollection, membershipCollection, groupCollection,
         var newGroupID = `g${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
 
         // find the user
-        var user = userCollection.find({id: userID}).toArray();
+        const user = await userCollection.findOne({ id: userID });
 
         // Making the ID for new channel
         var newChannelID = `c${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
@@ -207,8 +207,10 @@ function route(app, path, userCollection, membershipCollection, groupCollection,
                 userID: admin.id,
                 groupID: newGroupID,
             },
-            {$set: {role: "superAdmin"}},
-            {$setOnInsert: {membershipID: newMembershipID}},
+            {
+                $set: {role: "superAdmin"},
+                $setOnInsert: {membershipID: newMembershipID}
+            },
             {upsert: true}
         )
         }
@@ -223,11 +225,12 @@ function route(app, path, userCollection, membershipCollection, groupCollection,
             )
         }
 
-        const updatedUser = await userCollection.find({}).toArray();
+        const updatedUsers = await userCollection.find({}).toArray();
         const updatedMembership = await membershipCollection.find({}).toArray();
         const updatedGroup = await groupCollection.find({}).toArray();
+        const updatedChannel = await channelCollection.find({}).toArray();
         
-        res.json({updatedUser, updatedMembership, updatedGroup})
+        res.json({updatedUsers, updatedMembership, updatedGroup, updatedChannel})
     })
 
     // Delete Group
@@ -240,11 +243,17 @@ function route(app, path, userCollection, membershipCollection, groupCollection,
         // remove any membership for that group too
         await membershipCollection.deleteMany({groupID: groupID});
 
-        // returns every group and membership..? MIGHT HAVE TO INCLUDE USER ID TOO?        
-        const updatedGroup = groupCollection.find({}).toArray();
-        const updatedMembership = membershipCollection.find({}).toArray();
+        // remove any channel relateed to said group.
+        await channelCollection.deleteMany({groupID: groupID})
 
-        res.json({updatedGroup, updatedMembership})
+        // returns every group and membership..? MIGHT HAVE TO INCLUDE USER ID TOO?  
+        const updatedChannel = await channelCollection.find({}).toArray();      
+        const updatedGroup = await groupCollection.find({}).toArray();
+        const updatedMembership = await membershipCollection.find({}).toArray();
+
+        console.log("UPDATED GROUP: ", updatedGroup);
+
+        res.json({updatedGroup, updatedMembership, updatedChannel})
     })
 
     // Delete Channel
@@ -295,7 +304,6 @@ function route(app, path, userCollection, membershipCollection, groupCollection,
         )
         
         // get updated group + membership
-        const bannedGroup = await groupCollection.find({groupID: groupID}).toArray();
         const updatedGroup = await groupCollection.find({}).toArray();
         const updatedMembership = await membershipCollection.find({}).toArray();
         
@@ -380,6 +388,37 @@ function route(app, path, userCollection, membershipCollection, groupCollection,
         res.json({updatedUsers, updatedRequests, updatedMemberships});
     });
 
+    // get groups that user isn't in
+    app.get('/api/groupsNotIn/:userID', async function (req, res){
+        // get the groupID the user is in
+        const userID = req.params.userID;
+        const groupsUserIsIn = await membershipCollection.find({userID: userID}).project({groupID: 1}).toArray();
+        const groupIDsIn = groupsUserIsIn.map(g => g.groupID);
+
+        // get groups the user is NOT in
+        // We're using nin since we're comparing groupID with the array groupIDsIn
+        const groupsNotIn = await groupCollection.find({ groupID: { $nin: groupIDsIn } }).toArray();
+        
+        console.log("BACKEND - GROUPS USER IS NOT IN: ", groupsNotIn);
+        res.json(groupsNotIn);
+    })
+    
+    // Get USER's membership
+    app.get('/api/groupsIn/:userID', async function (req, res){
+        const userID = req.params.userID;
+        console.log("USER ID:", userID)
+
+        // get the groupID the user is in
+        const groupsUserIsIn = await membershipCollection.find({userID: userID}).toArray();
+
+        console.log("GROUP DETAILS: ", groupsUserIsIn);
+
+        if(groupsUserIsIn){
+            res.json(groupsUserIsIn)
+        } else{
+            console.log("no grpups..?")
+        }
+    })
 
     // Get users
     app.get('/api/users', async function (req, res){
@@ -410,5 +449,6 @@ function route(app, path, userCollection, membershipCollection, groupCollection,
         const membership = await membershipCollection.find({}).toArray();
         res.json(membership)
     })
+
 }
 module.exports = { route };
