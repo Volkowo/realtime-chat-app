@@ -94,13 +94,11 @@
                                 <td>{{ user.username }}</td>
                                 <td>
                                     <ul>
-                                        <li>
-                                            @for(group of user.groups; track group.group + '-' + group.role){
-                                                <li class="mb-2">
-                                                    {{getGroupById(group.group)}}
-                                                </li>
-                                            }
-                                        </li>
+                                        @for(membership of getCurrentUserMembership(user.id); track membership.groupID + '-' + membership.role){
+                                            <li class="mb-2">
+                                                {{getGroupById(membership.groupID)}}
+                                            </li>
+                                        }
                                     </ul>
                                 </td>
 
@@ -119,11 +117,11 @@
 
                                 <!-- Group Roles -->
                                 <td>
-                                    @if(hasAdmin(user).length > 0){
+                                    @if(hasAdmin(user.id).length > 0){
                                         <ul>
-                                            @for(groupRole of hasAdmin(user); track $index){
+                                            @for(groupRole of hasAdmin(user.id); track $index){
                                                 <li class="mb-2">
-                                                    {{getGroupById(groupRole.group)}}: {{groupRole.role}}
+                                                    {{getGroupById(groupRole.groupID)}}: {{groupRole.role}}
                                                 </li>
                                             }
                                         </ul>
@@ -139,14 +137,14 @@
                                     </button>
                                     
                                     <promote-modal 
-                                    [user]="user" 
+                                    [userID]="user.id" 
                                     [checkGroupAdminRole]="checkGroupAdminRole.bind(this)" 
                                     [checkUser]="checkUser.bind(this)" 
                                     [getGroupById]="getGroupById.bind(this)">
                                     </promote-modal>
 
                                 <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-warning  mb-2" data-bs-toggle="modal" [attr.data-bs-target]="'#manageUser' + user.id" (click)="checkSuperAdminRole(user)" [disabled]="isSuperAdmin(user)">
+                                <button type="button" class="btn btn-warning  mb-2" data-bs-toggle="modal" [attr.data-bs-target]="'#manageUser' + user.id" [disabled]="isSuperAdmin(user)">
                                     Promote to Super Admin
                                 </button>
                                 

@@ -108,8 +108,10 @@ setCurrentView(currentView: string){
     this.router.navigate([''])
   }
 
-  hasAdmin(user: any){
-    return user.groups.filter((group: any) => group.role == 'groupAdmin' || group.role == 'superAdmin')
+  hasAdmin(userID: string){
+    if(this.membershipJSON){
+      return this.membershipJSON.filter((membership: any) => (membership.userID == userID) && (membership.role == 'groupAdmin' || membership.role == 'superAdmin'))
+    }
   }
 
   isSuperAdmin(user: any): boolean {
@@ -202,20 +204,22 @@ setCurrentView(currentView: string){
   }
 
   // Check if user FROM AN ARRAY is a chatUser or not
-  checkGroupAdminRole(user: any){
-    // console.log("User groups:", user.groups);
-    const nonAdmin = user.groups.filter((group: any) => group.role == "chatUser");
+  checkGroupAdminRole(userID: string){
+    console.log("User ID:", userID);
+
+    if(this.membershipJSON){
+      const nonAdmin = this.membershipJSON.filter((membership: any) => membership.userID == userID && membership.role == "chatUser")
+      return nonAdmin;
+    }
     // console.log(nonAdmin);
-    return nonAdmin;
   }
 
   // Check if user FROM AN ARRAY is a superAdmin or not
-  checkSuperAdminRole(user: any){
-    // console.log("User groups:", user.groups);
-    const nonSuperAdmin = user.groups.filter((group: any) => group.role != "superAdmin");
-    // console.log(nonSuperAdmin);
-    return nonSuperAdmin;
-  }
+  // checkSuperAdminRole(userID: any){
+  //   // console.log("User groups:", user.groups);
+  //   const nonSuperAdmin = user.groups.filter((group: any) => group.role != "superAdmin");
+  //   return nonSuperAdmin;
+  // }
 
   isUserSuperAdmin(): boolean {
     return this.userJSON.roles.includes('superAdmin');
@@ -283,23 +287,23 @@ setCurrentView(currentView: string){
   }
 
   //Promote to GroupAdmin
-  checkUser(user: any, group: any, newRole: any){
-    console.log("Button check", user);
-    console.log("what is group: ", group)
+  checkUser(userID: any, groupID: any, newRole: any){
+    console.log("Button check", userID);
+    console.log("what is group: ", groupID)
 
     
-      this.http.put(`http://localhost:3000/api/user/${user.id}/group/${group.group}/role`, {role: newRole}).subscribe((updatedUser: any) => {
-        const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
-        this.usersJSON[index] = updatedUser
+      this.http.put(`http://localhost:3000/api/user/${userID}/group/${groupID}/role`, {role: newRole}).subscribe((res: any) => {
+        this.usersJSON = res.updatedUsers;
+        this.membershipJSON = res.updatedMembership;
       })
     
   }
 
   // Promote to SuperAdmin
   promoteToSuperAdmin(userID: any){
-      this.http.put<UserModel>(`http://localhost:3000/api/user/${userID}/superAdminPromotion`, {}).subscribe((updatedUser) => {
-        const index = this.usersJSON.findIndex((user: any) => user.id == updatedUser.id)
-        this.usersJSON[index] = updatedUser
+      this.http.put<UserModel>(`http://localhost:3000/api/user/${userID}/superAdminPromotion`, {}).subscribe((res: any) => {
+        this.usersJSON = res.updatedUser;
+        this.membershipJSON = res.updatedMembership;
 
         this.closeModal("manageUser" + userID)
     })
@@ -420,5 +424,8 @@ setCurrentView(currentView: string){
     });
   }
 
+  getCurrentUserMembership(userID: string){
+    return this.membershipJSON.filter((membership: any) => membership.userID == userID)
+  }
 
 }

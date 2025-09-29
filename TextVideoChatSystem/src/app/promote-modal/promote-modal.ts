@@ -7,8 +7,8 @@ import { Component, Input } from '@angular/core';
   styleUrl: './promote-modal.css'
 })
 export class PromoteModal {
-  @Input() user: any;   // comes from parent
-  @Input() checkGroupAdminRole!: (user: any) => any[];
-  @Input() checkUser!: (user: any, group: any, newRole: any) => void;
+  @Input() userID: any;   // comes from parent
+  @Input() checkGroupAdminRole!: (userID: any) => any[];
+  @Input() checkUser!: (user: any, groupID: any, newRole: any) => void;
   @Input() getGroupById!: (groupID: string) => string;
 }

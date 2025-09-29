@@ -17,14 +17,16 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
         const groupID = req.params.groupID;
         const newRole = req.body.role;
 
-        const user = await userCollection.find({id: userID})
+        const user = await userCollection.findOne({id: userID})
+        console.log("USER: ", user)
 
         // update membership
         await membershipCollection.updateOne(
             {userID: userID, groupID: groupID},
             { $set: {
                 role: "superAdmin"
-            }}
+            }
+            }
         )
 
         if(!user.roles.includes(newRole)){
@@ -36,9 +38,10 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
             )
         }
 
-        const updatedUsers = await userCollection.findOne({}).toArray();
+        const updatedUsers = await userCollection.find({}).toArray();
+        const updatedMembership = await membershipCollection.find({}).toArray();
 
-        res.json(updatedUsers)
+        res.json({updatedUsers, updatedMembership})
     });
 
     // Promote to super admin
@@ -49,19 +52,26 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
 
         const userID = req.params.userID;
         // find user in Mongo
-        const user = await userCollection.find({id: userID})
+        const user = await userCollection.findOne({id: userID})
 
         // get groupID from groupCollection
         const groups = await groupCollection.find({}).toArray();
         const groupID = groups.map(group => group.groupID);
 
+        // Making the ID for request
+        var date = new Date().toString()
+        var date_split = date.split(" ")
+        var dateForID = date_split[4].split(":").join("");
+        
         // Adding groupID + userID to Membership
         for (const group of groupID){
+            var membershipID = `m${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
             await membershipCollection.updateOne(
-                {userID: userID, groupID: group.groupID},
-                {$set: {
-                    role: "superAdmin"
-                }},
+                {userID: userID, groupID: group},
+                {
+                    $set: {role: "superAdmin"},
+                    $setOnInsert: {membershipID: membershipID}
+                },
                 // upsert means insert to collection if the userID+groupID doesn't exist in the collection (I think).
                 {upsert: true}
             )
