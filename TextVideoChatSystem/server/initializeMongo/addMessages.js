@@ -8,6 +8,7 @@ async function addMessages(collection){
                 "groupID": "g1",
                 "channelID": "c1",
                 "message": "Welcome to TestGroup!",
+                "images": [],
                 "datetime": "2025-09-03T12:00:00.000Z"
             },
             {
@@ -16,6 +17,7 @@ async function addMessages(collection){
                 "groupID": "g1",
                 "channelID": "c1",
                 "message": "Hi everyone!",
+                "images": [],
                 "datetime": "2025-09-03T12:01:00.000Z"
             },
             {
@@ -24,6 +26,7 @@ async function addMessages(collection){
                 "groupID": "g1",
                 "channelID": "c2",
                 "message": "Random thoughts here...",
+                "images": [],
                 "datetime": "2025-09-03T12:05:00.000Z"
             },
             {
@@ -32,6 +35,7 @@ async function addMessages(collection){
                 "groupID": "g3",
                 "channelID": "c5",
                 "message": "Working on project phase 1",
+                "images": [],
                 "datetime": "2025-09-03T12:10:00.000Z"
             },
             {
@@ -40,6 +44,7 @@ async function addMessages(collection){
                 "groupID": "g4",
                 "channelID": "c6",
                 "message": "Anyone into model trains?",
+                "images": [],
                 "datetime": "2025-09-03T12:15:00.000Z"
             }
         ]

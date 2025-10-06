@@ -8,6 +8,7 @@ async function addUsers(collection){
                 "email": "og@email.com",
                 "username": "super",
                 "pass": "123",
+                "avatar": "images/pfp/brownie.png",
                 "roles": [
                 "chatUser",
                 "superAdmin"
@@ -19,6 +20,7 @@ async function addUsers(collection){
                 "email": "user2@email.com",
                 "username": "userTwo",
                 "pass": "123",
+                "avatar": "images/pfp/defaultPFP.jpg",
                 "roles": [
                 "chatUser",
                 "groupAdmin"
@@ -30,6 +32,7 @@ async function addUsers(collection){
                 "email": "user3@email.com",
                 "username": "userThree",
                 "pass": "123",
+                "avatar": "images/pfp/defaultPFP.jpg",
                 "roles": [
                 "chatUser",
                 "groupAdmin"
@@ -41,6 +44,7 @@ async function addUsers(collection){
                 "email": "user5@email.com",
                 "username": "userFive",
                 "pass": "123",
+                "avatar": "images/pfp/defaultPFP.jpg",
                 "roles": [
                 "chatUser",
                 "groupAdmin"
@@ -52,6 +56,7 @@ async function addUsers(collection){
                 "email": "user6@email.com",
                 "username": "userSix",
                 "pass": "123",
+                "avatar": "images/pfp/defaultPFP.jpg",
                 "roles": [
                 "chatUser"
                 ],
@@ -62,6 +67,7 @@ async function addUsers(collection){
                 "email": "user7@email.com",
                 "username": "userSeven",
                 "pass": "123",
+                "avatar": "images/pfp/defaultPFP.jpg",
                 "roles": [
                 "chatUser",
                 "groupAdmin",
@@ -74,6 +80,7 @@ async function addUsers(collection){
                 "email": "gooner@email.com",
                 "username": "bruh",
                 "pass": "123",
+                "avatar": "images/pfp/defaultPFP.jpg",
                 "roles": [
                 "chatUser",
                 "groupAdmin",

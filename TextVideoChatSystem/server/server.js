@@ -5,6 +5,8 @@ const client = new MongoClient('mongodb://localhost:27017');
 var express = require('express'); //used for routing
 var app = express();
 
+app.use('/images', express.static('images'));
+
 var path = require('path');
 var cors = require('cors');
 app.use(cors());

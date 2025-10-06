@@ -45,15 +45,32 @@
             </div>
 
             <!-- Messages -->
-            <div class="col-10 min-vh-100 p-4 offset-2" id="chatContainer">
+            <div class="col-10 min-vh-100 offset-2" id="chatContainer">
                 <div class="mb-4">
                     @if (messagesJSON && messagesJSON.length>0) {
                         @for(message of messagesJSON; track message.messageID){
-                                {{message.datetime | date:'medium'}} - User: {{message.userID}}
-                                <li>
-                                    {{message.message}}
-                                </li>
-                            }
+                            <div class="messageContainer container mt-4">
+                                <div class="row">
+                                    <div class="pfpContainer col-1">
+                                        <img [src]='getAvatarById(message.userID)'
+                                            alt="Generic placeholder image" class="img-fluid profilePicture">
+                                    </div>
+                                    <div class="detailContainer col-11">
+                                        <div class="messageDetail d-flex align-items-baseline">
+                                            <p class="fw-semibold">
+                                                {{getUsernameById(message.userID)}}
+                                            </p>
+                                            <p class="ms-2 small text-muted">
+                                                {{message.datetime | date:'medium'}} 
+                                            </p>
+                                        </div>
+                                        <div class=" mt-n1 contentContainer">
+                                            <p>{{message.message}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     } @else {
                         <p>No messages yet.</p>
                     }
