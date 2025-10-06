@@ -1,3 +1,36 @@
-#chatContainer{
+/* #chatContainer{
     background-color: aqua;
+}
+
+.messageContainer{
+    background-color: rgb(0, 255, 81);
+}
+
+.detailContainer{
+    background-color: blueviolet;
+}
+
+.messageDetail{
+    background-color: aliceblue;
+}
+
+.contentContainer{
+    background-color: burlywood;
+} */
+
+/* .messageContainer{
+    background-color: rgb(0, 255, 81);
+} */
+
+.pfpContainer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profilePicture{
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    object-fit: cover;
 }

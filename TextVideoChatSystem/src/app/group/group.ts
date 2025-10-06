@@ -22,6 +22,7 @@ export class Group implements OnInit {
   }
   user: any;
   userJSON: any;
+  usersJSON: any;
   groupsJSON: GroupModel[] = [];
   channelsJSON: ChannelModel[] = [];
   messagesJSON: MessageModel[] = [];
@@ -37,6 +38,11 @@ export class Group implements OnInit {
           const groupsString = JSON.stringify(groups)
           console.log("GROUP: " + groupsString);
         })
+
+      this.http.get<UserModel>(`http://localhost:3000/api/users`).subscribe((users) => {
+        this.usersJSON = users;
+        // console.log(this.usersJSON); 
+      })
     } else {
       this.router.navigate([''])
     }
@@ -66,6 +72,27 @@ export class Group implements OnInit {
       console.log("messages: ", messageString)
     })
   }
+
+  getUsernameById(memberID: string){
+    if(this.usersJSON){
+      const user = this.usersJSON.find((user: any) => user.id === memberID)
+      // console.log("USER?! :", user.username)
+      return user ? user.username : "Unknown";
+    }
+  }
+
+  getAvatarById(memberID: string){
+    if(this.usersJSON){
+      const user = this.usersJSON.find((user: any) => user.id === memberID)
+      return user ? `http://localhost:3000/${user.avatar}` : "Unknown";
+    } else {
+      return "Unknown";
+    }
+  }
+
+  // getAvatarURL(user: any){
+  //   return `http://localhost:3000/${user.avatar}`
+  // }
   
   reset(){
     localStorage.clear();
