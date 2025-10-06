@@ -3,10 +3,24 @@ const { Group } = require("../models/Groups");
 const { Channel } = require("../models/Channel");
 const { Banned } = require("../models/Banned");
 const { JoinRequest } = require("../models/JoinRequest");
+const path = require('path');
+
+const multer = require('multer');
+
+const pfpStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, '../images/pfp'));
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname))
+    }
+})
+
+const upload = multer({ storage: pfpStorage })
 
 function route(app, userCollection, membershipCollection, groupCollection, requestCollection, channelCollection) {
     // ROUTE
-
     // promote to group admin
     app.put('/api/user/:userID/group/:groupID/role', async function (req, res) {
         if (!req.body) {
@@ -400,6 +414,34 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
 
         res.json({updatedUsers, updatedRequests, updatedMemberships});
     });
+
+    // update profile picture
+    app.post('/api/update/:userID', upload.single('profileImage'), async function (req, res, next) {
+        // req.file is the `avatar` file
+        // req.body will hold the text fields, if there were any
+        const userID = req.params.userID;
+        const profilePicture = req.file;
+
+        console.log(`userID: ${userID}`);
+        console.log("profile picture:", profilePicture)
+
+        var imageURL = `images/pfp/${profilePicture.filename}`
+
+        await userCollection.updateOne(
+            {id: userID},
+            {$set: {
+                avatar: imageURL
+            }}
+        )
+
+        const updatedUser = await userCollection.findOne(
+            { id: userID },
+            { projection: { password: 0 } }   // 0 means "exclude"
+        );
+
+        res.json(updatedUser);
+    })
+
 
     // get groups that user isn't in
     app.get('/api/groupsNotIn/:userID', async function (req, res){

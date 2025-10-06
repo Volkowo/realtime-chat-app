@@ -44,6 +44,8 @@ export class Profile implements OnInit {
   currentView: string = "";
   nonUsers: any[] = [];
   groupUserIsIn: any[] = []
+  avatar: string = "";
+  image: any;
 
   ngOnInit() {
     this.user = (localStorage.getItem("user"))
@@ -424,8 +426,31 @@ setCurrentView(currentView: string){
     });
   }
 
+  // change profile picutre
+  changeProfilePicture(userID: string){
+    var formData = new FormData();
+    if(this.image){
+      formData.append('profileImage', this.image)
+      this.http.post(`http://localhost:3000/api/update/${userID}`, formData).subscribe((res: any) => {
+          console.log(res);
+          this.userJSON = res;
+          localStorage.setItem("user", JSON.stringify(res));
+      })
+    }
+  }
+
+  onFileSelected(event: any){
+    if(event.target.value){
+      this.image = <File>event.target.files[0];
+    }
+  }
+  
   getCurrentUserMembership(userID: string){
     return this.membershipJSON.filter((membership: any) => membership.userID == userID)
+  }
+
+  getAvatarURL(user: any){
+    return `http://localhost:3000/${user.avatar}`
   }
 
 }
