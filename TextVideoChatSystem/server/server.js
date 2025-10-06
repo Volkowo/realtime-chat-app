@@ -8,10 +8,19 @@ var app = express();
 var path = require('path');
 var cors = require('cors');
 app.use(cors());
+
+const io = require('socket.io')(http, {
+    cors: {
+        origin: "http://localhost:4200",
+        methods: ["GET", "POST"]
+    }
+})
+
 var http = require('http').Server(app); //used to provide http functionality
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
+const sockets = require('./socket');
 
 const loginRoute = require('./routes/loginRoute');
 const groupRoute = require('./routes/groupRoute');
@@ -37,6 +46,9 @@ async function main(){
     groupRoute.route(app, membershipCollection, groupCollection);
     channelRoute.route(app, channelCollection, messageCollection);
     profileRoute.route(app, userCollection, membershipCollection, groupCollection, requestCollection, channelCollection);
+
+    // socket?
+    sockets.connect(io, 3000);
 
     // listen
     let server = http.listen(3000, function() {
