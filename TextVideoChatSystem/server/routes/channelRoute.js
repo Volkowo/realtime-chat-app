@@ -1,42 +1,35 @@
 const { readJSON, writeJSON } = require('../models/jsonHelper');
 
-function route(app, path) {
+function route(app, channelCollection, messageCollection) {
     // ROUTE
-    const groups = readJSON('../data/groups.json')
     // 1. Get the list of channel
-    app.get('/api/groups/:groupID/channels', function (req, res) {
-    const groupID = req.params.groupID;
+    app.get('/api/groups/:groupID/channels', async function (req, res) {
+        const groupID = req.params.groupID;
 
-    console.log("groupID (backend): ", groupID)
+        console.log("groupID (backend): ", groupID)
 
-    const group = groups.find(group => group.groupID == groupID);
-    if(group){
-        const channels = group.channels
-        console.log("CHANNELS (BACKEND): ", channels)
-        res.json(channels)
-    } else {
-        console.log("no channels..?")
-    }
+        const channels = await channelCollection.find({groupID: groupID}).toArray();
+        console.log("Channel (Backend): ", channels);
+
+        if(channels){
+            res.json(channels)
+        } else {
+            console.log("no channels..?")
+        }
     })
 
     // 2. Get the list of messages of a channel
-    app.get('/api/groups/:groupID/channels/:channelID', function (req, res) {
+    app.get('/api/groups/:groupID/channels/:channelID', async function (req, res) {
         const groupID = req.params.groupID;
         const channelID = req.params.channelID;
 
-        console.log("groupID (backend): ", groupID)
-        console.log("channelID (backend): ", channelID)
+        const messages = await messageCollection.find({groupID: groupID, channelID: channelID}).toArray();
 
-        if(!channelID && !groupID){
-            return res.sendStatus(400);
-        }
-
-        const group = groups.find(group => group.groupID == groupID);
-        const channel = group.channels.find(channel => channel.channelID == channelID)
+        console.log(messages);
         
-        if (channel){
-            console.log("messages (backend): ", channel.messages)
-            res.json(channel.messages)
+        if (messages){
+            console.log("messages (backend): ", messages)
+            res.json(messages)
         } else {
             console.log("idk you suck grr")
         }

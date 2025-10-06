@@ -1,19 +1,19 @@
 const { readJSON, writeJSON } = require('../models/jsonHelper');
 const { ChatUser } = require("../models/ChatUsers");
 
-function route(app, path) {
+function route(app, userCollection) {
     // ROUTE
-    app.post('/api/auth', function (req, res) {
+    app.post('/api/auth', async function (req, res) {
         if (!req.body) {
             return res.sendStatus(400);
         }
 
         const { username, pass } = req.body;
-        const users = readJSON('../data/users.json')
-        console.log(users);
+
+        const loggedUser = await userCollection.findOne({ username, pass });
+        console.log(loggedUser);
         console.log(req.body);
         console.log("AAAAAA " + username, pass);
-        const loggedUser = users.find(user => user.username === username && user.pass === pass);
 
         if (loggedUser) {
             const { pass, ...loggedUserWithoutPass } = loggedUser;
@@ -26,30 +26,94 @@ function route(app, path) {
     });
 
     // register a new user
-    app.post('/api/register', function(req, res){
+    app.post('/api/register', async function(req, res){
         if (!req.body) {
             return res.sendStatus(400);
         }
 
-        let users = readJSON('../data/users.json')
-
         const { username, password, email } = req.body;
 
         // Making the ID for new user
-        var date = new Date().toString()
-        var date_split = date.split(" ")
-        var dateForID = date_split[4].split(":").join("");
-        var newUserID = `${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+        var userID = createID();
 
-        if(users.find(user => user.username.toLowerCase() == username.toLowerCase() || user.email.toLowerCase() == email.toLowerCase())){
+        const user = await userCollection.findOne( {username: username.toLowerCase() });
+        console.log(user);
+
+        if(user){
             res.json({register: false})
         } else {
-            const newUser = new ChatUser(newUserID, email, username, password)
-            users.push(newUser)
-
-            writeJSON('../data/users.json', users)
+            await userCollection.insertOne({
+                id: userID,
+                email: email,
+                username: username,
+                pass: password,
+                roles: ["chatUser"],
+                signedIn: false
+            })
             res.json({register: true})
         }
     })
 }
+
+function createID(){
+    var date = new Date().toString()
+    var date_split = date.split(" ")
+    var dateForID = date_split[4].split(":").join("");
+    var newUserID = `${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+    return newUserID
+}
+
+// OLD FUNCTION
+// function route(app, userCollection) {
+//     // ROUTE
+//     app.post('/api/auth', function (req, res) {
+//         if (!req.body) {
+//             return res.sendStatus(400);
+//         }
+
+//         const { username, pass } = req.body;
+//         const users = readJSON('../data/users.json')
+//         console.log(users);
+//         console.log(req.body);
+//         console.log("AAAAAA " + username, pass);
+//         const loggedUser = users.find(user => user.username === username && user.pass === pass);
+
+//         if (loggedUser) {
+//             const { pass, ...loggedUserWithoutPass } = loggedUser;
+//             loggedUserWithoutPass.signedIn = true;
+
+//             res.json(loggedUserWithoutPass);
+//         } else {
+//             res.json({ signedIn: false });
+//         }
+//     });
+
+//     // register a new user
+//     app.post('/api/register', function(req, res){
+//         if (!req.body) {
+//             return res.sendStatus(400);
+//         }
+
+//         let users = readJSON('../data/users.json')
+
+//         const { username, password, email } = req.body;
+
+//         // Making the ID for new user
+//         var date = new Date().toString()
+//         var date_split = date.split(" ")
+//         var dateForID = date_split[4].split(":").join("");
+//         var newUserID = `${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+//         if(users.find(user => user.username.toLowerCase() == username.toLowerCase() || user.email.toLowerCase() == email.toLowerCase())){
+//             res.json({register: false})
+//         } else {
+//             const newUser = new ChatUser(newUserID, email, username, password)
+//             users.push(newUser)
+
+//             writeJSON('../data/users.json', users)
+//             res.json({register: true})
+//         }
+//     })
+// }
 module.exports = { route };

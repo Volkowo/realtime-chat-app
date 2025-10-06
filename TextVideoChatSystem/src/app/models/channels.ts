@@ -4,10 +4,6 @@ export class ChannelModel{
     constructor(
         public channelID: string, 
         public channelName: string, 
-        public messages: MessageModel[] = []
+        public groupID: string
     ){}
-
-    addMessage(messageID: string, userID: string, message: string){
-        this.messages.push(new MessageModel(messageID, userID, message))
-    }
 }

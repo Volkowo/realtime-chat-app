@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div class="modal fade" [id]="'promoteUser' + user.id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" [id]="'promoteUser' + userID" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,10 +12,10 @@
                         Choose Group
                     </button>
                     <ul class="dropdown-menu">
-                        @for(group of checkGroupAdminRole(user); track group.group){
+                        @for(group of checkGroupAdminRole(userID); track group.groupID){
                             <li>
-                                <button class="dropdown-item" (click)="checkUser(user, group, 'groupAdmin')">
-                                    {{ getGroupById(group.group) }}
+                                <button class="dropdown-item" (click)="checkUser(userID, group.groupID, 'groupAdmin')">
+                                    {{ getGroupById(group.groupID) }}
                                 </button>
                             </li>
                         }

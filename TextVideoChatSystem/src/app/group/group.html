@@ -26,9 +26,10 @@
                             [attr.aria-controls]="'#group' + group.groupID">
                                 {{group.groupName}}
                             </button>
+
                             <div class="collapse" [id]="'group' + group.groupID" data-bs-parent="#groupsAccordion">
                                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                    @for(channel of group.channels; track channel.channelID){
+                                    @for(channel of channelsJSON; track channel.channelID){
                                         <li class="ps-4" (click)="getMessage(group.groupID, channel.channelID)">
                                             {{channel.channelName}}
                                         </li>

@@ -26,8 +26,10 @@ export class Group implements OnInit {
   channelsJSON: ChannelModel[] = [];
   messagesJSON: MessageModel[] = [];
 
+  // Getting user + groups
   ngOnInit(){
-    this.user = (localStorage.getItem("user"))
+    this.user = (localStorage.getItem("user")); // checks if the user is actually logged in or not. (Logged in user is stored in Local Storage)
+
     if (this.user){
         this.userJSON = JSON.parse(this.user);
         this.http.get<GroupModel[]>(`http://localhost:3000/api/groups/${this.userJSON.id}`).subscribe((groups: GroupModel[]) => {
@@ -40,7 +42,9 @@ export class Group implements OnInit {
     }
   }
 
+  // Select a group and display the channel inside said group.
   selectGroup(groupID: string){
+    console.log("group.ts - selectGroup(): ", groupID);
     this.http.get<ChannelModel[]>(`http://localhost:3000/api/groups/${groupID}/channels`).subscribe((channels: ChannelModel[]) => {
       this.channelsJSON = channels;
       const channelString = JSON.stringify(channels)
@@ -72,8 +76,7 @@ export class Group implements OnInit {
   leaveGroup(groupID: string, userID: string){
     console.log(groupID)
     this.http.delete(`http://localhost:3000/api/group/${groupID}/${userID}/leave`, {}).subscribe((res: any) => {
-      this.groupsJSON = res.groups.filter((group: any) => group.users.includes(userID));
-      this.userJSON = res.user;
+      this.groupsJSON = res
 
       localStorage.setItem("user", JSON.stringify(this.userJSON));
     })
