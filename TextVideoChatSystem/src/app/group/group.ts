@@ -22,6 +22,7 @@ export class Group implements OnInit, AfterViewChecked {
 
   }
 
+  images: CanvasFillRule[] = [];
   messages: any;
   messageContent: string = "";
   currentGroupID: string = "";
@@ -142,14 +143,30 @@ export class Group implements OnInit, AfterViewChecked {
     this.currentChannelID = channelID;
   }
 
+  onFilesSelected(event: any){
+    if(event.target.value && event.target.files.length > 0){
+      this.images = Array.from(event.target.files);
+    }
+  }
+
   // send message
   sendChat(userID: string, channelID: string, groupID: string){
+    // return nothing if message AND image has nothing
+    if (!this.messageContent && this.images.length == 0) return;
+    var formData = new FormData();
+    formData.append("messageContent", this.messageContent);
+
+    console.log("images: ", this.images)
+
+    // Append images to formData
+    this.images.forEach((file, index) => {
+      console.log("image ", index, " :", file)
+        formData.append('images', file); // we're using images for all of it
+    });
+    
     console.log(this.messageContent);
 
-    // await this.socketService.joinChannel(channelID, this.userJSON.id);
-
-
-    this.http.post(`http://localhost:3000/api/addMessage/${userID}/${channelID}/${groupID}`, {messageContent: this.messageContent}).subscribe((res: any) => {
+    this.http.post(`http://localhost:3000/api/addMessage/${userID}/${channelID}/${groupID}`, formData).subscribe((res: any) => {
       // this.messagesJSON = res.updatedMessages;
 
       // console.log("SEND CHAT: ", this.socketService.messages())
@@ -157,6 +174,11 @@ export class Group implements OnInit, AfterViewChecked {
     })
 
     this.messageContent = "";
+    this.images = []
+  }
+
+  getAvatarURL(url: any){
+    return `http://localhost:3000/${url}`
   }
 
   

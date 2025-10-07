@@ -1,4 +1,19 @@
 const { readJSON, writeJSON } = require('../models/jsonHelper');
+const path = require('path');
+const multer = require('multer');
+
+const messageStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, '../images/server/message'));
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname))
+    }
+})
+
+const upload = multer({ storage: messageStorage })
+
 
 function route(app, membershipCollection, groupCollection, messageCollection, io) {
     // ROUTE
@@ -48,16 +63,25 @@ function route(app, membershipCollection, groupCollection, messageCollection, io
     })
 
     // add message
-    app.post('/api/addMessage/:userID/:channelID/:groupID', async function(req, res){
+    app.post('/api/addMessage/:userID/:channelID/:groupID', upload.array('images'), async function(req, res){
+        var imageArray = []
         const userID = req.params.userID;
         const channelID = req.params.channelID;
         const groupID = req.params.groupID;
         const message = req.body.messageContent;
         const datetime = new Date().toString();
+        const images = req.files;
+
+        for(let image of images){
+            var imageURL = `images/server/message/${image.filename}`
+            imageArray.push(imageURL)
+        }
 
         var date_split = datetime.split(" ")
         var dateForID = date_split[4].split(":").join("");
         var messageID = `msg${date_split[1]}${date_split[2]}_${dateForID}${Math.floor(Math.random() * 20)}`
+
+        console.log("Backend Image: ", images)
 
         console.log(
             `
@@ -75,7 +99,7 @@ function route(app, membershipCollection, groupCollection, messageCollection, io
                 groupID: groupID,
                 channelID: channelID,
                 message: message,
-                images: [],
+                images: imageArray,
                 datetime: datetime
         }
 

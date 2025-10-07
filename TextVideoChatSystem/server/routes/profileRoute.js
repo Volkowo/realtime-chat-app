@@ -436,7 +436,7 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
 
         const updatedUser = await userCollection.findOne(
             { id: userID },
-            { projection: { password: 0 } }   // 0 means "exclude"
+            { projection: { password: 0 } }   // 0 to exclude the password from being copied
         );
 
         res.json(updatedUser);
