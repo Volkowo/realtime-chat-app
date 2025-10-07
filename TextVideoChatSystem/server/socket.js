@@ -3,9 +3,9 @@ function connect(io, port){
         console.log(`User connected on port ${port}: ${socket.id}`);
 
         // send message
-        socket.on('message', (message) => {
-            console.log(`message: ${message}`);
-            io.emit("message", message)
+        socket.on('message', ({message, channelID}) => {
+            console.log(`message AAAAAAAAAAAAA: ${message}`);
+            io.to(channelID).emit("message", message)
         })
 
         // send image
@@ -17,6 +17,7 @@ function connect(io, port){
         // join channel
         socket.on('joinChannel', ({channelID, userID}) => {
             socket.join(channelID)
+            console.log(`User ${userID} joined channel ${channelID}`);
             io.to(channelID).emit("joinChannel", userID)
         })
 

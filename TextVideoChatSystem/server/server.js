@@ -44,7 +44,7 @@ async function main(){
 
     // routes
     loginRoute.route(app, userCollection); 
-    groupRoute.route(app, membershipCollection, groupCollection);
+    groupRoute.route(app, membershipCollection, groupCollection, messageCollection, io);
     channelRoute.route(app, channelCollection, messageCollection);
     profileRoute.route(app, userCollection, membershipCollection, groupCollection, requestCollection, channelCollection);
 

@@ -47,8 +47,8 @@
             <!-- Messages -->
             <div class="col-10 min-vh-100 offset-2" id="chatContainer">
                 <div class="mb-4">
-                    @if (messagesJSON && messagesJSON.length>0) {
-                        @for(message of messagesJSON; track message.messageID){
+                    @if(currentChannelID){
+                        @for(message of socketService.messages(); track message.messageID){
                             <div class="messageContainer container mt-4">
                                 <div class="row">
                                     <div class="pfpContainer col-1">
@@ -71,11 +71,22 @@
                                 </div>
                             </div>
                         }
+                        <form>
+                            <label>Current Channel: {{currentChannelID}}</label>
+                            <label>Current Group: {{currentGroupID}}</label>
+                            <label>Hi {{userJSON.id}}</label>
+                            <div class="form-group">
+                                <label for="messageContent">New Message</label>
+                                <input type="text" [(ngModel)]="messageContent" name="messageContent" id="messageContent"/>
+                            </div>
+                            <div class="form-group">
+                                <button (click)="sendChat(userJSON.id, currentChannelID, currentGroupID)" class="btn btn-primary">Send</button>
+                            </div>
+                        </form>
                     } @else {
-                        <p>No messages yet.</p>
+                        <p> aughhhhh </p>
                     }
                 </div>
-                <button type="button" class="btn btn-primary" (click)="reset()">Reset</button>
             </div>
         </div>
     </main>

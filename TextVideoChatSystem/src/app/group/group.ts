@@ -18,9 +18,14 @@ import { Socket } from '../services/socket';
   styleUrls: ['./group.css', './groupBootstrap.css']
 })
 export class Group implements OnInit {
-  constructor(private router: Router, private http: HttpClient, private socketService: Socket) {
+  constructor(private router: Router, private http: HttpClient, public socketService: Socket) {
 
   }
+
+  messages: any;
+  messageContent: string = "";
+  currentGroupID: string = "";
+  currentChannelID: string = "";
   user: any;
   userJSON: any;
   usersJSON: any;
@@ -55,6 +60,16 @@ export class Group implements OnInit {
     console.log("group.ts - selectGroup(): ", groupID);
     this.http.get<ChannelModel[]>(`http://localhost:3000/api/groups/${groupID}/channels`).subscribe((channels: ChannelModel[]) => {
       this.channelsJSON = channels;
+
+      // set the ID for currentGroup
+      if(this.currentGroupID !== groupID){
+        this.setCurrentGroup(groupID);
+        this.setCurrentChannel("")
+        this.socketService.leaveChannel(this.currentChannelID, this.userJSON.id);
+      } else {
+
+      }
+
       const channelString = JSON.stringify(channels)
       console.log("channels: ", channelString)
     })
@@ -68,7 +83,14 @@ export class Group implements OnInit {
   */
 
   getMessage(groupID: string, channelID: string){
-    this.http.get<MessageModel[]>(`http://localhost:3000/api/groups/${groupID}/channels/${channelID}`).subscribe((messages: MessageModel[]) => {
+    this.http.get<MessageModel[]>(`http://localhost:3000/api/groups/${groupID}/channels/${channelID}`).subscribe((messages: any) => {
+      this.setCurrentChannel(channelID);
+
+      this.socketService.joinChannel(channelID, this.userJSON.id);
+      this.socketService.messages.set(messages);
+
+      console.log("GET MESSAGE: ", this.socketService.messages())
+      
       this.messagesJSON = messages;
       const messageString = JSON.stringify(messages);
       console.log("messages: ", messageString)
@@ -91,10 +113,33 @@ export class Group implements OnInit {
       return "Unknown";
     }
   }
+  
+  // set current group (and channel)
+  setCurrentGroup(groupID: string){
+    this.currentGroupID = groupID;
+  }
 
-  // getAvatarURL(user: any){
-  //   return `http://localhost:3000/${user.avatar}`
-  // }
+  setCurrentChannel(channelID: string){
+    this.currentChannelID = channelID;
+  }
+
+  // send message
+  sendChat(userID: string, channelID: string, groupID: string){
+    console.log(this.messageContent);
+
+    this.socketService.joinChannel(channelID, this.userJSON.id);
+
+
+    this.http.post(`http://localhost:3000/api/addMessage/${userID}/${channelID}/${groupID}`, {messageContent: this.messageContent}).subscribe((res: any) => {
+      // this.messagesJSON = res.updatedMessages;
+
+      // console.log("SEND CHAT: ", this.socketService.messages())
+      // this.socketService.send(res.currentMessage, channelID);
+    })
+
+    this.messageContent = "";
+  }
+
   
   reset(){
     localStorage.clear();
@@ -110,4 +155,6 @@ export class Group implements OnInit {
       localStorage.setItem("user", JSON.stringify(this.userJSON));
     })
   }
+
+
 }
