@@ -4,6 +4,7 @@ const client = new MongoClient('mongodb://localhost:27017');
 
 var express = require('express'); //used for routing
 var app = express();
+const sockets = require('./socket');
 
 app.use('/images', express.static('images'));
 
@@ -11,18 +12,16 @@ var path = require('path');
 var cors = require('cors');
 app.use(cors());
 
+var http = require('http').Server(app); //used to provide http functionality
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json())
 const io = require('socket.io')(http, {
     cors: {
         origin: "http://localhost:4200",
         methods: ["GET", "POST"]
     }
 })
-
-var http = require('http').Server(app); //used to provide http functionality
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(bodyParser.json())
-const sockets = require('./socket');
 
 const loginRoute = require('./routes/loginRoute');
 const groupRoute = require('./routes/groupRoute');

@@ -9,6 +9,7 @@ import { UserModel, LoggedInUser } from '../models/users';
 import { GroupModel } from '../models/groups';
 import { ChannelModel } from '../models/channels';
 import { MessageModel } from '../models/messages';
+import { Socket } from '../services/socket';
 
 @Component({
   selector: 'app-group',
@@ -17,7 +18,7 @@ import { MessageModel } from '../models/messages';
   styleUrls: ['./group.css', './groupBootstrap.css']
 })
 export class Group implements OnInit {
-  constructor(private router: Router, private http: HttpClient) {
+  constructor(private router: Router, private http: HttpClient, private socketService: Socket) {
 
   }
   user: any;
@@ -29,6 +30,7 @@ export class Group implements OnInit {
 
   // Getting user + groups
   ngOnInit(){
+    this.socketService.initSocket();
     this.user = (localStorage.getItem("user")); // checks if the user is actually logged in or not. (Logged in user is stored in Local Storage)
 
     if (this.user){

@@ -17,25 +17,25 @@ function connect(io, port){
         // join channel
         socket.on('joinChannel', ({channelID, userID}) => {
             socket.join(channelID)
-            io.to(channelID).emit("userJoin", userID)
+            io.to(channelID).emit("joinChannel", userID)
         })
 
         // leave channel
         socket.on('leaveChannel', ({channelID, userID}) => {
             socket.leave(channelID)
-            io.to(channelID).emit("userJoin", userID)
+            io.to(channelID).emit("leaveChannel", userID)
         })
         
         // join group
         socket.on('joinGroup', ({groupID, userID}) => {
             socket.join(groupID)
-            io.to(groupID).emit("userJoin", userID)
+            io.to(groupID).emit("joinGroup", userID)
         })
 
         // leave group
         socket.on('leaveGroup', ({groupID, userID}) => {
             socket.leave(groupID)
-            io.to(groupID).emit("userJoin", userID)
+            io.to(groupID).emit("leaveGroup", userID)
         })
     })
 }
