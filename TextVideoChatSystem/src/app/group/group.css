@@ -1,7 +1,9 @@
-/* #chatContainer{
-    background-color: aqua;
+#chatContainer{
+    overflow-y: auto;
+    height: 80vh;
 }
 
+/*
 .messageContainer{
     background-color: rgb(0, 255, 81);
 }

@@ -44,13 +44,37 @@ export class Socket {
       })
 
       // join channel
-      this.socket.on("joinChannel", (userID: string) => {
+      this.socket.on("joinChannel", ({ userID, username }: { userID: string, username: string }) => {
         this.usersInChannel.update(currentUsers => [...currentUsers, userID]);
+
+        // message for when user join a channel
+        const joinMsg: ChatMessage = {
+            messageID: `sys-${Date.now()}`,
+            userID: "system",
+            groupID: this.currentChannel()!,
+            channelID: this.currentChannel()!,
+            message: `${username} joined the channel`,
+            images: [],
+            datetime: new Date().toString()
+        };
+        this.messages.update(msgs => [...msgs, joinMsg]);
       })
 
       // leave channel
-      this.socket.on('leaveChannel', (userID: string) =>{
+      this.socket.on('leaveChannel', ({ userID, username }: { userID: string, username: string }) =>{
         this.usersInChannel.update(currentUsers => currentUsers.filter(user => user !== userID))
+
+        // message for when user leave a channel
+        const joinMsg: ChatMessage = {
+            messageID: `sys-${Date.now()}`,
+            userID: "system",
+            groupID: this.currentChannel()!,
+            channelID: this.currentChannel()!,
+            message: `${username} left the channel`,
+            images: [],
+            datetime: new Date().toString()
+        };
+        this.messages.update(msgs => [...msgs, joinMsg]);
       })
 
     } else {

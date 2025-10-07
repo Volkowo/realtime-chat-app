@@ -49,7 +49,7 @@ async function main(){
     profileRoute.route(app, userCollection, membershipCollection, groupCollection, requestCollection, channelCollection);
 
     // socket?
-    sockets.connect(io, 3000);
+    sockets.connect(io, 3000, userCollection);
 
     // listen
     let server = http.listen(3000, function() {

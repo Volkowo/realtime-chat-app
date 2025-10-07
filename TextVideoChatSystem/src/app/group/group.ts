@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, ViewChild, ElementRef} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -17,7 +17,7 @@ import { Socket } from '../services/socket';
   templateUrl: './group.html',
   styleUrls: ['./group.css', './groupBootstrap.css']
 })
-export class Group implements OnInit {
+export class Group implements OnInit, AfterViewChecked {
   constructor(private router: Router, private http: HttpClient, public socketService: Socket) {
 
   }
@@ -32,6 +32,8 @@ export class Group implements OnInit {
   groupsJSON: GroupModel[] = [];
   channelsJSON: ChannelModel[] = [];
   messagesJSON: MessageModel[] = [];
+
+  @ViewChild('chatContainerRef') private chatContainer!: ElementRef;
 
   // Getting user + groups
   ngOnInit(){
@@ -54,6 +56,18 @@ export class Group implements OnInit {
       this.router.navigate([''])
     }
   }
+
+  ngAfterViewChecked(){
+    this.scrollToBottom();
+  }
+
+  scrollToBottom(){
+    try {
+        this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+    } catch(err) {
+        console.error(err);
+    }
+  } 
 
   // Select a group and display the channel inside said group.
   selectGroup(groupID: string){
@@ -84,6 +98,11 @@ export class Group implements OnInit {
 
   getMessage(groupID: string, channelID: string){
     this.http.get<MessageModel[]>(`http://localhost:3000/api/groups/${groupID}/channels/${channelID}`).subscribe((messages: any) => {
+      if(this.currentChannelID !== channelID){
+        this.socketService.leaveChannel(this.currentChannelID, this.userJSON.id);
+      }
+
+
       this.setCurrentChannel(channelID);
 
       this.socketService.joinChannel(channelID, this.userJSON.id);
@@ -127,7 +146,7 @@ export class Group implements OnInit {
   sendChat(userID: string, channelID: string, groupID: string){
     console.log(this.messageContent);
 
-    this.socketService.joinChannel(channelID, this.userJSON.id);
+    // await this.socketService.joinChannel(channelID, this.userJSON.id);
 
 
     this.http.post(`http://localhost:3000/api/addMessage/${userID}/${channelID}/${groupID}`, {messageContent: this.messageContent}).subscribe((res: any) => {

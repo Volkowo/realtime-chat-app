@@ -1,4 +1,4 @@
-function connect(io, port){
+function connect(io, port, userCollection){
     io.on('connection', (socket) => {
         console.log(`User connected on port ${port}: ${socket.id}`);
 
@@ -15,16 +15,24 @@ function connect(io, port){
         })
 
         // join channel
-        socket.on('joinChannel', ({channelID, userID}) => {
+        socket.on('joinChannel', async ({channelID, userID}) => {
             socket.join(channelID)
             console.log(`User ${userID} joined channel ${channelID}`);
-            io.to(channelID).emit("joinChannel", userID)
+
+            const user = await userCollection.findOne({ id: userID });
+            const username = user ? user.username : userID;
+
+            io.to(channelID).emit("joinChannel", {userID, username})
         })
 
         // leave channel
-        socket.on('leaveChannel', ({channelID, userID}) => {
+        socket.on('leaveChannel', async ({channelID, userID}) => {
             socket.leave(channelID)
-            io.to(channelID).emit("leaveChannel", userID)
+            
+            const user = await userCollection.findOne({ id: userID });
+            const username = user ? user.username : userID;
+
+            io.to(channelID).emit("leaveChannel", {userID, username})
         })
         
         // join group
