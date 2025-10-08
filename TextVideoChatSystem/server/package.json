@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "unitTest": "mocha ./unitTest/test.js",
+    "test": "mocha ./integrationTest/test.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,10 +18,8 @@
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "chai": "^6.2.0",
+    "chai-http": "^5.1.2",
     "mocha": "^11.7.4"
-  },
-  "scripts": {
-    "unitTest": "mocha ./unitTest/test.js",
-    "test": "mocha ./integrationTest/test.js"
   }
 }
