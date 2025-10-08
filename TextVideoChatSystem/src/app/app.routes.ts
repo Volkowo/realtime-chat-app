@@ -3,6 +3,7 @@ import { Login } from './login/login';
 import { Group } from './group/group';
 import { Profile } from './profile/profile';
 import { Register } from './register/register';
+import { Videos } from './videos/videos';
 
 export const routes: Routes = [
     {
@@ -29,5 +30,10 @@ export const routes: Routes = [
         path: "register",
         component: Register,
         title: "Register"
+    },
+    {
+        path: "videos",
+        component: Videos,
+        title: "Videos"
     }
 ];
