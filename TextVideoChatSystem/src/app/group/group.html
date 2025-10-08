@@ -45,20 +45,58 @@
             </div>
 
             <!-- Messages -->
-            <div class="col-10 min-vh-100 p-4 offset-2" id="chatContainer">
-                <div class="mb-4">
-                    @if (messagesJSON && messagesJSON.length>0) {
-                        @for(message of messagesJSON; track message.messageID){
-                                {{message.datetime | date:'medium'}} - User: {{message.userID}}
-                                <li>
-                                    {{message.message}}
-                                </li>
-                            }
+            <div class="col-10 min-vh-100 offset-2" #chatContainerRef id="chatContainer">
+                <div class="">
+                    @if(currentChannelID){
+                        @for(message of socketService.messages(); track message.messageID){
+                            <div class="messageContainer container mt-4">
+                                <div class="row">
+                                    @if(message.userID !== "system"){
+                                        <div class="col-1 d-flex align-items-start">
+                                            <div class="pfpContainer">
+                                                <img [src]='getAvatarById(message.userID)'
+                                                    alt="Generic placeholder image" class="profilePicture">
+                                            </div>
+                                        </div>
+                                        <div class="detailContainer col-11">
+                                            <div class="messageDetail d-flex align-items-baseline">
+                                                <p class="fw-semibold">
+                                                    {{getUsernameById(message.userID)}}
+                                                </p>
+                                                <p class="ms-2 small text-muted">
+                                                    {{message.datetime | date:'medium'}} 
+                                                </p>
+                                            </div>
+                                            <div class=" mt-n1 contentContainer">
+                                                <p>{{message.message}}</p>
+                                                @if(message.images.length > 0){
+                                                @for(image of message.images; track image){
+                                                    <img [src]='getAvatarURL(image)'
+                                                    alt="Generic placeholder image" class="img-fluid" />
+                                                }
+                                            }
+                                            </div>
+                                        </div>
+                                    } @else{
+                                        <div class="text-muted small systemMessage">
+                                            <p>{{message.message}}</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        <form class="d-flex w-100 sticky-bottom p-4 bg-white" (ngSubmit)="sendChat(userJSON.id, currentChannelID, currentGroupID)">
+                            <label for="fileInput" class="btn btn-outline-secondary me-2 p-2">
+                                +
+                            </label>
+                            <input hidden id="fileInput" type="file" (change)="onFilesSelected($event)" multiple accept="image/*" class="form-control me-2" />
+                            <input type="text" [(ngModel)]="messageContent" name="messageContent" class="form-control me-2" placeholder="Type a message..." />
+                            <button type="submit" class="btn btn-primary">Send</button>
+                        </form>
                     } @else {
-                        <p>No messages yet.</p>
+                        <p> aughhhhh </p>
                     }
                 </div>
-                <button type="button" class="btn btn-primary" (click)="reset()">Reset</button>
             </div>
         </div>
     </main>

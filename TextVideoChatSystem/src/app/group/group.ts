@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, ViewChild, ElementRef} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -9,6 +9,7 @@ import { UserModel, LoggedInUser } from '../models/users';
 import { GroupModel } from '../models/groups';
 import { ChannelModel } from '../models/channels';
 import { MessageModel } from '../models/messages';
+import { Socket } from '../services/socket';
 
 @Component({
   selector: 'app-group',
@@ -16,18 +17,28 @@ import { MessageModel } from '../models/messages';
   templateUrl: './group.html',
   styleUrls: ['./group.css', './groupBootstrap.css']
 })
-export class Group implements OnInit {
-  constructor(private router: Router, private http: HttpClient) {
+export class Group implements OnInit, AfterViewChecked {
+  constructor(private router: Router, private http: HttpClient, public socketService: Socket) {
 
   }
+
+  images: CanvasFillRule[] = [];
+  messages: any;
+  messageContent: string = "";
+  currentGroupID: string = "";
+  currentChannelID: string = "";
   user: any;
   userJSON: any;
+  usersJSON: any;
   groupsJSON: GroupModel[] = [];
   channelsJSON: ChannelModel[] = [];
   messagesJSON: MessageModel[] = [];
 
+  @ViewChild('chatContainerRef') private chatContainer!: ElementRef;
+
   // Getting user + groups
   ngOnInit(){
+    this.socketService.initSocket();
     this.user = (localStorage.getItem("user")); // checks if the user is actually logged in or not. (Logged in user is stored in Local Storage)
 
     if (this.user){
@@ -37,16 +48,43 @@ export class Group implements OnInit {
           const groupsString = JSON.stringify(groups)
           console.log("GROUP: " + groupsString);
         })
+
+      this.http.get<UserModel>(`http://localhost:3000/api/users`).subscribe((users) => {
+        this.usersJSON = users;
+        // console.log(this.usersJSON); 
+      })
     } else {
       this.router.navigate([''])
     }
   }
+
+  ngAfterViewChecked(){
+    this.scrollToBottom();
+  }
+
+  scrollToBottom(){
+    try {
+        this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+    } catch(err) {
+        console.error(err);
+    }
+  } 
 
   // Select a group and display the channel inside said group.
   selectGroup(groupID: string){
     console.log("group.ts - selectGroup(): ", groupID);
     this.http.get<ChannelModel[]>(`http://localhost:3000/api/groups/${groupID}/channels`).subscribe((channels: ChannelModel[]) => {
       this.channelsJSON = channels;
+
+      // set the ID for currentGroup
+      if(this.currentGroupID !== groupID){
+        this.setCurrentGroup(groupID);
+        this.setCurrentChannel("")
+        this.socketService.leaveChannel(this.currentChannelID, this.userJSON.id);
+      } else {
+
+      }
+
       const channelString = JSON.stringify(channels)
       console.log("channels: ", channelString)
     })
@@ -60,12 +98,89 @@ export class Group implements OnInit {
   */
 
   getMessage(groupID: string, channelID: string){
-    this.http.get<MessageModel[]>(`http://localhost:3000/api/groups/${groupID}/channels/${channelID}`).subscribe((messages: MessageModel[]) => {
+    this.http.get<MessageModel[]>(`http://localhost:3000/api/groups/${groupID}/channels/${channelID}`).subscribe((messages: any) => {
+      if(this.currentChannelID !== channelID){
+        this.socketService.leaveChannel(this.currentChannelID, this.userJSON.id);
+      }
+
+
+      this.setCurrentChannel(channelID);
+
+      this.socketService.joinChannel(channelID, this.userJSON.id);
+      this.socketService.messages.set(messages);
+
+      console.log("GET MESSAGE: ", this.socketService.messages())
+      
       this.messagesJSON = messages;
       const messageString = JSON.stringify(messages);
       console.log("messages: ", messageString)
     })
   }
+
+  getUsernameById(memberID: string){
+    if(this.usersJSON){
+      const user = this.usersJSON.find((user: any) => user.id === memberID)
+      // console.log("USER?! :", user.username)
+      return user ? user.username : "Unknown";
+    }
+  }
+
+  getAvatarById(memberID: string){
+    if(this.usersJSON){
+      const user = this.usersJSON.find((user: any) => user.id === memberID)
+      return user ? `http://localhost:3000/${user.avatar}` : "Unknown";
+    } else {
+      return "Unknown";
+    }
+  }
+  
+  // set current group (and channel)
+  setCurrentGroup(groupID: string){
+    this.currentGroupID = groupID;
+  }
+
+  setCurrentChannel(channelID: string){
+    this.currentChannelID = channelID;
+  }
+
+  onFilesSelected(event: any){
+    if(event.target.value && event.target.files.length > 0){
+      this.images = Array.from(event.target.files);
+    }
+  }
+
+  // send message
+  sendChat(userID: string, channelID: string, groupID: string){
+    // return nothing if message AND image has nothing
+    if (!this.messageContent && this.images.length == 0) return;
+    var formData = new FormData();
+    formData.append("messageContent", this.messageContent);
+
+    console.log("images: ", this.images)
+
+    // Append images to formData
+    this.images.forEach((file, index) => {
+      console.log("image ", index, " :", file)
+        formData.append('images', file); // we're using images for all of it
+    });
+    
+    console.log(this.messageContent);
+
+    this.http.post(`http://localhost:3000/api/addMessage/${userID}/${channelID}/${groupID}`, formData).subscribe((res: any) => {
+      // this.messagesJSON = res.updatedMessages;
+
+      // console.log("SEND CHAT: ", this.socketService.messages())
+      // this.socketService.send(res.currentMessage, channelID);
+    })
+
+    this.messageContent = "";
+    this.images = []
+  }
+
+  getAvatarURL(url: any){
+    return `http://localhost:3000/${url}`
+  }
+
   
   reset(){
     localStorage.clear();
@@ -81,4 +196,6 @@ export class Group implements OnInit {
       localStorage.setItem("user", JSON.stringify(this.userJSON));
     })
   }
+
+
 }

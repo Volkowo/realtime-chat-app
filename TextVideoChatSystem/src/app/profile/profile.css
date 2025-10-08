@@ -14,3 +14,13 @@
 #sidebarMenu {
   z-index: 1;
 }
+
+.profilePicture{
+    align-self: center;
+    width: 180px;
+    border-radius: 10px;
+}
+
+.profileCard{
+    border-radius: .5rem .5rem 0 0;
+}
