@@ -86,7 +86,10 @@
                             </div>
                         }
                         <form class="d-flex w-100 sticky-bottom p-4 bg-white" (ngSubmit)="sendChat(userJSON.id, currentChannelID, currentGroupID)">
-                            <input type="file" (change)="onFilesSelected($event)" multiple accept="image/*" class="form-control me-2" />
+                            <label for="fileInput" class="btn btn-outline-secondary me-2 p-2">
+                                +
+                            </label>
+                            <input hidden id="fileInput" type="file" (change)="onFilesSelected($event)" multiple accept="image/*" class="form-control me-2" />
                             <input type="text" [(ngModel)]="messageContent" name="messageContent" class="form-control me-2" placeholder="Type a message..." />
                             <button type="submit" class="btn btn-primary">Send</button>
                         </form>
