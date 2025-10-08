@@ -164,4 +164,21 @@ answerIncomingCalls(stream: MediaStream) {
       })
     }
   }
+
+    endCall() {
+    // Close all active PeerJS calls
+    this.calls.forEach((call: any) => {
+      call.close();  // triggers the 'close' event on both ends
+    });
+
+    // Remove our own video from the list
+    this.videos = this.videos.filter(v => v.userID !== this.peerService.myPeerID);
+
+    // Reset state
+    this.isCallStarted = false;
+    this.currentStream?.getTracks().forEach((t: MediaStreamTrack) => t.stop()); // stop camera/screen
+    this.currentStream = null;
+    this.calls = [];
+  }
+
 }
