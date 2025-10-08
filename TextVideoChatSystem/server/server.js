@@ -26,7 +26,7 @@ const profileRoute = require('./routes/profileRoute');
 const dbName = "assignmentSF";
 const client = new MongoClient('mongodb://localhost:27017');
 
-async function initApp() {
+async function initApp(testing = false) {
     await client.connect();
     const db = client.db(dbName);
 
@@ -44,8 +44,10 @@ async function initApp() {
     channelRoute.route(app, channelCollection, messageCollection);
     profileRoute.route(app, userCollection, membershipCollection, groupCollection, requestCollection, channelCollection);
 
-    // Socket setup
-    sockets.connect(io, 3000, userCollection);
+    // Socket 
+    if(testing == false){
+        sockets.connect(io, 3000, userCollection);
+    }
 }
 
 // Only start server when not in test mode

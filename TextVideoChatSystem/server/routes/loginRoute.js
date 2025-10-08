@@ -3,6 +3,7 @@ const { ChatUser } = require("../models/ChatUsers");
 
 function route(app, userCollection) {
     // ROUTE
+    // get logged in user
     app.post('/api/auth', async function (req, res) {
         if (!req.body) {
             return res.sendStatus(400);
