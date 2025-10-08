@@ -104,8 +104,19 @@ export class Videos implements OnInit{
       this.peerService.myPeer.reconnect();
     }
 
-    this.answerIncomingCalls(this.currentStream);  // <-- new
+    this.answerIncomingCalls(this.currentStream);  
     this.socketService.peerID(this.peerService.myPeerID);
+    this.isCallStarted = true;
+  }
+
+  async streamScreen(){
+    this.currentStream = await navigator.mediaDevices.getDisplayMedia(gdmOptions);
+    this.addMyVideo(this.currentStream);
+    if (this.peerService.myPeer.disconnected) {
+      this.peerService.myPeer.reconnect();
+    }
+
+    this.answering(this.currentStream);
     this.isCallStarted = true;
   }
 
@@ -123,7 +134,7 @@ export class Videos implements OnInit{
 answerIncomingCalls(stream: MediaStream) {
   this.peerService.myPeer.on('call', (call: any) => {
     console.log('Incoming call from', call.metadata?.peerID);
-    call.answer(stream);                     // send your own camera stream back
+    call.answer(stream); 
     call.on('stream', (remoteStream: MediaStream) => {
       const remoteID = call.metadata?.peerID || call.peer;
       console.log('Receiving remote stream from', remoteID);
@@ -131,8 +142,6 @@ answerIncomingCalls(stream: MediaStream) {
     });
   });
 }
-
-
 
   calling(peerID: string){
     if(confirm(`Do you want to call ${peerID}`)){
