@@ -18,5 +18,9 @@
   },
   "devDependencies": {
     "mocha": "^11.7.4"
+  },
+  "scripts": {
+    "unitTest": "mocha ./unitTest/test.js",
+    "test": "mocha ./integrationTest/test.js"
   }
 }
