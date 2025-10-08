@@ -10,6 +10,7 @@
 </head>
 <body>
     <main class="flex-nowrap">
+        
         <!-- Sidebar -->
         <div class="row">
             <div class="col-2 pt-1 ps-3 bg-light position-fixed min-vh-100">
@@ -45,7 +46,7 @@
             </div>
 
             <!-- Messages -->
-            <div class="col-10 min-vh-100 offset-2" #chatContainerRef id="chatContainer">
+            <div class="col-10 min-vh-100 ms-auto" #chatContainerRef id="chatContainer">
                 <div class="">
                     @if(currentChannelID){
                         @for(message of socketService.messages(); track message.messageID){

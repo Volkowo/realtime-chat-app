@@ -5,7 +5,7 @@ import { io, Socket as ClientSocket } from 'socket.io-client';
 // Signal (with capital S) is for read-only.
 
 const SERVER_URL = "http://localhost:3000"
-const VIDEO_SERVER_URL = "https://s5330262.elf.ict.griffith.edu.au:4443";
+const VIDEO_SERVER_URL = "https://s5330262.elf.ict.griffith.edu.au:3002";
 const PEER_SERVER_HOST = "s5330262.elf.ict.griffith.edu.au";
 const PEER_SERVER_PORT = 3001;
 
@@ -108,7 +108,7 @@ export class Socket {
   }
 
   // ELF SOCKET
-    initVideoSocket() {
+  initVideoSocket() {
     this.videoSocket = io(VIDEO_SERVER_URL);
     this.videoSocket.on('connect', () => {
       console.log('Connected to ELF video server:', this.videoSocket.id);
@@ -116,12 +116,12 @@ export class Socket {
   }
 
   peerID(message: string){
-    this.socket.emit("peerID", message)
+    this.videoSocket.emit("peerID", message)
   }
 
   getPeerID(){
     return new Observable(observer => {
-      this.socket.on("peerID", (data: string) => {
+      this.videoSocket.on("peerID", (data: string) => {
         observer.next(data)
       })
     })
