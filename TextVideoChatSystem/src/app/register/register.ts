@@ -8,7 +8,7 @@ import { UserModel } from '../models/users';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, RouterModule, HttpClientModule],
+  imports: [FormsModule, RouterModule],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
