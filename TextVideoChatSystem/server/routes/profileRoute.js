@@ -341,7 +341,7 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
     app.post('/api/request/join/:groupID/:userID', async function(req, res){
         const groupID = req.params.groupID;
         const userID = req.params.userID;
-        const reasonToJoin = req.body.reasonToJoin;
+        var reasonToJoin = req.body.reasonToJoin;
 
         // Making the ID for request
         var date = new Date().toString()

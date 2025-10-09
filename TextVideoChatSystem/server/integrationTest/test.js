@@ -7,11 +7,11 @@ const fs = require('fs');
 describe('Auth Routes', function() {
     let userCollection;
     let newGroupID;
-    let newChannelID;
+    let newRequestID;
 
     before(async function() {
         await initApp(true); 
-        ({ userCollection, membershipCollection, messageCollection, groupCollection, channelCollection} = getCollections());
+        ({ userCollection, requestCollection, membershipCollection, messageCollection, groupCollection, channelCollection} = getCollections());
 
         // add one user for testing
         await userCollection.insertOne({
@@ -36,12 +36,20 @@ describe('Auth Routes', function() {
             channelName: "TESTCHANNEL",
             groupID: "TEST"
         })
+
+        await requestCollection.insertOne({
+            requestID: "TEST",
+            userID: "TEST",
+            groupID: "TEST",
+            reasonToJoin: "TESTING PURPOSE ONLY",
+            datetime: "bruh"
+        })
     });
 
     after(async function() {
         // Removes stuff that was added during testing
         await userCollection.deleteOne({ username: "testDB" });
-        await userCollection.deleteOne({ id: "TEST" });
+        // await userCollection.deleteOne({ id: "TEST" });
         await groupCollection.deleteOne({groupID: "TEST"})
         await membershipCollection.insertOne({
             membershipID: "m22",
@@ -363,6 +371,94 @@ describe('Auth Routes', function() {
             const group = updatedGroup.find(g => g.groupID == "g1")
             const isUserBanned = group.bannedUsers.some(b => b.userID == "5")
             expect(isUserBanned).to.be.true;
+        })
+
+        it("Should create a request with empty reason", async function(){
+            const res = await request(app)
+                .post(`/api/request/join/${'g1'}/${"TEST"}`)
+                .send({reasonToJoin: ""})
+
+            expect(res.body).to.be.an("array")
+            
+            // check if request exist
+            const newRequest = res.body.find(r => r.userID === "TEST" && r.groupID == "g1");
+            expect(newRequest).to.exist;
+        
+            // check if request's reason to join is empty and if it gets changed to No reason was giveb
+            expect(newRequest.reasonToJoin).to.equal("No reason was given")
+        })
+
+        it("Should create a request with actual reason", async function(){
+            const res = await request(app)
+                .post(`/api/request/join/${'g1'}/${"TEST"}`)
+                .send({reasonToJoin: 'test test test'})
+
+            expect(res.body).to.be.an("array")
+            
+            // check if request exist
+            const newRequest = res.body.find(r => r.userID === "TEST");
+            expect(newRequest).to.exist;
+        
+            // check if request's reason to join is empty
+            expect(newRequest).to.not.equal("")
+        })
+
+        it("Should reject request and do nothing with user", async function(){
+            const res = await request(app)
+                .put(`/api/request/join/${"g1"}/${"TEST"}/${"wedontusets"}/${"reject"}`)
+
+            const updatedMembership = res.body.updatedMembership;
+            const updatedRequest = res.body.updatedRequest;
+            
+            // check if user is in membership
+            const isMember = updatedMembership.find(m => m.userID === "TEST" && m.groupID == "g1");
+            expect(isMember).to.not.exist;
+
+            // check if request from user for that group is gone
+            updatedRequest.forEach(request => {
+                expect(!(request.userID === 'TEST' && request.groupID === 'g1')).to.be.true;
+            });
+        })
+
+        it("Should approve request and include user into said group", async function(){
+            const res = await request(app)
+                .put(`/api/request/join/${"g1"}/${"TEST"}/${"wedontusets"}/${"approve"}`)
+
+            const updatedMembership = res.body.updatedMembership;
+            const updatedRequest = res.body.updatedRequest;
+            
+            // check if user is in membership
+            const isMember = updatedMembership.find(m => m.userID === "TEST" && m.groupID == "g1");
+            expect(isMember).to.exist;
+
+            // check if request from user for that group is gone
+            updatedRequest.forEach(request => {
+                expect(!(request.userID === 'TEST' && request.groupID === 'g1')).to.be.true;
+            });
+        })
+
+        it("Should delete a user and remove them from userCollection, requestCollection, and membershipCollection", async function() {
+            const res = await request(app)
+                .delete(`/api/user/${"TEST"}/delete`)
+            
+            const updatedUsers = res.body.updatedUsers
+            const updatedMembership = res.body.updatedMemberships;
+            const updatedRequest = res.body.updatedRequests;
+
+            // check if userID is still in userCollection
+            updatedUsers.forEach(user => {
+                expect(user.id).to.not.equal('TEST');
+            });
+
+            // check if any request related to user is still there or not
+            updatedRequest.forEach(request => {
+                expect(request.userID).to.not.equal('TEST');
+            });
+
+            // check if there is any membership with userID
+            updatedMembership.forEach(membership => {
+                expect(membership.userID).to.not.equal('TEST');
+            });
         })
     })
 });
