@@ -145,4 +145,83 @@ describe('Profile', () => {
     expect(memberships[0].role).toBe('superAdmin');
   });
 
+  it('should add user to group', () => {
+    component.addUserToGroup('g1', '3');
+
+    const req = httpMock.expectOne('http://localhost:3000/api/group/g1/add/3');
+    expect(req.request.method).toBe('PUT');
+    req.flush({
+      updatedMembership: [...component.membershipJSON, { userID: '3', groupID: 'g1', role: 'chatUser' }],
+      updatedRequests: []
+    });
+
+    expect(component.membershipJSON.length).toBe(4);
+  });
+
+  it('should create new group', () => {
+    component.createNewGroup('New Group', 'New Channel', '1');
+
+    const req = httpMock.expectOne('http://localhost:3000/api/group/newGroup/1/New Group/New Channel');
+    expect(req.request.method).toBe('POST');
+    req.flush({
+      updatedGroup: [...component.groupsJSON, { groupID: 'g2', groupName: 'New Group', bannedUsers: [] }],
+      updatedMembership: component.membershipJSON,
+      updatedUsers: component.usersJSON,
+      updatedChannel: component.channelJSON
+    });
+
+    expect(component.groupsJSON.length).toBe(3);
+  });
+
+  it('should promote user to superAdmin', () => {
+    component.promoteToSuperAdmin('1');
+
+    const req = httpMock.expectOne('http://localhost:3000/api/user/1/superAdminPromotion');
+    expect(req.request.method).toBe('PUT');
+
+    // Mock backend response as well goodness gracious
+    const updatedUsers = [
+      { id: '1', username: 'Alice', roles: ['chatUser', 'superAdmin'] },
+      { id: '2', username: 'Bob', roles: ['groupAdmin'] },
+      { id: '3', username: 'Mocka', roles: ['chatUser'] }
+    ];
+
+    // mock the actual response
+    req.flush({
+      updatedUser: updatedUsers,
+      updatedMembership: component.membershipJSON
+    });
+
+    expect(Array.isArray(component.usersJSON)).toBeTrue();
+
+    const promotedUser = component.usersJSON.find((u: any) => u.id === '1');
+    expect(promotedUser!.roles).toContain('superAdmin');
+  });
+
+  it('should delete a group', () => {
+    component.deleteGroup('g1');
+
+    const req = httpMock.expectOne('http://localhost:3000/api/group/g1/remove');
+    expect(req.request.method).toBe('DELETE');
+    req.flush({
+      updatedGroup: [],
+      updatedMembership: [],
+      updatedChannel: []
+    });
+
+    expect(component.groupsJSON.length).toBe(0);
+  });
+
+  // manageUser (kick/ban)
+  it('should kick a user', () => {
+    component.selectedUser = '1';
+    component.manageUser('1', 'g1', '', 'kick');
+
+    const req = httpMock.expectOne('http://localhost:3000/api/group/g1/user/1/kick');
+    expect(req.request.method).toBe('DELETE');
+    req.flush(component.membershipJSON.filter((m: any) => m.userID !== '1'));
+
+    expect(component.membershipJSON.find((m: any) => m.userID === '1')).toBeUndefined();
+  });
+
 });
