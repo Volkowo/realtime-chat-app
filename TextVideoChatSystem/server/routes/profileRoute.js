@@ -108,7 +108,7 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
         res.json({updatedUser, updatedMembership})
     })
 
-    // Add user to channel
+    // Add user to group
     app.put('/api/group/:groupID/add/:userID', async function (req, res){
         const userID = req.params.userID;
         const groupID = req.params.groupID;
@@ -341,7 +341,7 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
     app.post('/api/request/join/:groupID/:userID', async function(req, res){
         const groupID = req.params.groupID;
         const userID = req.params.userID;
-        const reasonToJoin = req.body.reasonToJoin;
+        var reasonToJoin = req.body.reasonToJoin;
 
         // Making the ID for request
         var date = new Date().toString()
@@ -441,7 +441,6 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
 
         res.json(updatedUser);
     })
-
 
     // get groups that user isn't in
     app.get('/api/groupsNotIn/:userID', async function (req, res){

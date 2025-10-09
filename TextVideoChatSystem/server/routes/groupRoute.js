@@ -22,7 +22,7 @@ function route(app, membershipCollection, groupCollection, messageCollection, io
     app.get('/api/groups/:userID', async function(req, res) {
         const userID = req.params.userID;
         console.log("userID (backend): ", userID)
-        if (!userID) {
+        if (!userID || userID == null || userID === '') {
             return res.sendStatus(400);
         }
 
