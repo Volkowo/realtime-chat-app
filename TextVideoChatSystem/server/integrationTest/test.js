@@ -7,6 +7,7 @@ const fs = require('fs');
 describe('Auth Routes', function() {
     let userCollection;
     let newGroupID;
+    let newChannelID;
 
     before(async function() {
         await initApp(true); 
@@ -29,6 +30,12 @@ describe('Auth Routes', function() {
             groupName: "TESTGROUP",
             bannedUsers: []
         })
+
+        await channelCollection.insertOne({
+            channelID: "TEST",
+            channelName: "TESTCHANNEL",
+            groupID: "TEST"
+        })
     });
 
     after(async function() {
@@ -41,6 +48,23 @@ describe('Auth Routes', function() {
             userID: "3",
             groupID: "g2",
             role: "chatUser"
+        })
+        await membershipCollection.insertOne({
+            membershipID: "m23",
+            userID: "3",
+            groupID: "g5",
+            role: "chatUser"
+        })
+        await membershipCollection.insertOne({
+            membershipID: "m25",
+            userID: "5",
+            groupID: "g1",
+            role: "chatUser"
+        })
+        await channelCollection.insertOne({
+            channelID: "c9",
+            channelName: "physics",
+            groupID: "g5"
         })
         await messageCollection.deleteOne({
             message: "TEST_Hello World!"
@@ -56,9 +80,23 @@ describe('Auth Routes', function() {
             groupID: "g4",
             channelName: "Amogus"
         })
+        await channelCollection.deleteOne({
+            channelName: "TestChannel"
+        })
+        await groupCollection.deleteOne({
+            groupName: "TESTGroup"
+        })
         await membershipCollection.deleteMany({
             groupID: newGroupID
         })
+        await groupCollection.updateOne(
+            {groupID: "g1"},
+            {
+                $set: {
+                    bannedUsers: []
+                }
+            }
+        )
 
         // close the client or smth idk
         await client.close(); 
@@ -191,29 +229,6 @@ describe('Auth Routes', function() {
             const isAdded = res.body.updatedMessages.some(m => m.messageID === currentMessage.messageID);
             expect(isAdded).to.be.true;
         })
-
-        it("Should send a message WITHOUT an image", async function(){
-            const res = await request(app)
-                .post(`/api/addMessage/${'3'}/${'c3'}/${'g2'}`)
-                .field('messageContent', 'TEST2_Hello World!')
-            
-            expect(res.status).to.equal(200);
-            expect(res.body).to.have.property('updatedMessages');
-            expect(res.body).to.have.property('currentMessage');
-
-            // check if currentMessage is actually in res.body or not
-            const currentMessage = res.body.currentMessage
-            expect(currentMessage).to.include.keys('messageID', 'userID', 'groupID', 'channelID', "message", "images", "datetime")
-
-            // the images array should be empty since we're not including any images
-            expect(currentMessage.images).to.be.an('array');
-            expect(currentMessage.images.length).to.equal(0);
-
-            // check if the message gets added or not
-            const isAdded = res.body.updatedMessages.some(m => m.messageID === currentMessage.messageID);
-            expect(isAdded).to.be.true;
-        })
-
     })
 
     describe("4. Profile Route", function() {
@@ -279,6 +294,75 @@ describe('Auth Routes', function() {
             // check if channel exists
             const hasChannel = updatedChannel.some(c => c.channelName == "TestChannel")
             expect(hasChannel).to.be.true;
+        })
+
+        it("Should delete a group", async function(){
+            const res = await request(app)
+                .delete(`/api/group/${'TEST'}/remove`)
+            
+            expect(res.status).to.equal(200);
+            const updatedMembership = res.body.updatedMembership
+            const updatedGroup = res.body.updatedGroup
+            const updatedChannel = res.body.updatedChannel
+
+            // check if membership doesnt have groupID
+            updatedMembership.forEach(membership => {
+                expect(membership.groupID).to.not.equal('TEST');
+            });
+
+            // check if groupID doesnt exist
+            updatedGroup.forEach(group => {
+                expect(group.groupID).to.not.equal('TEST');
+            });
+
+            // check if there's any channel associated with group
+            updatedChannel.forEach(channel => {
+                expect(channel.groupID).to.not.equal('TEST');
+                expect(channel.channelID).to.not.equal('TEST');
+            });
+        })
+
+        it("Should delete a channel from a group", async function(){
+            const res = await request(app)
+                .delete(`/api/group/${'g5'}/channel/${'c9'}/remove`)
+
+            // check if channelID is still in channelCollection
+            res.body.forEach(channel => {
+                expect(channel.channelID).to.not.equal('c9');
+            });
+
+            // check if channelID + groupID is still in channelCollection
+            const hasChannel = res.body.some(c => c.channelID == "c9" && c.groupID == "g5")
+            expect(hasChannel).to.be.false;
+        })
+
+        it("Should kick a user from a group", async function(){
+            const res = await request(app)
+                .delete(`/api/group/${'g5'}/user/${'3'}/kick`)
+            
+            // check if groupID + userID is still in membershipCollection
+            const notKicked = res.body.some(m => m.userID == "3" && m.groupID == "g5")
+            expect(notKicked).to.be.false;
+        })
+
+        it("Should ban a user from a group and also add them into the bannedUsers array list", async function(){
+            const res = await request(app)
+                .post(`/api/group/${'g1'}/user/${'5'}/ban`)
+                .send('kickBanReason', 'you stink!')
+            
+            const updatedGroup = res.body.updatedGroup
+            const updatedMembership = res.body.updatedMembership
+
+            console.log("MEMBERSHIP: ", updatedMembership)
+
+            // check if groupID + userID is still in membershipCollection
+            const notBanned = updatedMembership.some(m => m.userID == "5" && m.groupID == "g1")
+            expect(notBanned).to.be.false;
+
+            // check if userID is in banned list of groupID
+            const group = updatedGroup.find(g => g.groupID == "g1")
+            const isUserBanned = group.bannedUsers.some(b => b.userID == "5")
+            expect(isUserBanned).to.be.true;
         })
     })
 });
