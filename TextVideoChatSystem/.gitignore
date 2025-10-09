@@ -6,6 +6,11 @@
 /out-tsc
 /bazel-out
 
+# Coverage reports
+coverage/
+.nyc_output/
+
+
 # Node
 /server/node_modules
 /node_modules
