@@ -437,6 +437,36 @@ describe('Auth Routes', function() {
             });
         })
 
+        it("Should get the groups the user isn't in", async function(){
+            const res = await request(app)
+                .get(`/api/groupsNotIn/${"TEST"}`)
+            
+            // check if what's returned doesnt have userID
+            res.body.forEach(membership => {
+                expect(membership.userID).to.not.equal('TEST');
+            });
+
+            // check if g1 is in res.bpdy or not (it shouldnt have g1)
+            res.body.forEach(group => {
+                expect(!(group.groupID === 'g1')).to.be.true;
+            });
+        })
+
+        it("Should get the groups the user is in", async function(){
+            const res = await request(app)
+                .get(`/api/groupsIn/${"TEST"}`)
+            
+            // check if what's returned have userID
+            res.body.forEach(membership => {
+                expect(membership.userID).to.equal('TEST');
+            });
+
+            // check if each membership have userID
+            res.body.forEach(membership => {
+                expect((membership.userID === 'TEST')).to.be.true;
+            });
+        })
+
         it("Should delete a user and remove them from userCollection, requestCollection, and membershipCollection", async function() {
             const res = await request(app)
                 .delete(`/api/user/${"TEST"}/delete`)
@@ -461,5 +491,38 @@ describe('Auth Routes', function() {
             });
         })
     })
+
+    describe("5. GET Routes in ProfileRoute returning arrays", function() {
+        it("Should return an array of users", async function() {
+            const res = await request(app).get('/api/users');
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('array');
+        });
+
+        it("Should return an array of groups", async function() {
+            const res = await request(app).get('/api/groups');
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('array');
+        });
+
+        it("Should return an array of requests", async function() {
+            const res = await request(app).get('/api/requests');
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('array');
+        });
+
+        it("Should return an array of channels", async function() {
+            const res = await request(app).get('/api/channels');
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('array');
+        });
+
+        it("Should return an array of membership", async function() {
+            const res = await request(app).get('/api/membership');
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('array');
+        });
+    });
+
 });
 
