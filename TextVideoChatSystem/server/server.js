@@ -26,17 +26,21 @@ const profileRoute = require('./routes/profileRoute');
 const dbName = "assignmentSF";
 const client = new MongoClient('mongodb://localhost:27017');
 
+// This is for testing (like actual testing)
+let db, userCollection, messageCollection, membershipCollection, requestCollection, groupCollection, channelCollection;
+
+
 async function initApp(testing = false) {
     await client.connect();
-    const db = client.db(dbName);
+    db = client.db(dbName);
 
     // Collections
-    const userCollection = db.collection('users');
-    const messageCollection = db.collection('message');
-    const membershipCollection = db.collection('membership');
-    const requestCollection = db.collection('request');
-    const groupCollection = db.collection('group');
-    const channelCollection = db.collection('channel');
+    userCollection = db.collection('users');
+    messageCollection = db.collection('message');
+    membershipCollection = db.collection('membership');
+    requestCollection = db.collection('request');
+    groupCollection = db.collection('group');
+    channelCollection = db.collection('channel');
 
     // Register routes
     loginRoute.route(app, userCollection);
@@ -48,6 +52,16 @@ async function initApp(testing = false) {
     if(testing == false){
         sockets.connect(io, 3000, userCollection);
     }
+
+    return {
+        db,
+        userCollection,
+        messageCollection,
+        membershipCollection,
+        requestCollection,
+        groupCollection,
+        channelCollection
+    };
 }
 
 // Only start server when not in test mode
@@ -60,5 +74,18 @@ if (require.main === module) {
     });
 }
 
-module.exports = { app, initApp, server, client };
+module.exports = { 
+    app,
+    initApp,
+    server, 
+    client, 
+    getCollections: () => ({
+        db,
+        userCollection,
+        messageCollection,
+        membershipCollection,
+        requestCollection,
+        groupCollection,
+        channelCollection
+    })};
 

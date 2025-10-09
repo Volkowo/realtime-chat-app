@@ -37,10 +37,11 @@ function route(app, userCollection) {
         // Making the ID for new user
         var userID = createID();
 
-        const user = await userCollection.findOne( {username: username.toLowerCase() });
-        console.log(user);
 
-        if(user){
+        const existingUser = await userCollection.findOne({ username: username });
+        console.log("Existing user:", existingUser);
+
+        if(existingUser){
             res.json({register: false})
         } else {
             await userCollection.insertOne({

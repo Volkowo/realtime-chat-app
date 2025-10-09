@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "unitTest": "mocha ./unitTest/test.js",
-    "test": "mocha ./integrationTest/test.js"
+    "test": "mocha ./integrationTest/test.js",
+    "coverage": "nyc --reporter=lcov --reporter=text npm run test"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +22,7 @@
     "chai": "^6.2.0",
     "chai-http": "^4.4.0",
     "mocha": "^11.7.4",
+    "nyc": "^17.1.0",
     "supertest": "^7.1.4"
   }
 }
