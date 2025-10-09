@@ -1,17 +1,31 @@
 const { app, initApp, client, getCollections } = require('../server');
 const request = require('supertest'); 
 const { expect } = require('chai');
+const fs = require('fs');
+
 
 describe('Auth Routes', function() {
     let userCollection;
 
     before(async function() {
         await initApp(true); 
-        ({ userCollection } = getCollections());
+        ({ userCollection, membershipCollection, messageCollection} = getCollections());
     });
 
     after(async function() {
         await userCollection.deleteOne({ username: "testDB" });
+        await membershipCollection.insertOne({
+            membershipID: "m22",
+            userID: "3",
+            groupID: "g2",
+            role: "chatUser"
+        })
+        await messageCollection.deleteOne({
+            message: "TEST_Hello World!"
+        })
+        await messageCollection.deleteOne({
+            message: "TEST2_Hello World!"
+        })
         await client.close(); 
     });
 
@@ -34,6 +48,14 @@ describe('Auth Routes', function() {
             expect(res.body).to.have.property('signedIn', false);
         });
 
+        it("Should return 400 if no input in login", async function() {
+            const res = await request(app)
+                .post('/api/auth')
+                .send(null);
+    
+            expect(res.status).to.equal(400);
+        })
+
         it("Should register user if username unique", async function() {
             const res = await request(app)
                 .post('/api/register')
@@ -51,5 +73,113 @@ describe('Auth Routes', function() {
             expect(res.status).to.equal(200);
             expect(res.body).to.have.property('register', false);
         })
+
+        it("Should return 400 if no input in register", async function() {
+            const res = await request(app)
+                .post('/api/register')
+                .send(null);
+    
+            expect(res.status).to.equal(400);
+        })
+    })
+
+    
+    describe("2. Channel Route", function() {
+        it("Should get a list of channel", async function() {
+            const res = await request(app)
+                .get(`/api/groups/${'g2'}/channels`)
+
+            console.log("LKJASDJKLADS: ", res.body)
+
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('array');
+            res.body.forEach(channel => {
+                expect(channel).to.include.keys('channelID', 'channelName', 'groupID');
+            });
+        })
+
+        it("Should get a list of messages", async function() {
+            const res = await request(app)
+                .get(`/api/groups/${'g2'}/channels/${'c4'}`)
+
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('array');
+            res.body.forEach(message => {
+                expect(message).to.include.keys('messageID', 'userID', 'groupID', 'channelID', "message", "images", "datetime");
+            });
+        })
+    })
+
+    describe("3. Group Route", function() {
+        it("Should return an array of group the user is in", async function(){
+            const res = await request(app)
+                .get(`/api/groups/${3}`)
+
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('array');
+            res.body.forEach(group => {
+                expect(group).to.include.keys('groupID', 'groupName', 'bannedUsers');
+            })
+        })
+
+        it("Should remove a user from a group", async function(){
+            const res = await request(app)
+                .delete(`/api/group/${'g2'}/${'3'}/leave`)
+
+            expect(res.status).to.equal(200);
+            // expects the returned res to NOT have g2
+            res.body.forEach(group => {
+                expect(group.groupID).to.not.equal('g2');
+            });
+        })
+
+        it("Should send a message with image", async function(){
+            const res = await request(app)
+                .post(`/api/addMessage/${'3'}/${'c3'}/${'g2'}`)
+                .field('messageContent', 'TEST_Hello World!')
+                .attach('images', fs.readFileSync('../server/images/pfp/brownie.png'), 'brownie.png')
+            
+            expect(res.status).to.equal(200);
+            expect(res.body).to.have.property('updatedMessages');
+            expect(res.body).to.have.property('currentMessage');
+
+            // check if currentMessage is actually in res.body or not
+            const currentMessage = res.body.currentMessage
+            expect(currentMessage).to.include.keys('messageID', 'userID', 'groupID', 'channelID', "message", "images", "datetime")
+
+            /*
+                I can't really check if the image is stored correctly in the server since each picture has been added a unique suffix to ensure that it doesn't conflict with other images
+            */
+            expect(currentMessage.images).to.be.an('array');
+            expect(currentMessage.images.length).to.equal(1);
+
+            // check if the message gets added or not
+            const isAdded = res.body.updatedMessages.some(m => m.messageID === currentMessage.messageID);
+            expect(isAdded).to.be.true;
+        })
+
+        it("Should send a message WITHOUT an image", async function(){
+            const res = await request(app)
+                .post(`/api/addMessage/${'3'}/${'c3'}/${'g2'}`)
+                .field('messageContent', 'TEST2_Hello World!')
+            
+            expect(res.status).to.equal(200);
+            expect(res.body).to.have.property('updatedMessages');
+            expect(res.body).to.have.property('currentMessage');
+
+            // check if currentMessage is actually in res.body or not
+            const currentMessage = res.body.currentMessage
+            expect(currentMessage).to.include.keys('messageID', 'userID', 'groupID', 'channelID', "message", "images", "datetime")
+
+            // the images array should be empty since we're not including any images
+            expect(currentMessage.images).to.be.an('array');
+            expect(currentMessage.images.length).to.equal(0);
+
+            // check if the message gets added or not
+            const isAdded = res.body.updatedMessages.some(m => m.messageID === currentMessage.messageID);
+            expect(isAdded).to.be.true;
+        })
+
     })
 });
+
