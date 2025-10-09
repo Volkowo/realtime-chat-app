@@ -8,46 +8,46 @@ import { Profile } from './profile';
 
 describe('Profile', () => {
   let httpMock: HttpTestingController;
-  let routerSpy: jasmine.SpyObj<Router>;
   let component: Profile;
   let fixture: ComponentFixture<Profile>;
+
+  const mockUser = {
+    id: '1',
+    email: 'og@email.com',
+    username: 'super',
+    avatar: 'images/pfp/brownie.png',
+    roles: ['chatUser', 'superAdmin'],
+    signedIn: false
+  };
+
+  const mockUsers = [
+    { id: '1', username: 'Alice', roles: ['chatUser'] },
+    { id: '2', username: 'Bob', roles: ['groupAdmin'] },
+    { id: '3', username: 'Mocka', roles: ['chatUser'] }
+  ];
+
+  const mockGroups = [
+    { groupID: 'g1', groupName: 'Test Group', bannedUsers: [] },
+    { groupID: 'g2', groupName: 'Mock Group', bannedUsers: [] }
+  ];
+
+  const mockMembership = [
+    { userID: '1', groupID: 'g1', role: 'chatUser' },
+    { userID: '3', groupID: 'g2', role: 'chatUser' },
+    { userID: '2', groupID: 'g1', role: 'groupAdmin' }
+  ];
+
+  const mockChannels = [
+    { channelID: 'c1', groupID: 'g1', channelName: 'General' }
+  ];
 
   // mocking localStorage -> https://stackoverflow.com/questions/11485420/how-to-mock-localstorage-in-javascript-unit-tests
 
   beforeEach(async () => {
-    // mocking local storage so it doesnt affect the actual one
+    // Mock localStorage before ngOnInit and stuff
     spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key === 'user') {
-        return JSON.stringify({
-          id: '1',
-          email: 'og@email.com',
-          username: 'super',
-          avatar: 'images/pfp/brownie.png',
-          roles: ['chatUser', 'superAdmin'],
-          signedIn: false
-        });
-      }
-      return null;
+      return key === 'user' ? JSON.stringify(mockUser) : null;
     });
-
-    component.usersJSON = [
-      { id: '1', username: 'Alice', roles: ['chatUser'] },
-      { id: '2', username: 'Bob', roles: ['groupAdmin'] }
-    ];
-
-    component.membershipJSON = [
-      { userID: '1', groupID: 'g1', role: 'chatUser' },
-      { userID: '2', groupID: 'g1', role: 'groupAdmin' }
-    ];
-
-    component.groupsJSON = [
-      { groupID: 'g1', groupName: 'Test Group', bannedUsers: [] }
-    ];
-
-    component.channelJSON = [
-      { channelID: 'c1', groupID: 'g1', channelName: 'General' }
-    ];
-
     spyOn(localStorage, 'setItem').and.callFake(() => {});
     spyOn(localStorage, 'removeItem').and.callFake(() => {});
 
@@ -58,7 +58,19 @@ describe('Profile', () => {
     fixture = TestBed.createComponent(Profile);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
-    fixture.detectChanges();
+
+    // Flush HTTP requests that ngOnInit triggers
+    fixture.detectChanges(); // trigger ngOnInit
+
+    // ngOnInit makes multiple GET requests, so we flush them all
+    // Fulsh is a way to mock back-end's response; we're mocking ngOnInit's get requests here
+    httpMock.expectOne('http://localhost:3000/api/users').flush(mockUsers);
+    httpMock.expectOne('http://localhost:3000/api/groups').flush(mockGroups);
+    httpMock.expectOne('http://localhost:3000/api/requests').flush([]);
+    httpMock.expectOne('http://localhost:3000/api/channels').flush(mockChannels);
+    httpMock.expectOne('http://localhost:3000/api/membership').flush(mockMembership);
+    httpMock.expectOne(`http://localhost:3000/api/groupsNotIn/${mockUser.id}`).flush([]);
+    httpMock.expectOne(`http://localhost:3000/api/groupsIn/${mockUser.id}`).flush([]);
   });
 
   it('should create', () => {
@@ -66,14 +78,41 @@ describe('Profile', () => {
   });
 
   it('should fetch users on init', () => {
-    const mockUsers = [{ id: '1', username: 'testUser', roles: ['chatUser'] }];
-
-    const req = httpMock.expectOne('http://localhost:3000/api/users');
-    expect(req.request.method).toBe('GET');
-    req.flush(mockUsers);
-
     expect(component.usersJSON).toEqual(mockUsers);
   });
+
+  it('should return username by ID', () => {
+    expect(component.getUsernameById('1')).toBe('Alice');
+    expect(component.getUsernameById('3')).toBe('Mocka');
+    expect(component.getUsernameById('4')).toBe('Unknown');
+  });
+
+  it('should get user roles correctly', () => {
+    expect(component.getUserRoles('g1', '1')).toBe('chatUser');
+    expect(component.getUserRoles('g1', '3')).toBe('unknown'); // default to unknown since Mocka isnt a member of g1
+  });
+
+  it('should return users in group', () => {
+    const usersInGroup = component.getUserInGroup('g1');
+    expect(usersInGroup.length).toBe(2);
+  });
+
+  it('should return users not in group', () => {
+    const usersNotInGroup = component.getUserNotInGroup('g1');
+    expect(usersNotInGroup.length).toBe(1); // user 3: Mocka isnt in g1 so it should return an array with 1 uhh list inside?
+  });
+
+  it('should return channels by group ID', () => {
+    const channels = component.getChannelById('g1');
+    expect(channels.length).toBe(1);
+  });
+
+  it('should check if user is super or group admin', () => {
+    expect(component.isSuperOrGroupAdmin('superAdmin')).toBeTrue();
+    expect(component.isSuperOrGroupAdmin('groupAdmin')).toBeTrue();
+    expect(component.isSuperOrGroupAdmin('chatUser')).toBeFalse();
+  });
+
 
   it('should correctly identify superAdmin', () => {
     expect(component.isUserSuperAdmin()).toBeTrue();
