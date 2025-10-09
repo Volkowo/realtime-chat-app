@@ -15,6 +15,7 @@ describe('Profile', () => {
   // mocking localStorage -> https://stackoverflow.com/questions/11485420/how-to-mock-localstorage-in-javascript-unit-tests
 
   beforeEach(async () => {
+    // mocking local storage so it doesnt affect the actual one
     spyOn(localStorage, 'getItem').and.callFake((key: string) => {
       if (key === 'user') {
         return JSON.stringify({
@@ -28,6 +29,24 @@ describe('Profile', () => {
       }
       return null;
     });
+
+    component.usersJSON = [
+      { id: '1', username: 'Alice', roles: ['chatUser'] },
+      { id: '2', username: 'Bob', roles: ['groupAdmin'] }
+    ];
+
+    component.membershipJSON = [
+      { userID: '1', groupID: 'g1', role: 'chatUser' },
+      { userID: '2', groupID: 'g1', role: 'groupAdmin' }
+    ];
+
+    component.groupsJSON = [
+      { groupID: 'g1', groupName: 'Test Group', bannedUsers: [] }
+    ];
+
+    component.channelJSON = [
+      { channelID: 'c1', groupID: 'g1', channelName: 'General' }
+    ];
 
     spyOn(localStorage, 'setItem').and.callFake(() => {});
     spyOn(localStorage, 'removeItem').and.callFake(() => {});
