@@ -8,9 +8,10 @@ import { UserModel } from '../models/users';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, RouterModule, HttpClientModule],
+  imports: [FormsModule, RouterModule],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrl: './login.css',
+  standalone: true
 })
 export class Login implements OnInit {
   username = "";
