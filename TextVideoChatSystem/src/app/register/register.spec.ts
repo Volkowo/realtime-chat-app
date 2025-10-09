@@ -33,7 +33,11 @@ describe('Register', () => {
 
   it('should alert and navigate on successful registration', fakeAsync(() => {
     const httpMock = TestBed.inject(HttpTestingController);
+
+    // replace the navigate method with spy
     const routerSpy = spyOn(component['router'], 'navigate');
+
+    // we do this so the spy can record what appears when alert is called
     spyOn(window, 'alert');
 
     component.username = 'user';

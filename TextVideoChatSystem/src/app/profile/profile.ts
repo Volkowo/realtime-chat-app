@@ -18,7 +18,7 @@ declare var bootstrap: any;
 
 @Component({
   selector: 'app-profile',
-  imports: [FormsModule, RouterModule, HttpClientModule, CommonModule, PromoteModal],
+  imports: [FormsModule, RouterModule, CommonModule, PromoteModal],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
