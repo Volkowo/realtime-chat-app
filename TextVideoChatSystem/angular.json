@@ -19,7 +19,7 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-                "src/assets",
+              "src/assets",
               {
                 "glob": "**/*",
                 "input": "public"
@@ -91,8 +91,60 @@
               "src/styles.css"
             ]
           }
+        },
+        "cypress-run": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "TextVideoChatSystem:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "TextVideoChatSystem:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "watch": true,
+            "headless": false
+          }
+        },
+        "ct": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "TextVideoChatSystem:serve",
+            "watch": true,
+            "headless": false,
+            "testingType": "component"
+          },
+          "configurations": {
+            "development": {
+              "devServerTarget": "TextVideoChatSystem:serve:development"
+            }
+          }
+        },
+        "e2e": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "TextVideoChatSystem:serve",
+            "watch": true,
+            "headless": false
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "TextVideoChatSystem:serve:production"
+            }
+          }
         }
       }
     }
+  },
+  "cli": {
+    "schematicCollections": [
+      "@cypress/schematic",
+      "@cypress/schematic",
+      "@schematics/angular"
+    ]
   }
 }
