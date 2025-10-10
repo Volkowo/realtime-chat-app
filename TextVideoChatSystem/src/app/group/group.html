@@ -13,7 +13,7 @@
         
         <!-- Sidebar -->
         <div class="row">
-            <div class="col-2 pt-1 ps-3 bg-light position-fixed min-vh-100">
+            <div class="col-2 pt-1 ps-3 bg-light position-fixed sidebar min-vh-100">
                 <ul class="list-unstyled ps-0" id="groupsAccordion">
                     @for(group of groupsJSON; track group.groupID){
                         <li class="mb-1">
@@ -25,6 +25,11 @@
                             data-bs-toggle="collapse" 
                             aria-expanded="false" 
                             [attr.aria-controls]="'#group' + group.groupID">
+                                <img 
+                                    [src]="group.serverPic ? getServerPicURL(group) : ''" 
+                                    [alt]="getServerInitial(group.groupID)" 
+                                    class="server-icon me-2"
+                                />
                                 {{group.groupName}}
                             </button>
 
@@ -95,7 +100,7 @@
                             <button type="submit" class="btn btn-primary">Send</button>
                         </form>
                     } @else {
-                        <p> aughhhhh </p>
+                        <p> Choose a server's channel </p>
                     }
                 </div>
             </div>

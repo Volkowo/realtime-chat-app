@@ -415,7 +415,7 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
         res.json({updatedUsers, updatedRequests, updatedMemberships});
     });
 
-    // update profile picture
+    // update profile picture + status message
     app.post('/api/update/:userID', upload.single('profileImage'), async function (req, res, next) {
         // req.file is the `avatar` file
         // req.body will hold the text fields, if there were any
@@ -459,6 +459,24 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
         res.json(updatedUser);
     })
 
+    // update server profile picture
+    app.post('/api/group/updateServerPic/:groupID', upload.single('serverPic'), async function(req, res){
+        const groupID = req.params.groupID;
+        const serverPic = req.file;
+
+        const imageURL = `images/pfp/${serverPic.filename}`;
+
+        await groupCollection.updateOne(
+            {groupID: groupID},
+            {$set: {
+                serverPic: imageURL
+            }}
+        )
+
+        const updatedGroup = await groupCollection.find({}).toArray();
+        res.json(updatedGroup)
+    })
+
     // get groups that user isn't in
     app.get('/api/groupsNotIn/:userID', async function (req, res){
         // get the groupID the user is in
@@ -490,6 +508,7 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
             console.log("no grpups..?")
         }
     })
+    
 
     // Get users
     app.get('/api/users', async function (req, res){

@@ -197,5 +197,15 @@ export class Group implements OnInit, AfterViewChecked {
     })
   }
 
+  getServerPicURL(group: any){
+      return `http://localhost:3000/${group.serverPic}`
+  }
+
+  getServerInitial(groupID: any) {
+    const group = this.groupsJSON?.find((g: any) => g.groupID === groupID);
+    if (!group || !group.groupName) return '?';
+    return group.groupName.charAt(0).toUpperCase(); // return the first LETTER of the group name
+  }
+
 
 }

@@ -286,9 +286,14 @@
                                                 <div class="card-body">
                                                     <div class="row">
                                                         <div class="col-7">
-                                                            <h5 class="card-title">
-                                                            {{getGroupById(group.groupID)}}
-                                                            </h5>
+                                                            <div class="d-flex align-items-center">
+                                                                <img 
+                                                                    [src]="getServerPicURL(group.groupID)" 
+                                                                    alt="{{getServerInitial(group.groupID)}}" 
+                                                                    class="server-icon me-2"
+                                                                />
+                                                                <h5 class="card-title mb-0">{{getGroupById(group.groupID)}}</h5>
+                                                            </div>
                                                         </div>
                                                         <div class="col-5 d-flex justify-content-end">
                                                         <!-- DELETE GROUP -->
@@ -367,6 +372,11 @@
                                                     <!-- Button trigger modal -->
                                                     <div class="d-flex gap-2 mb-3 mt-5 justify-content-end">
                                                         <div class="me-1">
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#changePicture' + group.groupID" >
+                                                                Change Server Icon
+                                                            </button>
+                                                        </div>
+                                                        <div class="me-1">
                                                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#addUser' + group.groupID" >
                                                                 Add User
                                                             </button>
@@ -437,6 +447,30 @@
                                                         </div>
                                                     </div>
 
+                                                    <!-- Change server icon -->
+                                                    <!-- Modal -->
+                                                    <div class="modal fade" [id]="'changePicture' + group.groupID" tabindex="-1" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h1 class="modal-title fs-5">Change Server Icon for {{getGroupById(group.groupID)}}</h1>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <img 
+                                                                        [src]="previewServerIcon ? previewServerIcon :  getServerPicURL(group.groupID)" 
+                                                                        alt="{{getServerInitial(group.groupID)}}" 
+                                                                        class="server-icon me-2"
+                                                                    />
+                                                                    <input type="file" (change)="onServerPicSelected($event)" accept="image/*" />
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                    <button class="btn btn-primary" (click)="updateServerPic(group.groupID)">Save</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
                                                     <!-- REMOVE USER -->
                                                     <!-- Modal -->
