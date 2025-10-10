@@ -47,6 +47,7 @@ export class Profile implements OnInit {
   avatar: string = "";
   image: any;
   previewImage: any
+  previewStatus: any;
 
   ngOnInit() {
     this.user = (localStorage.getItem("user"))
@@ -88,6 +89,8 @@ export class Profile implements OnInit {
         // console.log("GROUP USER IS IN: ", res);
         this.groupUserIsIn = res;
       })
+
+      this.previewStatus = this.userJSON.statusMessage
       } else {
         this.router.navigate([''])
       }
@@ -427,8 +430,29 @@ setCurrentView(currentView: string){
     });
   }
 
-  saveProfile(){
-    console.log("gurt: yo")
+  saveProfile(userID: string){
+    console.log("gurt: yo ||", this.previewStatus)
+    if(this.previewStatus == this.userJSON.statusMessage && !this.previewImage){
+      this.closeModal("editProfileModal")
+      return;
+    }
+
+    var formData = new FormData();
+    if (this.previewStatus !== this.userJSON.statusMessage) {
+      formData.append('statusMessage', this.previewStatus);
+    }
+    if (this.image && this.previewImage) {
+      formData.append('profileImage', this.image);
+    }
+    console.log("hello")
+
+    this.http.post(`http://localhost:3000/api/update/${userID}`, formData).subscribe((res: any) => {
+      console.log(res);
+      this.userJSON = res;
+      localStorage.setItem("user", JSON.stringify(res));
+      this.closeModal("editProfileModal")
+    })
+    
   }
 
   // change profile picutre

@@ -610,10 +610,10 @@
                                         </div>
 
                                         <input type="file" (change)="onFileSelected($event)" accept="image/*" />
-                                        <input type="text" [(ngModel)]="userJSON.statusMessage" class="form-control mt-2"/>
+                                        <input type="text" [(ngModel)]="previewStatus" class="form-control mt-2"/>
                                     </div>
                                     <div class="modal-footer">
-                                        <button class="btn btn-success" (click)="saveProfile()">Save</button>
+                                        <button class="btn btn-success" (click)="saveProfile(userJSON.id)">Save</button>
                                     </div>
                                 </div>
                             </div>

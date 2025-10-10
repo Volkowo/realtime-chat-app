@@ -420,23 +420,40 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
         // req.file is the `avatar` file
         // req.body will hold the text fields, if there were any
         const userID = req.params.userID;
+        const statusMessage = req.body.statusMessage;
         const profilePicture = req.file;
 
         console.log(`userID: ${userID}`);
         console.log("profile picture:", profilePicture)
 
-        var imageURL = `images/pfp/${profilePicture.filename}`
+        /*
+            This ensures that we can update either profile picture or status message (or both)
+            depending on which variables have value and isnt empty
+        */
+        let updateObj = {};
+        
+        if (statusMessage) {
+            updateObj.statusMessage = statusMessage;
+        }
+
+        if (profilePicture) {
+            const imageURL = `images/pfp/${profilePicture.filename}`;
+            updateObj.avatar = imageURL;
+        }
+
+        console.log("UPDATE: ", updateObj)
+
 
         await userCollection.updateOne(
             {id: userID},
-            {$set: {
-                avatar: imageURL
-            }}
+            {$set: 
+                updateObj
+            }
         )
 
         const updatedUser = await userCollection.findOne(
             { id: userID },
-            { projection: { password: 0 } }   // 0 to exclude the password from being copied
+            { projection: { password: 0 } } // 0 to exclude the password from being copied
         );
 
         res.json(updatedUser);
