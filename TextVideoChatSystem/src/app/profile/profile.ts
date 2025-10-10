@@ -46,6 +46,7 @@ export class Profile implements OnInit {
   groupUserIsIn: any[] = []
   avatar: string = "";
   image: any;
+  previewImage: any
 
   ngOnInit() {
     this.user = (localStorage.getItem("user"))
@@ -426,6 +427,10 @@ setCurrentView(currentView: string){
     });
   }
 
+  saveProfile(){
+    console.log("gurt: yo")
+  }
+
   // change profile picutre
   changeProfilePicture(userID: string){
     var formData = new FormData();
@@ -442,6 +447,12 @@ setCurrentView(currentView: string){
   onFileSelected(event: any){
     if(event.target.value){
       this.image = <File>event.target.files[0];
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewImage = e.target?.result; // set preview
+      };
+      reader.readAsDataURL(this.image);
     }
   }
   
