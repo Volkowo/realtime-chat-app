@@ -2,7 +2,10 @@ export class MessageModel {
     constructor(
         public messageID: string,
         public userID: string,
+        public groupID: string,
+        public channelID: string,
         public message: string,
-        public datetime: Date = new Date()
+        public images: string[],
+        public datetime: string
     ) {}
 }

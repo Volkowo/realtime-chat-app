@@ -1,5 +1,485 @@
 ## 3813ICT_Assignment by Jason Kenaz - s5330262
 ---
+# Phase 2's README
+# Repository Organization
+
+- `TextVideoChatSystem`: Root project folder containing both the Angular frontend and Node.js backend.
+- `Assets`: Screenshots used in README.md.
+- `README.md`: Documentation of project setup, architecture, and usage.
+
+### Frontend (`TextVideoChatSystem/src`)
+Handles the front-end of the website with Angular.
+- `/app`: Main Angular application folder containing all components, services, and models.
+- `/app/group`: Component for displaying groups; users can also leave groups from here.
+- `/app/login`: Component for handling user authentication.
+- `/app/models`: TypeScript interfaces for User, Group, Channel, and Message. Used in some section of the front-end's `*.ts` file.
+- `/app/profile`: Component for managing groups, users, and channels depending on user roles.
+- `/app/promote-modal`: Modal component (used with `profile.html`) for promoting a user to an admin role.
+- `/app/register`: Component for creating a new user account.
+- `/app/videos`: Component for doing a peer to peer video call (and screen sharing)
+- `/app/services`: Used for peer and socket for real-time communications in `group.html` and `videos.html`.
+- `/assets`: Initially was going to be the directory to store images, but I found out images are stored in back-end instead.
+
+### Backend (`TextVideoChatSystem/server`)
+Handles the back-end with Node.
+- `/data`: JSON files for join requests, users, and groups. This was from Milestone 1 and is not used anymore. Storage is based on Mongo Database for this phase.
+- `/images`: Any images that are used in the website is stored here. Each image will be have unique values added as suffix to prevent any duplicate pictures.
+- `/initializeMongo`: Scripts to seed or reset MongoDB. This was created when I was migrating the storage from JSON to MongoDB
+- `/integrationTest`: JavaScript file for testing.
+- `/models`: Defines the data schema used by the server. Not used anymore since storage is done via MongoDB
+- `/routes`: Defines server-side endpoints for users, groups, requests, etc.
+- `/services`: Initially used to handle certain functions but was scrapped not long in the development.
+- `/server.js`: Main server entry and MongoDB connection.
+- `/socket.js`: Socket.IO and WebSocket setup.
+
+## Branching Strategy
+Branches are created per feature or major functionality and merged into `main` once stable.  
+![screenshot of branches in GitHub repo](./Assets/Milestone2Branches.png)
+Phase 2 branches include:
+- `mongoDBIntegration`: Migrated from JSON to MongoDB. `/initializeMongo` was made here.
+- `imageSupport`: Added image upload for profile pictures and groups using `multer`.
+- `socket`: Implemented real-time chat updates via Socket.IO.
+- `videoSupport`: Added video call and screen sharing via PeerJS. PeerJS's server can be accessed through ELF externally.
+- `backendTesting`: Back-end testing with Chai and Supertest.
+- `frontendTesting`: Front-end testing with Karma.
+- `e2eTesting`: End-to-end testing with Cypress.
+- `UI` & `UI_newVariables`: UI updates and variable improvements for status messages, profile pictures, and server icons.
+
+## Commit/Update Frequency <br>
+Commits are consistently pushed after completing a significant progress during the development.
+
+# Data Structures
+### Client-Side
+users.ts
+```ts
+    export class UserModel {
+        constructor(
+            public id: string = "",
+            public email: string = "",
+            public username: string = "",
+            public pass: string = "",
+            public avatar: string = "",
+            public roles: any[] = [],
+            public signedIn: boolean = false,
+            public statusMessage: string = "",
+            public dateJoined: string = ""
+        ){}
+    }
+
+    export class LoggedInUser{
+        constructor(
+            public id: string = "",
+            public email: string = "",
+            public username: string = "",
+            public avatar: string = "",
+            public roles: any[] = [],
+            public signedIn: boolean = false,
+            public statusMessage: string = "",
+            public dateJoined: string = ""
+        ){}
+    }
+```
+Represents each user in the system.
+- `Roles` define the permissions for a user.
+- `LoggedInUser` is a safe version for storing client-side session info without the password.
+- `dateJoined` is the date when they created their account
+
+### Server-side
+MongoDB - users
+```JSON
+  {
+    "_id": {
+      "$oid": "68e88358a5a122f31b2a8492"
+    },
+    "id": "7",
+    "email": "user7@email.com",
+    "username": "userSeven",
+    "pass": "123",
+    "avatar": "images/pfp/defaultPFP.jpg",
+    "roles": [
+      "chatUser",
+      "groupAdmin",
+      "superAdmin"
+    ],
+    "signedIn": false,
+    "statusMessage": "Online",
+    "dateJoined": "2025-10-10T03:54:00.221Z"
+  }
+```
+
+## Groups
+### Front-end
+groups.ts
+```ts
+    export class GroupModel{
+        constructor(
+            public groupID: string = "",
+            public groupName: string = "",
+            public bannedUsers: string[] = [],
+            public serverPic: string = ""
+        ){}
+    }
+```
+Represents a group, which may contain multiple channels and users.
+- `bannedUsers` track members that are banned by Super and Group Admin.
+
+### Back-end
+MongoDB - group
+```
+{
+  "_id": {
+    "$oid": "68e88358a5a122f31b2a84da"
+  },
+  "groupID": "gSep05_1007132",
+  "groupName": "Burrito",
+  "bannedUsers": [],
+  "serverPic": ""
+}
+```
+
+## Channels
+### Client-side
+channels.ts
+```ts
+export class ChannelModel{
+    constructor(
+        public channelID: string, 
+        public channelName: string, 
+        public groupID: string
+    ){}
+}
+```
+Represents a channel within a group. 
+- `groupID` represents the group this channel belongs to
+
+### Server-side
+MongoDB - channel
+```
+{
+  "_id": {
+    "$oid": "68e88358a5a122f31b2a84e3"
+  },
+  "channelID": "c1",
+  "channelName": "general",
+  "groupID": "g1"
+}
+```
+
+## Messages
+### Client-side
+messages.ts
+```ts
+export class MessageModel {
+    constructor(
+        public messageID: string,
+        public userID: string,
+        public groupID: string,
+        public channelID: string,
+        public message: string,
+        public images: string[],
+        public datetime: string
+    ) {}
+}
+```
+Represents a single message in a channel. 
+- `userID` is used to associate the message with the sender.
+- `groupID` is used to associate which group the message is from.
+- `channelID` is used to associate which channel the message is from.
+- `message` stores the content of the message.
+- `images` stores an array of links to images that was sent.
+
+### Server-side
+MongoDB - message
+```
+{
+  "_id": {
+    "$oid": "68e88358a5a122f31b2a8494"
+  },
+  "messageID": "m1",
+  "userID": "1",
+  "groupID": "g1",
+  "channelID": "c1",
+  "message": "Welcome to TestGroup!",
+  "images": [],
+  "datetime": "2025-09-03T12:00:00.000Z"
+}
+```
+
+## Join Requests
+### Client-side
+joinRequest.ts
+```ts
+export class JoinRequestModel {
+    constructor(
+        public requestID: string,
+        public userID: string,
+        public groupID: string,
+        public reasonToJoin: string,
+        public datetime: string
+    ){}
+}
+```
+Represents a user requesting to join a group.
+- `userID` references the user
+- `groupID` references the target group.
+- `reasonToJoin` is an optional input where the user can explain why they want to join said group.
+
+### Server-side
+MongoDB - request
+```
+{
+  "_id": {
+    "$oid": "68e88358a5a122f31b2a84d4"
+  },
+  "requestID": "4",
+  "userID": "7",
+  "groupID": "g3",
+  "reasonToJoin": "Want to share resources with the group.",
+  "datetime": "2025-09-06T07:45:00.000Z"
+}
+```
+
+## Membership
+A bridging entity that connects user and group. This is because user and group have many-to-many relationships.
+- User can be in one to many groups
+- Group can have one to many users.
+
+While MongoDB is not the same as a traditional database, I decided to add a bridging relationship just to make tracking membership easier.
+### Server-side Only
+MongoDB - membership
+```
+{
+  "_id": {
+    "$oid": "68e88358a5a122f31b2a8499"
+  },
+  "membershipID": "m1",
+  "userID": "1",
+  "groupID": "g1",
+  "role": "superAdmin"
+}
+```
+
+# Client and Server Responsibilities
+## Client
+The client is primarily responsible for user interaction, display, and real-time updates. It communicates with the server via REST APIs and WebSockets. Key responsibilities are:
+1. **User Interface & Navigation**
+- Handles rendering pages like login, register, group list, profile, chat, and video call screens.
+- Uses Angular components to separate UI and logics.
+2. **Data Management (Client-Side Models)**
+- Maintains local state for entities such as UserModel, GroupModel, ChannelModel, MessageModel, JoinRequestModel, and Membership.
+- Tracks the current logged-in user session using LoggedInUser via Local Storage.
+3. **Forms & Input Validation**
+- Provides input forms for registration, login, group creation, and chat messages.
+- Performs basic validation (non-empty inputs and unique username) before sending data to the server.
+4. **Real-Time Communication**
+- Uses Socket via Socket service for real-time chat updates and to notify when a user joins/leaves a channel.
+- Uses PeerJS via Peer service to handle video and screen sharing streams.
+- Updates Angular component views dynamically when messages, users, or video streams change.
+5. **API Communication**
+- Makes HTTP requests (via Angular HttpClient) to the backend for CRUD operations on users, groups, channels, messages, and join requests.
+- Handles responses from REST API, updates local state, and refreshes the UI.
+
+## Server
+The server is responsible for data persistence, validation, and real-time communication. It provides REST APIs for CRUD operations and WebSockets for instant updates. Key responsibilities:
+1. **Data Persistence**
+- Stores all entities (users, groups, channels, messages, join requests, membership) in MongoDB.
+- Manages images uploaded by users, saving them to /images with unique suffixes added to each image.
+2. **REST API**
+- Exposes routes to create, read, update, and delete users, groups, channels, messages, and join requests.
+- Returns JSON responses used by the Angular client.
+3. **Authorization**
+- Determines permissions for actions like promoting a user to admin, banning a user, or sending messages.
+- Handles join requests and membership role assignments.
+4. **Real-Time Communication**
+- Uses Socket and Signal for instant chat updates, user join/leave notifications, and broadcasting messages to channels.
+- Manages a separate video socket server (via Griffith's ELF) to handle PeerJS connections and peer ID exchange for video calls.
+5. **File Serving**
+- Serves static files (images) used by the frontend.
+
+# Routes
+| Route                      | Method | Parameters                             | Return                                                            | Purpose                                                |
+| -------------------------- | ------ | -------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------ |
+| `/api/auth`                | POST   | `{ username, pass }`                   | Logged-in user object (without password) or `{ signedIn: false }` | Authenticate user.                                     |
+| `/api/register`            | POST   | `{ username, password, email }`        | `{ register: boolean }`                                           | Register a new user.                                   |
+| `/api/users`               | GET    | None                                   | `[UserModel]`                                                     | Get all users.                                         |
+| `/api/user/:userID/delete` | DELETE | `userID`                               | `{ updatedUsers, updatedRequests, updatedMemberships }`           | Delete a user and related requests/memberships.        |
+| `/api/update/:userID`      | POST   | `profileImage` (file), `statusMessage` | Updated user object                                               | Update a user's profile picture and/or status message. |
+| `/api/groups/:userID`                                     | GET    | `userID`                           | `[GroupModel]`                                                      | Get groups the user belongs to.                                |
+| `/api/groupsNotIn/:userID`                                | GET    | `userID`                           | `[GroupModel]`                                                      | Get groups the user is not in.                                 |
+| `/api/groupsIn/:userID`                                   | GET    | `userID`                           | `[MembershipModel]`                                                 | Get the user's memberships.                                    |
+| `/api/group/newGroup/:userID/:newGroup/:newGroup_channel` | POST   | `userID`, group name, channel name | `{ updatedUsers, updatedMembership, updatedGroup, updatedChannel }` | Create a new group with initial channel and assign membership. |
+| `/api/group/:groupID/remove`                              | DELETE | `groupID`                          | `{ updatedGroup, updatedMembership, updatedChannel }`               | Delete a group and related memberships/channels.               |
+| `/api/group/:groupID/add/:userID`                         | PUT    | `userID`, `groupID`                | `{ updatedMembership, updatedRequests }`                            | Add a user to a group (approving join request).                |
+| `/api/group/:groupID/addChannel/:newChannel`              | PUT    | `newChannel`                       | Updated channel list                                                | Add a new channel to a group.                                  |
+| `/api/group/:groupID/updateServerPic`                     | POST   | `serverPic` (file)                 | Updated group list                                                  | Update a group's server picture.                               |
+| `/api/group/:groupID/:userID/leave`                       | DELETE | `groupID`, `userID`                | Updated group list                                                  | Leave a group.                                                 |
+| `/api/group/:groupID/user/:userID/kick`                   | DELETE | `groupID`, `userID`                | Updated membership list                                             | Kick a user from a group.                                      |
+| `/api/group/:groupID/user/:userID/ban`                    | POST   | `kickBanReason`                    | `{ updatedGroup, updatedMembership }`                               | Ban a user from a group.                                       |
+| `/api/groups/:groupID/channels`                 | GET    | `groupID`              | `[ChannelModel]`     | Get all channels in a group.        |
+| `/api/group/:groupID/channel/:channelID/remove` | DELETE | `groupID`, `channelID` | Updated channel list | Delete a channel from a group.      |
+| `/api/channels`                                 | GET    | None                   | `[ChannelModel]`     | Get all channels (general listing). |
+| `/api/groups/:groupID/channels/:channelID`    | GET    | `groupID`, `channelID`                                       | `[MessageModel]`                      | Get all messages in a channel.                      |
+| `/api/addMessage/:userID/:channelID/:groupID` | POST   | `userID`, `channelID`, `groupID`, `messageContent`, `images` | `{ updatedMessages, currentMessage }` | Send a message in a channel (with optional images). |
+| `/api/request/join/:groupID/:userID`                    | POST   | `groupID`, `userID`, `reasonToJoin`                         | Updated requests list                   | User requests to join a group.    |
+| `/api/request/join/:groupID/:userID/:requestID/:action` | PUT    | `groupID`, `userID`, `requestID`, `action` (approve/reject) | `{ updatedMembership, updatedRequest }` | Approve or reject a join request. |
+| `/api/user/:userID/group/:groupID/role` | PUT    | `userID`, `groupID`, `{ role }` | `{ updatedUsers, updatedMembership }` | Promote a user to group admin. |
+| `/api/user/:userID/superAdminPromotion` | PUT    | `userID`                        | `{ updatedUser, updatedMembership }`  | Promote a user to super admin. |
+| `/api/membership`                       | GET    | None                            | `[MembershipModel]`                   | Get all membership records.    |
+
+# Angular Architecture
+## Components
+Each component have:
+- HTML template: Defines the view in the website.
+- `.spec.ts`: Used for front-end testing
+- TS class: Handles logic, data fetching, and event handling.
+- CSS: Used for styling.
+
+Currently I have these components:
+- `group`: Displays the group and channel the user is in. Each channel will also display messages in it.
+- `login`: Handles user authentication form and log them in.
+- `profile`: Displays user profile, group info, join requests, channels, and handles group management actions.
+- `promote-modal`: A modal used together with `group`. This modal is used to promote a user into an Admin.
+- `register`: Handles user registration form and sends data to related back-end routes.
+- `videos`: Handles peer to peer video call and screen sharing.
+
+## Models
+Models represent the structure of data for both front-end and backend.
+- `users.ts`: Represents a user.
+- `messages.ts`: Represents a single message in a channel.
+- `joinRequest.ts`: Represents a request to join a group.
+- `groups.ts`: Represents a group with channels, members, and list of banned users.
+- `channels.ts`: Represents a chat channel in a group.
+- `bannedUsers.ts`: Represents a user that is banned from a group.
+
+## Services
+Angular services provide shared logic and backend communication.
+- `socket.ts`: Manages Socket connections for real-time chat, user presence, and video peer coordination.
+- `peer.ts`: Provides PeerJS integration for video and screen sharing streams.
+- `data.ts`: Unused.
+
+## Routes
+There are 5 routes in total that defines the navigation path of the website. These routes are in `app.routes.ts`.
+- `""`: Used to navigate to `login`-related component
+- `"/login"`: Also used to navigate to `login`-related component
+- `"/group"`: Used to navigate to `group`-related components
+- `"/profile"`: Used to navigate to `profile`-related components
+- `"/register"`: Used to navigate to `register`-related components
+- `"/videos"`: Used to navigate to `videos`-related components
+
+# Client–Server Interaction Details
+## 1. User Authentication and Session
+
+**Client:**
+- The Login component sends a `POST /api/auth` request with username and password.
+- If authentication succeeds, the server returns a user object with no password.
+- The response is stored in the browser’s Local Storage as `LoggedInUser`.
+
+**Server:**
+- `/routes/authRoute.js` verifies the user from the MongoDB `users` collection.
+- The user’s `signedIn` property in MongoDB is set to `true`.
+
+**UI Update:**
+- Angular routes navigate to `/group` after login.
+- The `group` component loads the groups the user belongs to by calling `GET /api/groups/:userID`.
+
+
+## 2. Group and Channel Management
+**Client:**
+- Profile component manages group creation, deletion, and user membership. These functionalities depend on whether a user is an admin or not.
+- Creating a group sends a `POST /api/group/newGroup/:userID/:newGroup/:newGroup_channel`.
+- Adding/removing channels uses `PUT /api/group/:groupID/addChannel/:newChannel` or `DELETE /api/group/:groupID/channel/:channelID/remove`.
+
+**Server:**
+- `/routes/groupRoute.js` updates MongoDB collections (`groups`, `channels`, `memberships`) accordingly.
+- Temporary server-side variables log or track changes during execution.
+
+**UI Update:**
+- The Angular component refreshes groups and channels.
+- Admin panels update automatically.
+
+
+## 3. Real-Time Chat Messaging
+**Client:**
+- The Group component initializes a socket connection using the `Socket` service.
+- Joining a channel emits `joinChannel` with `{ userID, channelID }`.
+- Leaving a channel emits `leaveChannel` with `{ userID, channelID }`.
+- Sending a message emits `message` via socket and also calls `POST /api/addMessage/:userID/:channelID/:groupID`.
+
+**Server:**
+- `socket.js` tracks connected users and channels.
+- Incoming messages are stored in MongoDB (`messages`) and broadcast to all connected users in that channel.
+
+**UI Update:**
+- The `Socket` service listens for `"message"` events.
+- Messages are appended to `messages` via `signal<ChatMessage[]>`.
+- The chat view updates reactively without page reload.
+
+
+## 4. Image Uploads and Profile Updates
+**Client:**
+- Uploading a profile picture or changing status calls `POST /api/update/:userID`. This route will update profile picture and status calls dynamically.
+  - What this means is that it will only update the field that has values in it.
+- Updating a group icon calls `POST /api/group/:groupID/updateServerPic`.
+
+**Server:**
+- Uses `multer` to save files in `/server/images` with unique suffixes added to the image(s).
+- Updates MongoDB documents’ `avatar` or `serverPic` fields.
+
+**UI Update:**
+- Returned URLs update `<img>` sources dynamically.
+- Changes appear immediately in `profile` or group components.
+
+
+## 5. Join Requests and Role Management
+**Client:**
+- Users request to join groups via `POST /api/request/join/:groupID/:userID`.
+- Admins approve/reject requests via `PUT /api/request/join/:groupID/:userID/:requestID/:action`.
+- Promoting users to admin or super admin uses `PUT /api/user/:userID/group/:groupID/role` or `/api/user/:userID/superAdminPromotion`.
+
+**Server:**
+- Updates MongoDB collections: `requests`, `users`, `memberships`.
+- Any join requests that are approved will insert user to membership records and remove the request(s). 
+  - If the request is rejected, then the user will not be inserted into membership records. The request will still be removed.
+- Promotions update `roles` arrays in `users` MongoDB collection.
+
+**UI Update:**
+- Angular refetches updated users and requests.
+- Admin-only features appear dynamically with `@if`.
+
+## 6. Video and Screen Sharing (PeerJS + ELF)
+
+**Client:**
+- The **Videos** component uses the `Peer` service to connect to ELF (`https://s5330262.elf.ict.griffith.edu.au:3002`).
+- Sends peer ID via `Socket` service for synchronization.
+- PeerJS establishes direct P2P streams for video and screen sharing.
+
+**Server (ELF):**
+- Runs independently of the local project.
+- Uses HTTPS and `PeerServer`.
+- Receives and broadcasts Peer IDs for connection coordination.
+
+**UI Update:**
+- `videos.html` subscribes to the `getPeerID()` Observable.
+- Incoming streams are added to the `videos` array.
+- `<video>` elements update dynamically with new streams.
+
+## Socket Communication
+| Event          | Direction       | Data                           | Purpose                                                                                             |
+| -------------- | --------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `message`      | Client → Server | `{ message: string, channelID: string }` | Sends a chat message to a channel. Server stores it in DB and broadcasts it to the channel.         |
+| `message`      | Server → Client | `ChatMessage` object                     | Broadcasts a chat message to all users in a channel.                                                |
+| `image`        | Client → Server | `any` (image data / URL)                 | Sends image(s) to server.                                                                           |
+| `image`        | Server → Client | `any` (image data / URL)                 | Broadcasts images to all connected clients.                                                         |
+| `joinChannel`  | Client → Server | `{ channelID: string, userID: string }`  | Notify server that a user joins a channel; server adds socket to room.                              |
+| `joinChannel`  | Server → Client | `{ userID: string, username: string }`   | Broadcasts that a user joined the channel; client updates `usersInChannel` and adds system message. |
+| `leaveChannel` | Client → Server | `{ channelID: string, userID: string }`  | Notify server that a user leaves a channel; server removes socket from room.                        |
+| `leaveChannel` | Server → Client | `{ userID: string, username: string }`   | Broadcasts that a user left the channel; client updates `usersInChannel` and adds system message.   |                                                          |
+| `peerID`       | Client → Server | `string` (peer ID)                       | Sends PeerJS ID to ELF server for P2P video coordination.                                           |
+| `peerID`       | Server → Client | `string` (peer ID)                       | Receives other users’ PeerJS IDs to establish video/screen sharing streams.                         |
+
+
+---
+# Phase 1's README
 # Repository Organization
 ## Folder Structure
 - `TextVideoChatSystem`: Root project folder containing the Angular frontend and Node.js backend.
@@ -388,6 +868,7 @@ joinRequest.json
 ]
 ```
 ---
+
 # Angular Architecture
 ## Components
 Each component have:

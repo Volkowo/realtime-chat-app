@@ -4,9 +4,11 @@ export class UserModel {
         public email: string = "",
         public username: string = "",
         public pass: string = "",
+        public avatar: string = "",
         public roles: any[] = [],
-        public groups: any[] = [],
-        public signedIn: boolean = false
+        public signedIn: boolean = false,
+        public statusMessage: string = "",
+        public dateJoined: string = ""
     ){}
 }
 
@@ -15,8 +17,10 @@ export class LoggedInUser{
         public id: string = "",
         public email: string = "",
         public username: string = "",
+        public avatar: string = "",
         public roles: any[] = [],
-        public groups: any[] = [],
-        public signedIn: boolean = false
+        public signedIn: boolean = false,
+        public statusMessage: string = "",
+        public dateJoined: string = ""
     ){}
 }

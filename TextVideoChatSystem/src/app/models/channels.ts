@@ -1,5 +1,3 @@
-import { MessageModel } from "./messages"
-
 export class ChannelModel{
     constructor(
         public channelID: string, 
