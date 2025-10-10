@@ -1,9 +1,16 @@
 <div class="container-fluid">
 
-    <div class="row p-2">
-        <button mat-raised-button color="primary" class="m-2" [disabled]="isCallStarted" (click)="streamCamera()">Stream with Camera</button>
-        <button mat-raised-button color="primary" class="m-2" [disabled]="isCallStarted" (click)="streamScreen()">Stream with Screen</button>
-        <button mat-raised-button color="primary" class="m-2" [disabled]="!(isCallStarted)" (click)="endCall()">End Call</button>
+    <!-- Sticky buttons on top -->
+    <div class="d-flex align-items-center p-2 sticky-buttons">
+        <button mat-raised-button color="primary" [disabled]="isCallStarted" (click)="streamCamera()" class="me-2">
+            Stream with Camera
+        </button>
+        <button mat-raised-button color="primary" [disabled]="isCallStarted" (click)="streamScreen()" class="me-2">
+            Stream with Screen
+        </button>
+        <button mat-raised-button color="primary" [disabled]="!isCallStarted" (click)="endCall()">
+            End Call
+        </button>
     </div>
 
     <h2>Peers</h2>
@@ -15,14 +22,24 @@
         }
     </ul>
 
-    <div class="video-grid">
-        @for(video of videos; track video.userID){
-            <span *ngIf="video.userID !== ownID; else currentUserVideoLabel">Peer: {{video.userID}}</span>
-            <ng-template #currentUserVideoLabel>
-                <span>You: {{video.userID}}</span>
-            </ng-template>
-            <video [srcObject]="video.srcObject" controls autoplay [muted]="video.muted"></video>
-        }
+    <div class="video-container">
+        <!-- Our video -->
+        <div class="own-video" *ngFor="let video of videos" >
+            <ng-container *ngIf="video.userID === ownID">
+                <video [srcObject]="video.srcObject" autoplay muted></video>
+            </ng-container>
+        </div>
+
+        <!-- Other peers -->
+        <div class="peer-videos">
+            <ng-container *ngFor="let video of videos" >
+                <ng-container *ngIf="video.userID !== ownID">
+                    <div class="peer-video">
+                        <video [srcObject]="video.srcObject" autoplay></video>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
     </div>
 
 </div>

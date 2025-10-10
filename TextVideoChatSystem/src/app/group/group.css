@@ -53,6 +53,14 @@
     display: block;
 }
 
+.chatBox{
+    position: sticky;
+    bottom: 0;
+    left: 16.666667%;
+    width: 83.33333%;
+    z-index: 10;
+}
+
 /* .systemMessage{
     margin-top: -1rem;
 } */
