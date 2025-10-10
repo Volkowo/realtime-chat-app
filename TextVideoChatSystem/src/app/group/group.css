@@ -4,6 +4,24 @@
     height: 80vh;
 }
 
+.server-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #f0f0f0;
+    line-height: 60px;
+    text-align: center;
+}
+
+.sidebar {
+    height: 100%;
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-right: 0.5rem; 
+}
+
+
+
 /*
 .messageContainer{
     background-color: rgb(0, 255, 81);
@@ -51,6 +69,14 @@
     border-radius: 50%;
     object-fit: cover;
     display: block;
+}
+
+.chatBox{
+    position: sticky;
+    bottom: 0;
+    left: 16.666667%;
+    width: 83.33333%;
+    z-index: 10;
 }
 
 /* .systemMessage{

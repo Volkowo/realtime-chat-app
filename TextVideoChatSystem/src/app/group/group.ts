@@ -13,7 +13,7 @@ import { Socket } from '../services/socket';
 
 @Component({
   selector: 'app-group',
-  imports: [FormsModule, RouterModule, HttpClientModule, CommonModule],
+  imports: [FormsModule, RouterModule, CommonModule],
   templateUrl: './group.html',
   styleUrls: ['./group.css', './groupBootstrap.css']
 })
@@ -195,6 +195,16 @@ export class Group implements OnInit, AfterViewChecked {
 
       localStorage.setItem("user", JSON.stringify(this.userJSON));
     })
+  }
+
+  getServerPicURL(group: any){
+      return `http://localhost:3000/${group.serverPic}`
+  }
+
+  getServerInitial(groupID: any) {
+    const group = this.groupsJSON?.find((g: any) => g.groupID === groupID);
+    if (!group || !group.groupName) return '?';
+    return group.groupName.charAt(0).toUpperCase(); // return the first LETTER of the group name
   }
 
 

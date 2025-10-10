@@ -12,14 +12,28 @@
 }
 
 #sidebarMenu {
-  z-index: 1;
+    z-index: 1;
 }
 
 .profilePicture{
     align-self: center;
-    width: 180px;
-    border-radius: 10px;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    /* max-width: 150px; */
 }
+
+.server-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #f0f0f0;
+    line-height: 60px;
+    text-align: center;
+}
+
 
 .profileCard{
     border-radius: .5rem .5rem 0 0;

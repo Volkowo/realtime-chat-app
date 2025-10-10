@@ -13,7 +13,7 @@
         
         <!-- Sidebar -->
         <div class="row">
-            <div class="col-2 pt-1 ps-3 bg-light position-fixed min-vh-100">
+            <div class="col-2 pt-1 ps-3 bg-light position-fixed sidebar min-vh-100">
                 <ul class="list-unstyled ps-0" id="groupsAccordion">
                     @for(group of groupsJSON; track group.groupID){
                         <li class="mb-1">
@@ -25,6 +25,11 @@
                             data-bs-toggle="collapse" 
                             aria-expanded="false" 
                             [attr.aria-controls]="'#group' + group.groupID">
+                                <img 
+                                    [src]="group.serverPic ? getServerPicURL(group) : ''" 
+                                    [alt]="getServerInitial(group.groupID)" 
+                                    class="server-icon me-2"
+                                />
                                 {{group.groupName}}
                             </button>
 
@@ -86,7 +91,7 @@
                                 </div>
                             </div>
                         }
-                        <form class="d-flex w-100 sticky-bottom p-4 bg-white" (ngSubmit)="sendChat(userJSON.id, currentChannelID, currentGroupID)">
+                        <form class="d-flex w-100 chatBox sticky-bottom p-4 bg-white" (ngSubmit)="sendChat(userJSON.id, currentChannelID, currentGroupID)">
                             <label for="fileInput" class="btn btn-outline-secondary me-2 p-2">
                                 +
                             </label>
@@ -95,7 +100,7 @@
                             <button type="submit" class="btn btn-primary">Send</button>
                         </form>
                     } @else {
-                        <p> aughhhhh </p>
+                        <p> Choose a server's channel </p>
                     }
                 </div>
             </div>
@@ -106,19 +111,3 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-<!-- Will be used in the future, probably; Im just putting it here for now-->
-<!-- <li class="mb-1">
-    <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" 
-            data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-        Account
-    </button>
-    <div class="collapse" id="account-collapse">
-        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">New...</a></li>
-        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Profile</a></li>
-        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Settings</a></li>
-        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Sign out</a></li>
-        </ul>
-    </div>
-</li> -->

@@ -4,6 +4,7 @@ export class GroupModel{
         public groupID: string = "",
         public groupName: string = "",
         public channels: ChannelModel[] = [],
-        public users: string[] = []
+        public users: string[] = [],
+        public serverPic: string = ""
     ){}
 }

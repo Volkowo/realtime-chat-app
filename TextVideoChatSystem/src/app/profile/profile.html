@@ -286,9 +286,14 @@
                                                 <div class="card-body">
                                                     <div class="row">
                                                         <div class="col-7">
-                                                            <h5 class="card-title">
-                                                            {{getGroupById(group.groupID)}}
-                                                            </h5>
+                                                            <div class="d-flex align-items-center">
+                                                                <img 
+                                                                    [src]="getServerPicURL(group.groupID)" 
+                                                                    alt="{{getServerInitial(group.groupID)}}" 
+                                                                    class="server-icon me-2"
+                                                                />
+                                                                <h5 class="card-title mb-0">{{getGroupById(group.groupID)}}</h5>
+                                                            </div>
                                                         </div>
                                                         <div class="col-5 d-flex justify-content-end">
                                                         <!-- DELETE GROUP -->
@@ -367,6 +372,11 @@
                                                     <!-- Button trigger modal -->
                                                     <div class="d-flex gap-2 mb-3 mt-5 justify-content-end">
                                                         <div class="me-1">
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#changePicture' + group.groupID" >
+                                                                Change Server Icon
+                                                            </button>
+                                                        </div>
+                                                        <div class="me-1">
                                                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" [attr.data-bs-target]="'#addUser' + group.groupID" >
                                                                 Add User
                                                             </button>
@@ -437,6 +447,30 @@
                                                         </div>
                                                     </div>
 
+                                                    <!-- Change server icon -->
+                                                    <!-- Modal -->
+                                                    <div class="modal fade" [id]="'changePicture' + group.groupID" tabindex="-1" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h1 class="modal-title fs-5">Change Server Icon for {{getGroupById(group.groupID)}}</h1>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <img 
+                                                                        [src]="previewServerIcon ? previewServerIcon :  getServerPicURL(group.groupID)" 
+                                                                        alt="{{getServerInitial(group.groupID)}}" 
+                                                                        class="server-icon me-2"
+                                                                    />
+                                                                    <input type="file" (change)="onServerPicSelected($event)" accept="image/*" />
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                    <button class="btn btn-primary" (click)="updateServerPic(group.groupID)">Save</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
                                                     <!-- REMOVE USER -->
                                                     <!-- Modal -->
@@ -569,13 +603,51 @@
                                         <div>
                                             <h5 class="mb-1">{{userJSON.username}}</h5>
                                             <p class="mb-2 pb-1">{{userJSON.email}}</p>
+                                            <div class="d-flex flex-column rounded-3 p-2 mb-2 bg-body-tertiary">
+                                                <div>
+                                                    <p class="small text-muted mb-1">Status Message</p>
+                                                    <p class="mb-0">{{userJSON.statusMessage}}</p>
+                                                </div>
+
+                                                <div class="mt-1">
+                                                    <p class="small text-muted mb-1">Joined on</p>
+                                                    <p class="mb-0">{{userJSON.dateJoined | date: "mediumDate"}}</p>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="d-flex pt-1 mt-auto">
-                                            <button type="button" class="btn btn-warning me-1 flex-grow-1">Edit</button>
-                                            <button type="button" class="btn btn-danger me-1 flex-grow-1" data-bs-toggle="modal" data-bs-target="#deleteAccount">
-                                                Delete Account
-                                            </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="button" class="btn btn-warning me-1 flex-grow-1"  data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+                            <button type="button" class="btn btn-danger me-1 flex-grow-1" data-bs-toggle="modal" data-bs-target="#deleteAccount">
+                                Delete Account
+                            </button>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="editProfileModal" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5>Edit Profile</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="text-center mb-3">
+                                            <img 
+                                                [src]="previewImage ? previewImage : getAvatarURL(userJSON)" 
+                                                alt="Profile Picture" 
+                                                class="img-fluid profilePicture mb-2"
+                                            />
                                         </div>
+
+                                        <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+                                        <input type="text" [(ngModel)]="previewStatus" class="form-control mt-2"/>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-success" (click)="saveProfile(userJSON.id)">Save</button>
                                     </div>
                                 </div>
                             </div>
@@ -583,13 +655,6 @@
                     </div>
                 </div>
             </section>
-                <section class="profileUploadSection">
-                <input type="file" (input)="onFileSelected($event)" accept="image/*" />
-                <button type="button" class="btn btn-primary mt-2" (click)="changeProfilePicture(userJSON.id)">
-                    Update Profile Picture
-                </button>
-                </section>
-
         }
         </main>
 

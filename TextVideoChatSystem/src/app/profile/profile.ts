@@ -46,6 +46,10 @@ export class Profile implements OnInit {
   groupUserIsIn: any[] = []
   avatar: string = "";
   image: any;
+  serverIcon: any;
+  previewImage: any
+  previewServerIcon: any;
+  previewStatus: any;
 
   ngOnInit() {
     this.user = (localStorage.getItem("user"))
@@ -87,6 +91,8 @@ export class Profile implements OnInit {
         // console.log("GROUP USER IS IN: ", res);
         this.groupUserIsIn = res;
       })
+
+      this.previewStatus = this.userJSON.statusMessage
       } else {
         this.router.navigate([''])
       }
@@ -426,6 +432,31 @@ setCurrentView(currentView: string){
     });
   }
 
+  saveProfile(userID: string){
+    console.log("gurt: yo ||", this.previewStatus)
+    if(this.previewStatus == this.userJSON.statusMessage && !this.previewImage){
+      this.closeModal("editProfileModal")
+      return;
+    }
+
+    var formData = new FormData();
+    if (this.previewStatus !== this.userJSON.statusMessage) {
+      formData.append('statusMessage', this.previewStatus);
+    }
+    if (this.image && this.previewImage) {
+      formData.append('profileImage', this.image);
+    }
+    console.log("hello")
+
+    this.http.post(`http://localhost:3000/api/update/${userID}`, formData).subscribe((res: any) => {
+      console.log(res);
+      this.userJSON = res;
+      localStorage.setItem("user", JSON.stringify(res));
+      this.closeModal("editProfileModal")
+    })
+    
+  }
+
   // change profile picutre
   changeProfilePicture(userID: string){
     var formData = new FormData();
@@ -442,6 +473,12 @@ setCurrentView(currentView: string){
   onFileSelected(event: any){
     if(event.target.value){
       this.image = <File>event.target.files[0];
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewImage = e.target?.result; // set preview
+      };
+      reader.readAsDataURL(this.image);
     }
   }
   
@@ -451,6 +488,49 @@ setCurrentView(currentView: string){
 
   getAvatarURL(user: any){
     return `http://localhost:3000/${user.avatar}`
+  }
+
+  getServerPicURL(groupID: any){
+    let group = this.groupsJSON.find((group: any) => group.groupID == groupID)
+    console.log(group)
+    console.log(group.serverPic)
+    return `http://localhost:3000/${group.serverPic}`
+  }
+  
+  onServerPicSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.serverIcon = file;
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.previewServerIcon = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  updateServerPic(groupID: string) {
+    if (!this.serverIcon) return;
+
+    const formData = new FormData();
+    formData.append('serverPic', this.serverIcon);
+
+    this.http.post(`http://localhost:3000/api/group/updateServerPic/${groupID}`, formData)
+      .subscribe((res: any) => {
+        console.log('Updated group:', res);
+        this.groupsJSON = res
+
+        this.serverIcon = null;
+        this.previewServerIcon = null;
+        this.closeModal("changePicture" + groupID)
+      });
+  }
+
+  getServerInitial(groupID: any) {
+    const group = this.groupsJSON?.find((g: any) => g.groupID === groupID);
+    if (!group || !group.groupName) return '?';
+    return group.groupName.charAt(0).toUpperCase(); // return the first LETTER of the group name
   }
 
 }

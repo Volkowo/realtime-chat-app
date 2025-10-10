@@ -1,0 +1,44 @@
+/* Sticky buttons */
+.sticky-buttons {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 100;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Video container with separate rows */
+.video-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+/* our own video row */
+.own-video {
+    display: flex;
+    justify-content: center;
+}
+
+.own-video video {
+    max-width: 400px;
+    max-height: 300px;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Other peers row */
+.peer-videos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.peer-video video {
+    width: 100%;
+    height: auto;
+    max-height: 150px;
+    border-radius: 8px;
+}
