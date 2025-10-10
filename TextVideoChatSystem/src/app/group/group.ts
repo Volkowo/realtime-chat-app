@@ -13,7 +13,7 @@ import { Socket } from '../services/socket';
 
 @Component({
   selector: 'app-group',
-  imports: [FormsModule, RouterModule, HttpClientModule, CommonModule],
+  imports: [FormsModule, RouterModule, CommonModule],
   templateUrl: './group.html',
   styleUrls: ['./group.css', './groupBootstrap.css']
 })
