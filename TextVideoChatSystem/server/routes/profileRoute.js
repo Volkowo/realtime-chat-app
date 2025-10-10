@@ -199,7 +199,8 @@ function route(app, userCollection, membershipCollection, groupCollection, reque
         const group = await groupCollection.insertOne({
             groupID: newGroupID,
             groupName: newGroup,
-            bannedUsers: []
+            bannedUsers: [],
+            serverPic: ""
         })
 
         // add the current user to membership

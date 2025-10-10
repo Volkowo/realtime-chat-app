@@ -49,8 +49,11 @@ function route(app, userCollection) {
                 email: email,
                 username: username,
                 pass: password,
+                avatar: "images/pfp/defaultPFP.jpg",
                 roles: ["chatUser"],
-                signedIn: false
+                signedIn: false,
+                statusMessage: "I'm a new user!",
+                dateJoined: new Date().toString()
             })
             res.json({register: true})
         }
